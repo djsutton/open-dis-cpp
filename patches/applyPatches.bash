@@ -65,6 +65,7 @@ case "$1" in
       patch cpp/DIS/VariableDatum.cpp patches/cpp/VariableDatum.cpp.patch
       patch cpp/DIS/VariableDatum.h patches/cpp/VariableDatum.h.patch
       patch cpp/DIS/Pdu.cpp patches/cpp/Pdu.patch
+      patch cpp/DIS/msLibMacro.h patches/cpp/msLibMacro.h.patch
       ;;
 
   cppDis7)
