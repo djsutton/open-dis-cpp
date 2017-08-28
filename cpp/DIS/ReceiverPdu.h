@@ -2,6 +2,7 @@
 #define RECEIVERPDU_H
 
 #include <DIS/EntityID.h>
+#include <DIS/EntityID.h>
 #include <DIS/RadioCommunicationsFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -18,6 +19,12 @@ namespace DIS
 class EXPORT_MACRO ReceiverPdu : public RadioCommunicationsFamilyPdu
 {
 protected:
+  /** ID of the entity that is the source of the communication, ie contains the radio */
+  EntityID _entityId; 
+
+  /** particular radio within an entity */
+  unsigned short _radioId; 
+
   /** encoding scheme used, and enumeration */
   unsigned short _receiverState; 
 
@@ -25,7 +32,7 @@ protected:
   unsigned short _padding1; 
 
   /** received power */
-  float _receivedPoser; 
+  float _receivedPower; 
 
   /** ID of transmitter */
   EntityID _transmitterEntityId; 
@@ -41,14 +48,21 @@ protected:
     virtual void marshal(DataStream& dataStream) const;
     virtual void unmarshal(DataStream& dataStream);
 
+    EntityID& getEntityId(); 
+    const EntityID&  getEntityId() const; 
+    void setEntityId(const EntityID    &pX);
+
+    unsigned short getRadioId() const; 
+    void setRadioId(unsigned short pX); 
+
     unsigned short getReceiverState() const; 
     void setReceiverState(unsigned short pX); 
 
     unsigned short getPadding1() const; 
     void setPadding1(unsigned short pX); 
 
-    float getReceivedPoser() const; 
-    void setReceivedPoser(float pX); 
+    float getReceivedPower() const; 
+    void setReceivedPower(float pX); 
 
     EntityID& getTransmitterEntityId(); 
     const EntityID&  getTransmitterEntityId() const; 

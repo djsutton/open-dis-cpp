@@ -10,14 +10,14 @@ RecordQueryReliablePdu::RecordQueryReliablePdu() : SimulationManagementWithRelia
    _pad2(0), 
    _eventType(0), 
    _time(0), 
-   _numberOfRecords(0)
+   _numberOfRecords(0), 
+   _recordIDs()
 {
-    setPduType( 63 );
+    setPduType( 65 );
 }
 
 RecordQueryReliablePdu::~RecordQueryReliablePdu()
 {
-    _recordIDs.clear();
 }
 
 unsigned int RecordQueryReliablePdu::getRequestID() const
@@ -82,22 +82,27 @@ void RecordQueryReliablePdu::setTime(unsigned int pX)
 
 unsigned int RecordQueryReliablePdu::getNumberOfRecords() const
 {
-   return _recordIDs.size();
+    return _numberOfRecords;
 }
 
-std::vector<FourByteChunk>& RecordQueryReliablePdu::getRecordIDs() 
+void RecordQueryReliablePdu::setNumberOfRecords(unsigned int pX)
+{
+    _numberOfRecords = pX;
+}
+
+FourByteChunk& RecordQueryReliablePdu::getRecordIDs() 
 {
     return _recordIDs;
 }
 
-const std::vector<FourByteChunk>& RecordQueryReliablePdu::getRecordIDs() const
+const FourByteChunk& RecordQueryReliablePdu::getRecordIDs() const
 {
     return _recordIDs;
 }
 
-void RecordQueryReliablePdu::setRecordIDs(const std::vector<FourByteChunk>& pX)
+void RecordQueryReliablePdu::setRecordIDs(const FourByteChunk &pX)
 {
-     _recordIDs = pX;
+    _recordIDs = pX;
 }
 
 void RecordQueryReliablePdu::marshal(DataStream& dataStream) const
@@ -109,14 +114,8 @@ void RecordQueryReliablePdu::marshal(DataStream& dataStream) const
     dataStream << _pad2;
     dataStream << _eventType;
     dataStream << _time;
-    dataStream << ( unsigned int )_recordIDs.size();
-
-     for(size_t idx = 0; idx < _recordIDs.size(); idx++)
-     {
-        FourByteChunk x = _recordIDs[idx];
-        x.marshal(dataStream);
-     }
-
+    dataStream << _numberOfRecords;
+    _recordIDs.marshal(dataStream);
 }
 
 void RecordQueryReliablePdu::unmarshal(DataStream& dataStream)
@@ -129,14 +128,7 @@ void RecordQueryReliablePdu::unmarshal(DataStream& dataStream)
     dataStream >> _eventType;
     dataStream >> _time;
     dataStream >> _numberOfRecords;
-
-     _recordIDs.clear();
-     for(size_t idx = 0; idx < _numberOfRecords; idx++)
-     {
-        FourByteChunk x;
-        x.unmarshal(dataStream);
-        _recordIDs.push_back(x);
-     }
+    _recordIDs.unmarshal(dataStream);
 }
 
 
@@ -152,12 +144,8 @@ bool RecordQueryReliablePdu::operator ==(const RecordQueryReliablePdu& rhs) cons
      if( ! (_pad2 == rhs._pad2) ) ivarsEqual = false;
      if( ! (_eventType == rhs._eventType) ) ivarsEqual = false;
      if( ! (_time == rhs._time) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _recordIDs.size(); idx++)
-     {
-        if( ! ( _recordIDs[idx] == rhs._recordIDs[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_numberOfRecords == rhs._numberOfRecords) ) ivarsEqual = false;
+     if( ! (_recordIDs == rhs._recordIDs) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -174,13 +162,7 @@ int RecordQueryReliablePdu::getMarshalledSize() const
    marshalSize = marshalSize + 2;  // _eventType
    marshalSize = marshalSize + 4;  // _time
    marshalSize = marshalSize + 4;  // _numberOfRecords
-
-   for(int idx=0; idx < _recordIDs.size(); idx++)
-   {
-        FourByteChunk listElement = _recordIDs[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _recordIDs.getMarshalledSize();  // _recordIDs
     return marshalSize;
 }
 

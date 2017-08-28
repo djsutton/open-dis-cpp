@@ -7,14 +7,14 @@ MinefieldResponseNackPdu::MinefieldResponseNackPdu() : MinefieldFamilyPdu(),
    _minefieldID(), 
    _requestingEntityID(), 
    _requestID(0), 
-   _numberOfMissingPdus(0)
+   _numberOfMissingPdus(0), 
+   _missingPduSequenceNumbers()
 {
     setPduType( 40 );
 }
 
 MinefieldResponseNackPdu::~MinefieldResponseNackPdu()
 {
-    _missingPduSequenceNumbers.clear();
 }
 
 EntityID& MinefieldResponseNackPdu::getMinefieldID() 
@@ -59,22 +59,27 @@ void MinefieldResponseNackPdu::setRequestID(unsigned char pX)
 
 unsigned char MinefieldResponseNackPdu::getNumberOfMissingPdus() const
 {
-   return _missingPduSequenceNumbers.size();
+    return _numberOfMissingPdus;
 }
 
-std::vector<EightByteChunk>& MinefieldResponseNackPdu::getMissingPduSequenceNumbers() 
+void MinefieldResponseNackPdu::setNumberOfMissingPdus(unsigned char pX)
+{
+    _numberOfMissingPdus = pX;
+}
+
+EightByteChunk& MinefieldResponseNackPdu::getMissingPduSequenceNumbers() 
 {
     return _missingPduSequenceNumbers;
 }
 
-const std::vector<EightByteChunk>& MinefieldResponseNackPdu::getMissingPduSequenceNumbers() const
+const EightByteChunk& MinefieldResponseNackPdu::getMissingPduSequenceNumbers() const
 {
     return _missingPduSequenceNumbers;
 }
 
-void MinefieldResponseNackPdu::setMissingPduSequenceNumbers(const std::vector<EightByteChunk>& pX)
+void MinefieldResponseNackPdu::setMissingPduSequenceNumbers(const EightByteChunk &pX)
 {
-     _missingPduSequenceNumbers = pX;
+    _missingPduSequenceNumbers = pX;
 }
 
 void MinefieldResponseNackPdu::marshal(DataStream& dataStream) const
@@ -83,14 +88,8 @@ void MinefieldResponseNackPdu::marshal(DataStream& dataStream) const
     _minefieldID.marshal(dataStream);
     _requestingEntityID.marshal(dataStream);
     dataStream << _requestID;
-    dataStream << ( unsigned char )_missingPduSequenceNumbers.size();
-
-     for(size_t idx = 0; idx < _missingPduSequenceNumbers.size(); idx++)
-     {
-        EightByteChunk x = _missingPduSequenceNumbers[idx];
-        x.marshal(dataStream);
-     }
-
+    dataStream << _numberOfMissingPdus;
+    _missingPduSequenceNumbers.marshal(dataStream);
 }
 
 void MinefieldResponseNackPdu::unmarshal(DataStream& dataStream)
@@ -100,14 +99,7 @@ void MinefieldResponseNackPdu::unmarshal(DataStream& dataStream)
     _requestingEntityID.unmarshal(dataStream);
     dataStream >> _requestID;
     dataStream >> _numberOfMissingPdus;
-
-     _missingPduSequenceNumbers.clear();
-     for(size_t idx = 0; idx < _numberOfMissingPdus; idx++)
-     {
-        EightByteChunk x;
-        x.unmarshal(dataStream);
-        _missingPduSequenceNumbers.push_back(x);
-     }
+    _missingPduSequenceNumbers.unmarshal(dataStream);
 }
 
 
@@ -120,12 +112,8 @@ bool MinefieldResponseNackPdu::operator ==(const MinefieldResponseNackPdu& rhs) 
      if( ! (_minefieldID == rhs._minefieldID) ) ivarsEqual = false;
      if( ! (_requestingEntityID == rhs._requestingEntityID) ) ivarsEqual = false;
      if( ! (_requestID == rhs._requestID) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _missingPduSequenceNumbers.size(); idx++)
-     {
-        if( ! ( _missingPduSequenceNumbers[idx] == rhs._missingPduSequenceNumbers[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_numberOfMissingPdus == rhs._numberOfMissingPdus) ) ivarsEqual = false;
+     if( ! (_missingPduSequenceNumbers == rhs._missingPduSequenceNumbers) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -139,13 +127,7 @@ int MinefieldResponseNackPdu::getMarshalledSize() const
    marshalSize = marshalSize + _requestingEntityID.getMarshalledSize();  // _requestingEntityID
    marshalSize = marshalSize + 1;  // _requestID
    marshalSize = marshalSize + 1;  // _numberOfMissingPdus
-
-   for(int idx=0; idx < _missingPduSequenceNumbers.size(); idx++)
-   {
-        EightByteChunk listElement = _missingPduSequenceNumbers[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _missingPduSequenceNumbers.getMarshalledSize();  // _missingPduSequenceNumbers
     return marshalSize;
 }
 

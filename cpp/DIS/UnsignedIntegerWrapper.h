@@ -1,5 +1,5 @@
-#ifndef PDU_H
-#define PDU_H
+#ifndef UNSIGNEDINTEGERWRAPPER_H
+#define UNSIGNEDINTEGERWRAPPER_H
 
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -7,69 +7,33 @@
 
 namespace DIS
 {
-// The superclass for all PDUs. This incorporates the PduHeader record, section 5.2.29.
+// Wrapper for an unsigned 32 bit integer
 
 // Copyright (c) 2007-2009, MOVES Institute, Naval Postgraduate School. All rights reserved. 
 //
 // @author DMcG, jkg
 
-class EXPORT_MACRO Pdu
+class EXPORT_MACRO UnsignedIntegerWrapper
 {
 protected:
-  /** The version of the protocol. 5=DIS-1995, 6=DIS-1998. */
-  unsigned char _protocolVersion; 
-
-  /** Exercise ID */
-  unsigned char _exerciseID; 
-
-  /** Type of pdu, unique for each PDU class */
-  unsigned char _pduType; 
-
-  /** value that refers to the protocol family, eg SimulationManagement, et */
-  unsigned char _protocolFamily; 
-
-  /** Timestamp value */
-  unsigned int _timestamp; 
-
-  /** Length, in bytes, of the PDU. Changed name from length to avoid use of Hibernate QL reserved word */
-  unsigned short _pduLength; 
-
-  /** zero-filled array of padding */
-  short _padding; 
+  /** name can't be too accurate or the generated source code will have reserved word problems */
+  unsigned int _wrapper; 
 
 
  public:
-    Pdu();
-    virtual ~Pdu();
+    UnsignedIntegerWrapper();
+    virtual ~UnsignedIntegerWrapper();
 
     virtual void marshal(DataStream& dataStream) const;
     virtual void unmarshal(DataStream& dataStream);
 
-    unsigned char getProtocolVersion() const; 
-    void setProtocolVersion(unsigned char pX); 
-
-    unsigned char getExerciseID() const; 
-    void setExerciseID(unsigned char pX); 
-
-    unsigned char getPduType() const; 
-    void setPduType(unsigned char pX); 
-
-    unsigned char getProtocolFamily() const; 
-    void setProtocolFamily(unsigned char pX); 
-
-    unsigned int getTimestamp() const; 
-    void setTimestamp(unsigned int pX); 
-
-    unsigned short getPduLength() const; 
-    void setPduLength(unsigned short pX); 
-
-    short getPadding() const; 
-    void setPadding(short pX); 
+    unsigned int getWrapper() const; 
+    void setWrapper(unsigned int pX); 
 
 
 virtual int getMarshalledSize() const;
 
-     bool operator  ==(const Pdu& rhs) const;
+     bool operator  ==(const UnsignedIntegerWrapper& rhs) const;
 };
 }
 

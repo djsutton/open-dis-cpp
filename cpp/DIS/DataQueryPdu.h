@@ -1,9 +1,8 @@
 #ifndef DATAQUERYPDU_H
 #define DATAQUERYPDU_H
 
-#include <DIS/FixedDatum.h>
-#include <DIS/VariableDatum.h>
-#include <vector>
+#include <DIS/UnsignedIntegerWrapper.h>
+#include <DIS/UnsignedIntegerWrapper.h>
 #include <DIS/SimulationManagementFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -33,10 +32,10 @@ protected:
   unsigned int _numberOfVariableDatumRecords; 
 
   /** variable length list of fixed datums */
-  std::vector<FixedDatum> _fixedDatums; 
+  UnsignedIntegerWrapper _fixedDatums; 
 
   /** variable length list of variable length datums */
-  std::vector<VariableDatum> _variableDatums; 
+  UnsignedIntegerWrapper _variableDatums; 
 
 
  public:
@@ -53,16 +52,18 @@ protected:
     void setTimeInterval(unsigned int pX); 
 
     unsigned int getNumberOfFixedDatumRecords() const; 
+    void setNumberOfFixedDatumRecords(unsigned int pX); 
 
     unsigned int getNumberOfVariableDatumRecords() const; 
+    void setNumberOfVariableDatumRecords(unsigned int pX); 
 
-    std::vector<FixedDatum>& getFixedDatums(); 
-    const std::vector<FixedDatum>& getFixedDatums() const; 
-    void setFixedDatums(const std::vector<FixedDatum>&    pX);
+    UnsignedIntegerWrapper& getFixedDatums(); 
+    const UnsignedIntegerWrapper&  getFixedDatums() const; 
+    void setFixedDatums(const UnsignedIntegerWrapper    &pX);
 
-    std::vector<VariableDatum>& getVariableDatums(); 
-    const std::vector<VariableDatum>& getVariableDatums() const; 
-    void setVariableDatums(const std::vector<VariableDatum>&    pX);
+    UnsignedIntegerWrapper& getVariableDatums(); 
+    const UnsignedIntegerWrapper&  getVariableDatums() const; 
+    void setVariableDatums(const UnsignedIntegerWrapper    &pX);
 
 
 virtual int getMarshalledSize() const;

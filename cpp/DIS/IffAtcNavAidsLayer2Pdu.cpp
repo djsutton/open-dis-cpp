@@ -6,13 +6,13 @@ using namespace DIS;
 IffAtcNavAidsLayer2Pdu::IffAtcNavAidsLayer2Pdu() : IffAtcNavAidsLayer1Pdu(),
    _layerHeader(), 
    _beamData(), 
-   _secondaryOperationalData()
+   _secondaryOperationalData(), 
+   _fundamentalIffParameters()
 {
 }
 
 IffAtcNavAidsLayer2Pdu::~IffAtcNavAidsLayer2Pdu()
 {
-    _fundamentalIffParameters.clear();
 }
 
 LayerHeader& IffAtcNavAidsLayer2Pdu::getLayerHeader() 
@@ -60,19 +60,19 @@ void IffAtcNavAidsLayer2Pdu::setSecondaryOperationalData(const BeamData &pX)
     _secondaryOperationalData = pX;
 }
 
-std::vector<FundamentalParameterDataIff>& IffAtcNavAidsLayer2Pdu::getFundamentalIffParameters() 
+FundamentalParameterDataIff& IffAtcNavAidsLayer2Pdu::getFundamentalIffParameters() 
 {
     return _fundamentalIffParameters;
 }
 
-const std::vector<FundamentalParameterDataIff>& IffAtcNavAidsLayer2Pdu::getFundamentalIffParameters() const
+const FundamentalParameterDataIff& IffAtcNavAidsLayer2Pdu::getFundamentalIffParameters() const
 {
     return _fundamentalIffParameters;
 }
 
-void IffAtcNavAidsLayer2Pdu::setFundamentalIffParameters(const std::vector<FundamentalParameterDataIff>& pX)
+void IffAtcNavAidsLayer2Pdu::setFundamentalIffParameters(const FundamentalParameterDataIff &pX)
 {
-     _fundamentalIffParameters = pX;
+    _fundamentalIffParameters = pX;
 }
 
 void IffAtcNavAidsLayer2Pdu::marshal(DataStream& dataStream) const
@@ -81,13 +81,7 @@ void IffAtcNavAidsLayer2Pdu::marshal(DataStream& dataStream) const
     _layerHeader.marshal(dataStream);
     _beamData.marshal(dataStream);
     _secondaryOperationalData.marshal(dataStream);
-
-     for(size_t idx = 0; idx < _fundamentalIffParameters.size(); idx++)
-     {
-        FundamentalParameterDataIff x = _fundamentalIffParameters[idx];
-        x.marshal(dataStream);
-     }
-
+    _fundamentalIffParameters.marshal(dataStream);
 }
 
 void IffAtcNavAidsLayer2Pdu::unmarshal(DataStream& dataStream)
@@ -96,14 +90,7 @@ void IffAtcNavAidsLayer2Pdu::unmarshal(DataStream& dataStream)
     _layerHeader.unmarshal(dataStream);
     _beamData.unmarshal(dataStream);
     _secondaryOperationalData.unmarshal(dataStream);
-
-     _fundamentalIffParameters.clear();
-     for(size_t idx = 0; idx < _pad2; idx++)
-     {
-        FundamentalParameterDataIff x;
-        x.unmarshal(dataStream);
-        _fundamentalIffParameters.push_back(x);
-     }
+    _fundamentalIffParameters.unmarshal(dataStream);
 }
 
 
@@ -116,12 +103,7 @@ bool IffAtcNavAidsLayer2Pdu::operator ==(const IffAtcNavAidsLayer2Pdu& rhs) cons
      if( ! (_layerHeader == rhs._layerHeader) ) ivarsEqual = false;
      if( ! (_beamData == rhs._beamData) ) ivarsEqual = false;
      if( ! (_secondaryOperationalData == rhs._secondaryOperationalData) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _fundamentalIffParameters.size(); idx++)
-     {
-        if( ! ( _fundamentalIffParameters[idx] == rhs._fundamentalIffParameters[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_fundamentalIffParameters == rhs._fundamentalIffParameters) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -134,13 +116,7 @@ int IffAtcNavAidsLayer2Pdu::getMarshalledSize() const
    marshalSize = marshalSize + _layerHeader.getMarshalledSize();  // _layerHeader
    marshalSize = marshalSize + _beamData.getMarshalledSize();  // _beamData
    marshalSize = marshalSize + _secondaryOperationalData.getMarshalledSize();  // _secondaryOperationalData
-
-   for(int idx=0; idx < _fundamentalIffParameters.size(); idx++)
-   {
-        FundamentalParameterDataIff listElement = _fundamentalIffParameters[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _fundamentalIffParameters.getMarshalledSize();  // _fundamentalIffParameters
     return marshalSize;
 }
 

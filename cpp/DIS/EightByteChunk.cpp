@@ -3,56 +3,33 @@
 using namespace DIS;
 
 
-EightByteChunk::EightByteChunk()
+EightByteChunk::EightByteChunk():
+   _otherParameters(0)
 {
-     // Initialize fixed length array
-     for(int lengthotherParameters= 0; lengthotherParameters < 8; lengthotherParameters++)
-     {
-         _otherParameters[lengthotherParameters] = 0;
-     }
-
 }
 
 EightByteChunk::~EightByteChunk()
 {
 }
 
-char* EightByteChunk::getOtherParameters() 
+char EightByteChunk::getOtherParameters() const
 {
     return _otherParameters;
 }
 
-const char* EightByteChunk::getOtherParameters() const
+void EightByteChunk::setOtherParameters(char pX)
 {
-    return _otherParameters;
-}
-
-void EightByteChunk::setOtherParameters(const char* x)
-{
-   for(int i = 0; i < 8; i++)
-   {
-        _otherParameters[i] = x[i];
-   }
+    _otherParameters = pX;
 }
 
 void EightByteChunk::marshal(DataStream& dataStream) const
 {
-
-     for(size_t idx = 0; idx < 8; idx++)
-     {
-        dataStream << _otherParameters[idx];
-     }
-
+    dataStream << _otherParameters;
 }
 
 void EightByteChunk::unmarshal(DataStream& dataStream)
 {
-
-     for(size_t idx = 0; idx < 8; idx++)
-     {
-        dataStream >> _otherParameters[idx];
-     }
-
+    dataStream >> _otherParameters;
 }
 
 
@@ -60,12 +37,7 @@ bool EightByteChunk::operator ==(const EightByteChunk& rhs) const
  {
      bool ivarsEqual = true;
 
-
-     for(char idx = 0; idx < 8; idx++)
-     {
-          if(!(_otherParameters[idx] == rhs._otherParameters[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_otherParameters == rhs._otherParameters) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -74,7 +46,7 @@ int EightByteChunk::getMarshalledSize() const
 {
    int marshalSize = 0;
 
-   marshalSize = marshalSize + 8 * 1;  // _otherParameters
+   marshalSize = marshalSize + 1;  // _otherParameters
     return marshalSize;
 }
 

@@ -14,14 +14,14 @@ IntercomControlPdu::IntercomControlPdu() : RadioCommunicationsFamilyPdu(),
    _command(0), 
    _masterEntityID(), 
    _masterCommunicationsDeviceID(0), 
-   _intercomParametersLength(0)
+   _intercomParametersLength(0), 
+   _intercomParameters()
 {
     setPduType( 32 );
 }
 
 IntercomControlPdu::~IntercomControlPdu()
 {
-    _intercomParameters.clear();
 }
 
 unsigned char IntercomControlPdu::getControlType() const
@@ -136,22 +136,27 @@ void IntercomControlPdu::setMasterCommunicationsDeviceID(unsigned short pX)
 
 unsigned int IntercomControlPdu::getIntercomParametersLength() const
 {
-   return _intercomParameters.size();
+    return _intercomParametersLength;
 }
 
-std::vector<IntercomCommunicationsParameters>& IntercomControlPdu::getIntercomParameters() 
+void IntercomControlPdu::setIntercomParametersLength(unsigned int pX)
+{
+    _intercomParametersLength = pX;
+}
+
+IntercomCommunicationsParameters& IntercomControlPdu::getIntercomParameters() 
 {
     return _intercomParameters;
 }
 
-const std::vector<IntercomCommunicationsParameters>& IntercomControlPdu::getIntercomParameters() const
+const IntercomCommunicationsParameters& IntercomControlPdu::getIntercomParameters() const
 {
     return _intercomParameters;
 }
 
-void IntercomControlPdu::setIntercomParameters(const std::vector<IntercomCommunicationsParameters>& pX)
+void IntercomControlPdu::setIntercomParameters(const IntercomCommunicationsParameters &pX)
 {
-     _intercomParameters = pX;
+    _intercomParameters = pX;
 }
 
 void IntercomControlPdu::marshal(DataStream& dataStream) const
@@ -167,14 +172,8 @@ void IntercomControlPdu::marshal(DataStream& dataStream) const
     dataStream << _command;
     _masterEntityID.marshal(dataStream);
     dataStream << _masterCommunicationsDeviceID;
-    dataStream << ( unsigned int )_intercomParameters.size();
-
-     for(size_t idx = 0; idx < _intercomParameters.size(); idx++)
-     {
-        IntercomCommunicationsParameters x = _intercomParameters[idx];
-        x.marshal(dataStream);
-     }
-
+    dataStream << _intercomParametersLength;
+    _intercomParameters.marshal(dataStream);
 }
 
 void IntercomControlPdu::unmarshal(DataStream& dataStream)
@@ -191,14 +190,7 @@ void IntercomControlPdu::unmarshal(DataStream& dataStream)
     _masterEntityID.unmarshal(dataStream);
     dataStream >> _masterCommunicationsDeviceID;
     dataStream >> _intercomParametersLength;
-
-     _intercomParameters.clear();
-     for(size_t idx = 0; idx < _intercomParametersLength; idx++)
-     {
-        IntercomCommunicationsParameters x;
-        x.unmarshal(dataStream);
-        _intercomParameters.push_back(x);
-     }
+    _intercomParameters.unmarshal(dataStream);
 }
 
 
@@ -218,12 +210,8 @@ bool IntercomControlPdu::operator ==(const IntercomControlPdu& rhs) const
      if( ! (_command == rhs._command) ) ivarsEqual = false;
      if( ! (_masterEntityID == rhs._masterEntityID) ) ivarsEqual = false;
      if( ! (_masterCommunicationsDeviceID == rhs._masterCommunicationsDeviceID) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _intercomParameters.size(); idx++)
-     {
-        if( ! ( _intercomParameters[idx] == rhs._intercomParameters[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_intercomParametersLength == rhs._intercomParametersLength) ) ivarsEqual = false;
+     if( ! (_intercomParameters == rhs._intercomParameters) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -244,13 +232,7 @@ int IntercomControlPdu::getMarshalledSize() const
    marshalSize = marshalSize + _masterEntityID.getMarshalledSize();  // _masterEntityID
    marshalSize = marshalSize + 2;  // _masterCommunicationsDeviceID
    marshalSize = marshalSize + 4;  // _intercomParametersLength
-
-   for(int idx=0; idx < _intercomParameters.size(); idx++)
-   {
-        IntercomCommunicationsParameters listElement = _intercomParameters[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _intercomParameters.getMarshalledSize();  // _intercomParameters
     return marshalSize;
 }
 

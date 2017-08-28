@@ -12,16 +12,16 @@ UaPdu::UaPdu() : DistributedEmissionsFamilyPdu(),
    _propulsionPlantConfiguration(0), 
    _numberOfShafts(0), 
    _numberOfAPAs(0), 
-   _numberOfUAEmitterSystems(0)
+   _numberOfUAEmitterSystems(0), 
+   _shaftRPMs(), 
+   _apaData(), 
+   _emitterSystems()
 {
     setPduType( 29 );
 }
 
 UaPdu::~UaPdu()
 {
-    _shaftRPMs.clear();
-    _apaData.clear();
-    _emitterSystems.clear();
 }
 
 EntityID& UaPdu::getEmittingEntityID() 
@@ -96,62 +96,77 @@ void UaPdu::setPropulsionPlantConfiguration(unsigned char pX)
 
 unsigned char UaPdu::getNumberOfShafts() const
 {
-   return _shaftRPMs.size();
+    return _numberOfShafts;
+}
+
+void UaPdu::setNumberOfShafts(unsigned char pX)
+{
+    _numberOfShafts = pX;
 }
 
 unsigned char UaPdu::getNumberOfAPAs() const
 {
-   return _apaData.size();
+    return _numberOfAPAs;
+}
+
+void UaPdu::setNumberOfAPAs(unsigned char pX)
+{
+    _numberOfAPAs = pX;
 }
 
 unsigned char UaPdu::getNumberOfUAEmitterSystems() const
 {
-   return _emitterSystems.size();
+    return _numberOfUAEmitterSystems;
 }
 
-std::vector<ShaftRPMs>& UaPdu::getShaftRPMs() 
+void UaPdu::setNumberOfUAEmitterSystems(unsigned char pX)
+{
+    _numberOfUAEmitterSystems = pX;
+}
+
+ShaftRPMs& UaPdu::getShaftRPMs() 
 {
     return _shaftRPMs;
 }
 
-const std::vector<ShaftRPMs>& UaPdu::getShaftRPMs() const
+const ShaftRPMs& UaPdu::getShaftRPMs() const
 {
     return _shaftRPMs;
 }
 
-void UaPdu::setShaftRPMs(const std::vector<ShaftRPMs>& pX)
+void UaPdu::setShaftRPMs(const ShaftRPMs &pX)
 {
-     _shaftRPMs = pX;
+    _shaftRPMs = pX;
 }
 
-std::vector<ApaData>& UaPdu::getApaData() 
+ApaData& UaPdu::getApaData() 
 {
     return _apaData;
 }
 
-const std::vector<ApaData>& UaPdu::getApaData() const
+const ApaData& UaPdu::getApaData() const
 {
     return _apaData;
 }
 
-void UaPdu::setApaData(const std::vector<ApaData>& pX)
+void UaPdu::setApaData(const ApaData &pX)
 {
-     _apaData = pX;
+    _apaData = pX;
 }
 
-std::vector<AcousticEmitterSystemData>& UaPdu::getEmitterSystems() 
+AcousticEmitterSystemData& UaPdu::getEmitterSystems() 
 {
     return _emitterSystems;
 }
 
-const std::vector<AcousticEmitterSystemData>& UaPdu::getEmitterSystems() const
+const AcousticEmitterSystemData& UaPdu::getEmitterSystems() const
 {
     return _emitterSystems;
 }
 
-void UaPdu::setEmitterSystems(const std::vector<AcousticEmitterSystemData>& pX)
+void UaPdu::setEmitterSystems(const AcousticEmitterSystemData &pX)
 {
-     _emitterSystems = pX;
+    _emitterSystems = pX;
 }
 
 void UaPdu::marshal(DataStream& dataStream) const
@@ -163,30 +178,12 @@ void UaPdu::marshal(DataStream& dataStream) const
     dataStream << _pad;
     dataStream << _passiveParameterIndex;
     dataStream << _propulsionPlantConfiguration;
-    dataStream << ( unsigned char )_shaftRPMs.size();
-    dataStream << ( unsigned char )_apaData.size();
-    dataStream << ( unsigned char )_emitterSystems.size();
-
-     for(size_t idx = 0; idx < _shaftRPMs.size(); idx++)
-     {
-        ShaftRPMs x = _shaftRPMs[idx];
-        x.marshal(dataStream);
-     }
-
-
-     for(size_t idx = 0; idx < _apaData.size(); idx++)
-     {
-        ApaData x = _apaData[idx];
-        x.marshal(dataStream);
-     }
-
-
-     for(size_t idx = 0; idx < _emitterSystems.size(); idx++)
-     {
-        AcousticEmitterSystemData x = _emitterSystems[idx];
-        x.marshal(dataStream);
-     }
-
+    dataStream << _numberOfShafts;
+    dataStream << _numberOfAPAs;
+    dataStream << _numberOfUAEmitterSystems;
+    _shaftRPMs.marshal(dataStream);
+    _apaData.marshal(dataStream);
+    _emitterSystems.marshal(dataStream);
 }
 
 void UaPdu::unmarshal(DataStream& dataStream)
@@ -201,30 +198,9 @@ void UaPdu::unmarshal(DataStream& dataStream)
     dataStream >> _numberOfShafts;
     dataStream >> _numberOfAPAs;
     dataStream >> _numberOfUAEmitterSystems;
-
-     _shaftRPMs.clear();
-     for(size_t idx = 0; idx < _numberOfShafts; idx++)
-     {
-        ShaftRPMs x;
-        x.unmarshal(dataStream);
-        _shaftRPMs.push_back(x);
-     }
-
-     _apaData.clear();
-     for(size_t idx = 0; idx < _numberOfAPAs; idx++)
-     {
-        ApaData x;
-        x.unmarshal(dataStream);
-        _apaData.push_back(x);
-     }
-
-     _emitterSystems.clear();
-     for(size_t idx = 0; idx < _numberOfUAEmitterSystems; idx++)
-     {
-        AcousticEmitterSystemData x;
-        x.unmarshal(dataStream);
-        _emitterSystems.push_back(x);
-     }
+    _shaftRPMs.unmarshal(dataStream);
+    _apaData.unmarshal(dataStream);
+    _emitterSystems.unmarshal(dataStream);
 }
 
 
@@ -240,24 +216,12 @@ bool UaPdu::operator ==(const UaPdu& rhs) const
      if( ! (_pad == rhs._pad) ) ivarsEqual = false;
      if( ! (_passiveParameterIndex == rhs._passiveParameterIndex) ) ivarsEqual = false;
      if( ! (_propulsionPlantConfiguration == rhs._propulsionPlantConfiguration) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _shaftRPMs.size(); idx++)
-     {
-        if( ! ( _shaftRPMs[idx] == rhs._shaftRPMs[idx]) ) ivarsEqual = false;
-     }
-
-
-     for(size_t idx = 0; idx < _apaData.size(); idx++)
-     {
-        if( ! ( _apaData[idx] == rhs._apaData[idx]) ) ivarsEqual = false;
-     }
-
-
-     for(size_t idx = 0; idx < _emitterSystems.size(); idx++)
-     {
-        if( ! ( _emitterSystems[idx] == rhs._emitterSystems[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_numberOfShafts == rhs._numberOfShafts) ) ivarsEqual = false;
+     if( ! (_numberOfAPAs == rhs._numberOfAPAs) ) ivarsEqual = false;
+     if( ! (_numberOfUAEmitterSystems == rhs._numberOfUAEmitterSystems) ) ivarsEqual = false;
+     if( ! (_shaftRPMs == rhs._shaftRPMs) ) ivarsEqual = false;
+     if( ! (_apaData == rhs._apaData) ) ivarsEqual = false;
+     if( ! (_emitterSystems == rhs._emitterSystems) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -276,27 +240,9 @@ int UaPdu::getMarshalledSize() const
    marshalSize = marshalSize + 1;  // _numberOfShafts
    marshalSize = marshalSize + 1;  // _numberOfAPAs
    marshalSize = marshalSize + 1;  // _numberOfUAEmitterSystems
-
-   for(int idx=0; idx < _shaftRPMs.size(); idx++)
-   {
-        ShaftRPMs listElement = _shaftRPMs[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
-
-   for(int idx=0; idx < _apaData.size(); idx++)
-   {
-        ApaData listElement = _apaData[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
-
-   for(int idx=0; idx < _emitterSystems.size(); idx++)
-   {
-        AcousticEmitterSystemData listElement = _emitterSystems[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _shaftRPMs.getMarshalledSize();  // _shaftRPMs
+   marshalSize = marshalSize + _apaData.getMarshalledSize();  // _apaData
+   marshalSize = marshalSize + _emitterSystems.getMarshalledSize();  // _emitterSystems
     return marshalSize;
 }
 

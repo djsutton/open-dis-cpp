@@ -15,15 +15,15 @@ MinefieldDataPdu::MinefieldDataPdu() : MinefieldFamilyPdu(),
    _pad2(0), 
    _dataFilter(0), 
    _mineType(), 
-   _pad3(0)
+   _sensorTypes(), 
+   _pad3(0), 
+   _mineLocation()
 {
     setPduType( 39 );
 }
 
 MinefieldDataPdu::~MinefieldDataPdu()
 {
-    _sensorTypes.clear();
-    _mineLocation.clear();
 }
 
 EntityID& MinefieldDataPdu::getMinefieldID() 
@@ -98,12 +98,22 @@ void MinefieldDataPdu::setNumberOfPdus(unsigned char pX)
 
 unsigned char MinefieldDataPdu::getNumberOfMinesInThisPdu() const
 {
-   return _mineLocation.size();
+    return _numberOfMinesInThisPdu;
+}
+
+void MinefieldDataPdu::setNumberOfMinesInThisPdu(unsigned char pX)
+{
+    _numberOfMinesInThisPdu = pX;
 }
 
 unsigned char MinefieldDataPdu::getNumberOfSensorTypes() const
 {
-   return _sensorTypes.size();
+    return _numberOfSensorTypes;
+}
+
+void MinefieldDataPdu::setNumberOfSensorTypes(unsigned char pX)
+{
+    _numberOfSensorTypes = pX;
 }
 
 unsigned char MinefieldDataPdu::getPad2() const
@@ -141,19 +151,19 @@ void MinefieldDataPdu::setMineType(const EntityType &pX)
     _mineType = pX;
 }
 
-std::vector<TwoByteChunk>& MinefieldDataPdu::getSensorTypes() 
+TwoByteChunk& MinefieldDataPdu::getSensorTypes() 
 {
     return _sensorTypes;
 }
 
-const std::vector<TwoByteChunk>& MinefieldDataPdu::getSensorTypes() const
+const TwoByteChunk& MinefieldDataPdu::getSensorTypes() const
 {
     return _sensorTypes;
 }
 
-void MinefieldDataPdu::setSensorTypes(const std::vector<TwoByteChunk>& pX)
+void MinefieldDataPdu::setSensorTypes(const TwoByteChunk &pX)
 {
-     _sensorTypes = pX;
+    _sensorTypes = pX;
 }
 
 unsigned char MinefieldDataPdu::getPad3() const
@@ -166,19 +176,19 @@ void MinefieldDataPdu::setPad3(unsigned char pX)
     _pad3 = pX;
 }
 
-std::vector<Vector3Float>& MinefieldDataPdu::getMineLocation() 
+Vector3Float& MinefieldDataPdu::getMineLocation() 
 {
     return _mineLocation;
 }
 
-const std::vector<Vector3Float>& MinefieldDataPdu::getMineLocation() const
+const Vector3Float& MinefieldDataPdu::getMineLocation() const
 {
     return _mineLocation;
 }
 
-void MinefieldDataPdu::setMineLocation(const std::vector<Vector3Float>& pX)
+void MinefieldDataPdu::setMineLocation(const Vector3Float &pX)
 {
-     _mineLocation = pX;
+    _mineLocation = pX;
 }
 
 void MinefieldDataPdu::marshal(DataStream& dataStream) const
@@ -190,26 +200,14 @@ void MinefieldDataPdu::marshal(DataStream& dataStream) const
     dataStream << _requestID;
     dataStream << _pduSequenceNumber;
     dataStream << _numberOfPdus;
-    dataStream << ( unsigned char )_mineLocation.size();
-    dataStream << ( unsigned char )_sensorTypes.size();
+    dataStream << _numberOfMinesInThisPdu;
+    dataStream << _numberOfSensorTypes;
     dataStream << _pad2;
     dataStream << _dataFilter;
     _mineType.marshal(dataStream);
-
-     for(size_t idx = 0; idx < _sensorTypes.size(); idx++)
-     {
-        TwoByteChunk x = _sensorTypes[idx];
-        x.marshal(dataStream);
-     }
-
+    _sensorTypes.marshal(dataStream);
     dataStream << _pad3;
-
-     for(size_t idx = 0; idx < _mineLocation.size(); idx++)
-     {
-        Vector3Float x = _mineLocation[idx];
-        x.marshal(dataStream);
-     }
-
+    _mineLocation.marshal(dataStream);
 }
 
 void MinefieldDataPdu::unmarshal(DataStream& dataStream)
@@ -226,23 +224,9 @@ void MinefieldDataPdu::unmarshal(DataStream& dataStream)
     dataStream >> _pad2;
     dataStream >> _dataFilter;
     _mineType.unmarshal(dataStream);
-
-     _sensorTypes.clear();
-     for(size_t idx = 0; idx < _numberOfSensorTypes; idx++)
-     {
-        TwoByteChunk x;
-        x.unmarshal(dataStream);
-        _sensorTypes.push_back(x);
-     }
+    _sensorTypes.unmarshal(dataStream);
     dataStream >> _pad3;
-
-     _mineLocation.clear();
-     for(size_t idx = 0; idx < _numberOfMinesInThisPdu; idx++)
-     {
-        Vector3Float x;
-        x.unmarshal(dataStream);
-        _mineLocation.push_back(x);
-     }
+    _mineLocation.unmarshal(dataStream);
 }
 
 
@@ -258,22 +242,14 @@ bool MinefieldDataPdu::operator ==(const MinefieldDataPdu& rhs) const
      if( ! (_requestID == rhs._requestID) ) ivarsEqual = false;
      if( ! (_pduSequenceNumber == rhs._pduSequenceNumber) ) ivarsEqual = false;
      if( ! (_numberOfPdus == rhs._numberOfPdus) ) ivarsEqual = false;
+     if( ! (_numberOfMinesInThisPdu == rhs._numberOfMinesInThisPdu) ) ivarsEqual = false;
+     if( ! (_numberOfSensorTypes == rhs._numberOfSensorTypes) ) ivarsEqual = false;
      if( ! (_pad2 == rhs._pad2) ) ivarsEqual = false;
      if( ! (_dataFilter == rhs._dataFilter) ) ivarsEqual = false;
      if( ! (_mineType == rhs._mineType) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _sensorTypes.size(); idx++)
-     {
-        if( ! ( _sensorTypes[idx] == rhs._sensorTypes[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_sensorTypes == rhs._sensorTypes) ) ivarsEqual = false;
      if( ! (_pad3 == rhs._pad3) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _mineLocation.size(); idx++)
-     {
-        if( ! ( _mineLocation[idx] == rhs._mineLocation[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_mineLocation == rhs._mineLocation) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -294,21 +270,9 @@ int MinefieldDataPdu::getMarshalledSize() const
    marshalSize = marshalSize + 1;  // _pad2
    marshalSize = marshalSize + 4;  // _dataFilter
    marshalSize = marshalSize + _mineType.getMarshalledSize();  // _mineType
-
-   for(int idx=0; idx < _sensorTypes.size(); idx++)
-   {
-        TwoByteChunk listElement = _sensorTypes[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _sensorTypes.getMarshalledSize();  // _sensorTypes
    marshalSize = marshalSize + 1;  // _pad3
-
-   for(int idx=0; idx < _mineLocation.size(); idx++)
-   {
-        Vector3Float listElement = _mineLocation[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _mineLocation.getMarshalledSize();  // _mineLocation
     return marshalSize;
 }
 

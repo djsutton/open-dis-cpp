@@ -6,7 +6,6 @@
 #include <DIS/ShaftRPMs.h>
 #include <DIS/ApaData.h>
 #include <DIS/AcousticEmitterSystemData.h>
-#include <vector>
 #include <DIS/DistributedEmissionsFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -51,12 +50,12 @@ protected:
   unsigned char _numberOfUAEmitterSystems; 
 
   /** shaft RPM values */
-  std::vector<ShaftRPMs> _shaftRPMs; 
+  ShaftRPMs _shaftRPMs; 
 
   /** apaData */
-  std::vector<ApaData> _apaData; 
+  ApaData _apaData; 
 
-  std::vector<AcousticEmitterSystemData> _emitterSystems; 
+  AcousticEmitterSystemData _emitterSystems; 
 
 
  public:
@@ -87,22 +86,25 @@ protected:
     void setPropulsionPlantConfiguration(unsigned char pX); 
 
     unsigned char getNumberOfShafts() const; 
+    void setNumberOfShafts(unsigned char pX); 
 
     unsigned char getNumberOfAPAs() const; 
+    void setNumberOfAPAs(unsigned char pX); 
 
     unsigned char getNumberOfUAEmitterSystems() const; 
+    void setNumberOfUAEmitterSystems(unsigned char pX); 
 
-    std::vector<ShaftRPMs>& getShaftRPMs(); 
-    const std::vector<ShaftRPMs>& getShaftRPMs() const; 
-    void setShaftRPMs(const std::vector<ShaftRPMs>&    pX);
+    ShaftRPMs& getShaftRPMs(); 
+    const ShaftRPMs&  getShaftRPMs() const; 
+    void setShaftRPMs(const ShaftRPMs    &pX);
 
-    std::vector<ApaData>& getApaData(); 
-    const std::vector<ApaData>& getApaData() const; 
-    void setApaData(const std::vector<ApaData>&    pX);
+    ApaData& getApaData(); 
+    const ApaData&  getApaData() const; 
+    void setApaData(const ApaData    &pX);
 
-    std::vector<AcousticEmitterSystemData>& getEmitterSystems(); 
-    const std::vector<AcousticEmitterSystemData>& getEmitterSystems() const; 
-    void setEmitterSystems(const std::vector<AcousticEmitterSystemData>&    pX);
+    AcousticEmitterSystemData& getEmitterSystems(); 
+    const AcousticEmitterSystemData&  getEmitterSystems() const; 
+    void setEmitterSystems(const AcousticEmitterSystemData    &pX);
 
 
 virtual int getMarshalledSize() const;

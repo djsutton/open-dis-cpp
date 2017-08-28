@@ -9,7 +9,7 @@
 
 namespace DIS
 {
-// 5.2.3: location of the radiating portion of the antenna, specified in world coordinates and         entity coordinates.
+// 5.2.3: location of the radiating portion of the antenna, specified in world coordinates and entity coordinates.
 
 // Copyright (c) 2007-2009, MOVES Institute, Naval Postgraduate School. All rights reserved. 
 //

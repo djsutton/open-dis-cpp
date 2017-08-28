@@ -2,7 +2,6 @@
 #define FASTENTITYSTATEPDU_H
 
 #include <DIS/ArticulationParameter.h>
-#include <vector>
 #include <DIS/EntityInformationFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -49,8 +48,8 @@ protected:
   /** subcategory of entity */
   unsigned char _subcategory; 
 
-  /** specific info based on subcategory field */
-  unsigned char _specific; 
+  /** specific info based on subcategory field. Name changed from specific because that is a reserved word in SQL. */
+  unsigned char _specif; 
 
   unsigned char _extra; 
 
@@ -105,7 +104,7 @@ protected:
   unsigned char _deadReckoningAlgorithm; 
 
   /** other parameters to use in the dead reckoning algorithm */
-  char _otherParameters[15]; 
+  char _otherParameters; 
 
   /** X value */
   float _xAcceleration; 
@@ -126,13 +125,13 @@ protected:
   float _zAngularVelocity; 
 
   /** characters that can be used for debugging, or to draw unique strings on the side of entities in the world */
-  char _marking[12]; 
+  char _marking; 
 
   /** a series of bit flags */
   int _capabilities; 
 
   /** variable length list of articulation parameters */
-  std::vector<ArticulationParameter> _articulationParameters; 
+  ArticulationParameter _articulationParameters; 
 
 
  public:
@@ -155,6 +154,7 @@ protected:
     void setForceId(unsigned char pX); 
 
     char getNumberOfArticulationParameters() const; 
+    void setNumberOfArticulationParameters(char pX); 
 
     unsigned char getEntityKind() const; 
     void setEntityKind(unsigned char pX); 
@@ -171,8 +171,8 @@ protected:
     unsigned char getSubcategory() const; 
     void setSubcategory(unsigned char pX); 
 
-    unsigned char getSpecific() const; 
-    void setSpecific(unsigned char pX); 
+    unsigned char getSpecif() const; 
+    void setSpecif(unsigned char pX); 
 
     unsigned char getExtra() const; 
     void setExtra(unsigned char pX); 
@@ -231,9 +231,8 @@ protected:
     unsigned char getDeadReckoningAlgorithm() const; 
     void setDeadReckoningAlgorithm(unsigned char pX); 
 
-    char*  getOtherParameters(); 
-    const char*  getOtherParameters() const; 
-    void setOtherParameters( const char*    pX);
+    char getOtherParameters() const; 
+    void setOtherParameters(char pX); 
 
     float getXAcceleration() const; 
     void setXAcceleration(float pX); 
@@ -253,17 +252,15 @@ protected:
     float getZAngularVelocity() const; 
     void setZAngularVelocity(float pX); 
 
-    char*  getMarking(); 
-    const char*  getMarking() const; 
-    void setMarking( const char*    pX);
-    void setByStringMarking(const char* pX);
+    char getMarking() const; 
+    void setMarking(char pX); 
 
     int getCapabilities() const; 
     void setCapabilities(int pX); 
 
-    std::vector<ArticulationParameter>& getArticulationParameters(); 
-    const std::vector<ArticulationParameter>& getArticulationParameters() const; 
-    void setArticulationParameters(const std::vector<ArticulationParameter>&    pX);
+    ArticulationParameter& getArticulationParameters(); 
+    const ArticulationParameter&  getArticulationParameters() const; 
+    void setArticulationParameters(const ArticulationParameter    &pX);
 
 
 virtual int getMarshalledSize() const;

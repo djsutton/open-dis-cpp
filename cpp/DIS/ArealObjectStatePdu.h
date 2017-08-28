@@ -8,7 +8,6 @@
 #include <DIS/SimulationAddress.h>
 #include <DIS/SimulationAddress.h>
 #include <DIS/Vector3Double.h>
-#include <vector>
 #include <DIS/SyntheticEnvironmentFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -56,7 +55,7 @@ protected:
   SimulationAddress _receivingID; 
 
   /** location of object */
-  std::vector<Vector3Double> _objectLocation; 
+  Vector3Double _objectLocation; 
 
 
  public:
@@ -92,6 +91,7 @@ protected:
     void setObjectAppearance(const SixByteChunk    &pX);
 
     unsigned short getNumberOfPoints() const; 
+    void setNumberOfPoints(unsigned short pX); 
 
     SimulationAddress& getRequesterID(); 
     const SimulationAddress&  getRequesterID() const; 
@@ -101,9 +101,9 @@ protected:
     const SimulationAddress&  getReceivingID() const; 
     void setReceivingID(const SimulationAddress    &pX);
 
-    std::vector<Vector3Double>& getObjectLocation(); 
-    const std::vector<Vector3Double>& getObjectLocation() const; 
-    void setObjectLocation(const std::vector<Vector3Double>&    pX);
+    Vector3Double& getObjectLocation(); 
+    const Vector3Double&  getObjectLocation() const; 
+    void setObjectLocation(const Vector3Double    &pX);
 
 
 virtual int getMarshalledSize() const;

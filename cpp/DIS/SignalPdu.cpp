@@ -4,18 +4,45 @@ using namespace DIS;
 
 
 SignalPdu::SignalPdu() : RadioCommunicationsFamilyPdu(),
+   _entityId(), 
+   _radioId(0), 
    _encodingScheme(0), 
    _tdlType(0), 
    _sampleRate(0), 
    _dataLength(0), 
-   _samples(0)
+   _samples(0), 
+   _data()
 {
     setPduType( 26 );
 }
 
 SignalPdu::~SignalPdu()
 {
-    _data.clear();
+}
+
+EntityID& SignalPdu::getEntityId() 
+{
+    return _entityId;
+}
+
+const EntityID& SignalPdu::getEntityId() const
+{
+    return _entityId;
+}
+
+void SignalPdu::setEntityId(const EntityID &pX)
+{
+    _entityId = pX;
+}
+
+unsigned short SignalPdu::getRadioId() const
+{
+    return _radioId;
+}
+
+void SignalPdu::setRadioId(unsigned short pX)
+{
+    _radioId = pX;
 }
 
 unsigned short SignalPdu::getEncodingScheme() const
@@ -48,69 +75,65 @@ void SignalPdu::setSampleRate(unsigned int pX)
     _sampleRate = pX;
 }
 
-short SignalPdu::getDataLength() const
+unsigned short SignalPdu::getDataLength() const
 {
-   return _data.size();
+    return _dataLength;
 }
 
-short SignalPdu::getSamples() const
+void SignalPdu::setDataLength(unsigned short pX)
+{
+    _dataLength = pX;
+}
+
+unsigned short SignalPdu::getSamples() const
 {
     return _samples;
 }
 
-void SignalPdu::setSamples(short pX)
+void SignalPdu::setSamples(unsigned short pX)
 {
     _samples = pX;
 }
 
-std::vector<OneByteChunk>& SignalPdu::getData() 
+OneByteChunk& SignalPdu::getData() 
 {
     return _data;
 }
 
-const std::vector<OneByteChunk>& SignalPdu::getData() const
+const OneByteChunk& SignalPdu::getData() const
 {
     return _data;
 }
 
-void SignalPdu::setData(const std::vector<OneByteChunk>& pX)
+void SignalPdu::setData(const OneByteChunk &pX)
 {
-     _data = pX;
+    _data = pX;
 }
 
 void SignalPdu::marshal(DataStream& dataStream) const
 {
     RadioCommunicationsFamilyPdu::marshal(dataStream); // Marshal information in superclass first
+    _entityId.marshal(dataStream);
+    dataStream << _radioId;
     dataStream << _encodingScheme;
     dataStream << _tdlType;
     dataStream << _sampleRate;
-    dataStream << ( short )_data.size();
+    dataStream << _dataLength;
     dataStream << _samples;
-
-     for(size_t idx = 0; idx < _data.size(); idx++)
-     {
-        OneByteChunk x = _data[idx];
-        x.marshal(dataStream);
-     }
-
+    _data.marshal(dataStream);
 }
 
 void SignalPdu::unmarshal(DataStream& dataStream)
 {
     RadioCommunicationsFamilyPdu::unmarshal(dataStream); // unmarshal information in superclass first
+    _entityId.unmarshal(dataStream);
+    dataStream >> _radioId;
     dataStream >> _encodingScheme;
     dataStream >> _tdlType;
     dataStream >> _sampleRate;
     dataStream >> _dataLength;
     dataStream >> _samples;
-
-     _data.clear();
-     for(size_t idx = 0; idx < _dataLength; idx++)
-     {
-        OneByteChunk x;
-        x.unmarshal(dataStream);
-        _data.push_back(x);
-     }
+    _data.unmarshal(dataStream);
 }
 
 
@@ -120,16 +143,14 @@ bool SignalPdu::operator ==(const SignalPdu& rhs) const
 
      ivarsEqual = RadioCommunicationsFamilyPdu::operator==(rhs);
 
+     if( ! (_entityId == rhs._entityId) ) ivarsEqual = false;
+     if( ! (_radioId == rhs._radioId) ) ivarsEqual = false;
      if( ! (_encodingScheme == rhs._encodingScheme) ) ivarsEqual = false;
      if( ! (_tdlType == rhs._tdlType) ) ivarsEqual = false;
      if( ! (_sampleRate == rhs._sampleRate) ) ivarsEqual = false;
+     if( ! (_dataLength == rhs._dataLength) ) ivarsEqual = false;
      if( ! (_samples == rhs._samples) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _data.size(); idx++)
-     {
-        if( ! ( _data[idx] == rhs._data[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_data == rhs._data) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -139,18 +160,14 @@ int SignalPdu::getMarshalledSize() const
    int marshalSize = 0;
 
    marshalSize = RadioCommunicationsFamilyPdu::getMarshalledSize();
+   marshalSize = marshalSize + _entityId.getMarshalledSize();  // _entityId
+   marshalSize = marshalSize + 2;  // _radioId
    marshalSize = marshalSize + 2;  // _encodingScheme
    marshalSize = marshalSize + 2;  // _tdlType
    marshalSize = marshalSize + 4;  // _sampleRate
    marshalSize = marshalSize + 2;  // _dataLength
    marshalSize = marshalSize + 2;  // _samples
-
-   for(int idx=0; idx < _data.size(); idx++)
-   {
-        OneByteChunk listElement = _data[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _data.getMarshalledSize();  // _data
     return marshalSize;
 }
 

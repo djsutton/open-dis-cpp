@@ -5,7 +5,6 @@
 #include <DIS/EntityType.h>
 #include <DIS/Orientation.h>
 #include <DIS/GridAxisRecord.h>
-#include <vector>
 #include <DIS/SyntheticEnvironmentFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -65,7 +64,7 @@ protected:
   unsigned char _padding2; 
 
   /** Grid data ^^^This is wrong */
-  std::vector<GridAxisRecord> _gridDataList; 
+  GridAxisRecord _gridDataList; 
 
 
  public:
@@ -92,6 +91,7 @@ protected:
     void setCoordinateSystem(unsigned short pX); 
 
     unsigned char getNumberOfGridAxes() const; 
+    void setNumberOfGridAxes(unsigned char pX); 
 
     unsigned char getConstantGrid() const; 
     void setConstantGrid(unsigned char pX); 
@@ -119,9 +119,9 @@ protected:
     unsigned char getPadding2() const; 
     void setPadding2(unsigned char pX); 
 
-    std::vector<GridAxisRecord>& getGridDataList(); 
-    const std::vector<GridAxisRecord>& getGridDataList() const; 
-    void setGridDataList(const std::vector<GridAxisRecord>&    pX);
+    GridAxisRecord& getGridDataList(); 
+    const GridAxisRecord&  getGridDataList() const; 
+    void setGridDataList(const GridAxisRecord    &pX);
 
 
 virtual int getMarshalledSize() const;

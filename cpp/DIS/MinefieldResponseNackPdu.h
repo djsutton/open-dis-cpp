@@ -4,7 +4,6 @@
 #include <DIS/EntityID.h>
 #include <DIS/EntityID.h>
 #include <DIS/EightByteChunk.h>
-#include <vector>
 #include <DIS/MinefieldFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -34,7 +33,7 @@ protected:
   unsigned char _numberOfMissingPdus; 
 
   /** PDU sequence numbers that were missing */
-  std::vector<EightByteChunk> _missingPduSequenceNumbers; 
+  EightByteChunk _missingPduSequenceNumbers; 
 
 
  public:
@@ -56,10 +55,11 @@ protected:
     void setRequestID(unsigned char pX); 
 
     unsigned char getNumberOfMissingPdus() const; 
+    void setNumberOfMissingPdus(unsigned char pX); 
 
-    std::vector<EightByteChunk>& getMissingPduSequenceNumbers(); 
-    const std::vector<EightByteChunk>& getMissingPduSequenceNumbers() const; 
-    void setMissingPduSequenceNumbers(const std::vector<EightByteChunk>&    pX);
+    EightByteChunk& getMissingPduSequenceNumbers(); 
+    const EightByteChunk&  getMissingPduSequenceNumbers() const; 
+    void setMissingPduSequenceNumbers(const EightByteChunk    &pX);
 
 
 virtual int getMarshalledSize() const;

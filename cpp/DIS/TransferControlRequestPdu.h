@@ -5,7 +5,6 @@
 #include <DIS/EntityID.h>
 #include <DIS/EntityID.h>
 #include <DIS/RecordSet.h>
-#include <vector>
 #include <DIS/EntityManagementFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -44,7 +43,7 @@ protected:
   unsigned char _numberOfRecordSets; 
 
   /** ^^^This is wrong--the RecordSet class needs more work */
-  std::vector<RecordSet> _recordSets; 
+  RecordSet _recordSets; 
 
 
  public:
@@ -76,10 +75,11 @@ protected:
     void setTransferEntityID(const EntityID    &pX);
 
     unsigned char getNumberOfRecordSets() const; 
+    void setNumberOfRecordSets(unsigned char pX); 
 
-    std::vector<RecordSet>& getRecordSets(); 
-    const std::vector<RecordSet>& getRecordSets() const; 
-    void setRecordSets(const std::vector<RecordSet>&    pX);
+    RecordSet& getRecordSets(); 
+    const RecordSet&  getRecordSets() const; 
+    void setRecordSets(const RecordSet    &pX);
 
 
 virtual int getMarshalledSize() const;

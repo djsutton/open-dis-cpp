@@ -1,75 +1,83 @@
-#ifndef PDU_H
-#define PDU_H
+#ifndef PDUSTREAM_H
+#define PDUSTREAM_H
 
+#include <DIS/Pdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
 
 
 namespace DIS
 {
-// The superclass for all PDUs. This incorporates the PduHeader record, section 5.2.29.
+// Non-DIS class, used to describe streams of PDUs when logging to SQL databases
 
 // Copyright (c) 2007-2009, MOVES Institute, Naval Postgraduate School. All rights reserved. 
 //
 // @author DMcG, jkg
 
-class EXPORT_MACRO Pdu
+class EXPORT_MACRO PduStream
 {
 protected:
-  /** The version of the protocol. 5=DIS-1995, 6=DIS-1998. */
-  unsigned char _protocolVersion; 
+  /** short description of this PDU stream */
+  char _shortDescription; 
 
-  /** Exercise ID */
-  unsigned char _exerciseID; 
+  /** Longish description of this PDU stream */
+  char _longDescription; 
 
-  /** Type of pdu, unique for each PDU class */
-  unsigned char _pduType; 
+  /** Name of person performing recording */
+  char _personRecording; 
 
-  /** value that refers to the protocol family, eg SimulationManagement, et */
-  unsigned char _protocolFamily; 
+  /** Email of person performing recording */
+  char _authorEmail; 
 
-  /** Timestamp value */
-  unsigned int _timestamp; 
+  /** Start time of recording, in Unix time */
+  long _startTime; 
 
-  /** Length, in bytes, of the PDU. Changed name from length to avoid use of Hibernate QL reserved word */
-  unsigned short _pduLength; 
+  /** stop time of recording, in Unix time */
+  long _stopTime; 
 
-  /** zero-filled array of padding */
-  short _padding; 
+  /** how many PDUs in this stream */
+  unsigned int _pduCount; 
+
+  /** variable length list of PDUs */
+  Pdu _pdusInStream; 
 
 
  public:
-    Pdu();
-    virtual ~Pdu();
+    PduStream();
+    virtual ~PduStream();
 
     virtual void marshal(DataStream& dataStream) const;
     virtual void unmarshal(DataStream& dataStream);
 
-    unsigned char getProtocolVersion() const; 
-    void setProtocolVersion(unsigned char pX); 
+    char getShortDescription() const; 
+    void setShortDescription(char pX); 
 
-    unsigned char getExerciseID() const; 
-    void setExerciseID(unsigned char pX); 
+    char getLongDescription() const; 
+    void setLongDescription(char pX); 
 
-    unsigned char getPduType() const; 
-    void setPduType(unsigned char pX); 
+    char getPersonRecording() const; 
+    void setPersonRecording(char pX); 
 
-    unsigned char getProtocolFamily() const; 
-    void setProtocolFamily(unsigned char pX); 
+    char getAuthorEmail() const; 
+    void setAuthorEmail(char pX); 
 
-    unsigned int getTimestamp() const; 
-    void setTimestamp(unsigned int pX); 
+    long getStartTime() const; 
+    void setStartTime(long pX); 
 
-    unsigned short getPduLength() const; 
-    void setPduLength(unsigned short pX); 
+    long getStopTime() const; 
+    void setStopTime(long pX); 
 
-    short getPadding() const; 
-    void setPadding(short pX); 
+    unsigned int getPduCount() const; 
+    void setPduCount(unsigned int pX); 
+
+    Pdu& getPdusInStream(); 
+    const Pdu&  getPdusInStream() const; 
+    void setPdusInStream(const Pdu    &pX);
 
 
 virtual int getMarshalledSize() const;
 
-     bool operator  ==(const Pdu& rhs) const;
+     bool operator  ==(const PduStream& rhs) const;
 };
 }
 

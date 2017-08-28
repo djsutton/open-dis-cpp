@@ -4,7 +4,6 @@
 #include <DIS/EntityID.h>
 #include <DIS/EventID.h>
 #include <DIS/ElectronicEmissionSystemData.h>
-#include <vector>
 #include <DIS/DistributedEmissionsFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -37,7 +36,7 @@ protected:
   unsigned short _paddingForEmissionsPdu; 
 
   /** Electronic emmissions systems */
-  std::vector<ElectronicEmissionSystemData> _systems; 
+  ElectronicEmissionSystemData _systems; 
 
 
  public:
@@ -59,13 +58,14 @@ protected:
     void setStateUpdateIndicator(unsigned char pX); 
 
     unsigned char getNumberOfSystems() const; 
+    void setNumberOfSystems(unsigned char pX); 
 
     unsigned short getPaddingForEmissionsPdu() const; 
     void setPaddingForEmissionsPdu(unsigned short pX); 
 
-    std::vector<ElectronicEmissionSystemData>& getSystems(); 
-    const std::vector<ElectronicEmissionSystemData>& getSystems() const; 
-    void setSystems(const std::vector<ElectronicEmissionSystemData>&    pX);
+    ElectronicEmissionSystemData& getSystems(); 
+    const ElectronicEmissionSystemData&  getSystems() const; 
+    void setSystems(const ElectronicEmissionSystemData    &pX);
 
 
 virtual int getMarshalledSize() const;

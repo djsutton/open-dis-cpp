@@ -1,5 +1,4 @@
 #include <DIS/FastEntityStatePdu.h> 
-#include <cstring>
 
 using namespace DIS;
 
@@ -15,7 +14,7 @@ FastEntityStatePdu::FastEntityStatePdu() : EntityInformationFamilyPdu(),
    _country(0), 
    _category(0), 
    _subcategory(0), 
-   _specific(0), 
+   _specif(0), 
    _extra(0), 
    _altEntityKind(0), 
    _altDomain(0), 
@@ -35,32 +34,22 @@ FastEntityStatePdu::FastEntityStatePdu() : EntityInformationFamilyPdu(),
    _phi(0.0), 
    _entityAppearance(0), 
    _deadReckoningAlgorithm(0), 
+   _otherParameters(0), 
    _xAcceleration(0.0), 
    _yAcceleration(0.0), 
    _zAcceleration(0.0), 
    _xAngularVelocity(0.0), 
    _yAngularVelocity(0.0), 
    _zAngularVelocity(0.0), 
-   _capabilities(0)
+   _marking(0), 
+   _capabilities(0), 
+   _articulationParameters()
 {
     setPduType( 1 );
-     // Initialize fixed length array
-     for(int lengthotherParameters= 0; lengthotherParameters < 15; lengthotherParameters++)
-     {
-         _otherParameters[lengthotherParameters] = 0;
-     }
-
-     // Initialize fixed length array
-     for(int lengthmarking= 0; lengthmarking < 12; lengthmarking++)
-     {
-         _marking[lengthmarking] = 0;
-     }
-
 }
 
 FastEntityStatePdu::~FastEntityStatePdu()
 {
-    _articulationParameters.clear();
 }
 
 unsigned short FastEntityStatePdu::getSite() const
@@ -105,7 +94,12 @@ void FastEntityStatePdu::setForceId(unsigned char pX)
 
 char FastEntityStatePdu::getNumberOfArticulationParameters() const
 {
-   return _articulationParameters.size();
+    return _numberOfArticulationParameters;
+}
+
+void FastEntityStatePdu::setNumberOfArticulationParameters(char pX)
+{
+    _numberOfArticulationParameters = pX;
 }
 
 unsigned char FastEntityStatePdu::getEntityKind() const
@@ -158,14 +152,14 @@ void FastEntityStatePdu::setSubcategory(unsigned char pX)
     _subcategory = pX;
 }
 
-unsigned char FastEntityStatePdu::getSpecific() const
+unsigned char FastEntityStatePdu::getSpecif() const
 {
-    return _specific;
+    return _specif;
 }
 
-void FastEntityStatePdu::setSpecific(unsigned char pX)
+void FastEntityStatePdu::setSpecif(unsigned char pX)
 {
-    _specific = pX;
+    _specif = pX;
 }
 
 unsigned char FastEntityStatePdu::getExtra() const
@@ -358,22 +352,14 @@ void FastEntityStatePdu::setDeadReckoningAlgorithm(unsigned char pX)
     _deadReckoningAlgorithm = pX;
 }
 
-char* FastEntityStatePdu::getOtherParameters() 
+char FastEntityStatePdu::getOtherParameters() const
 {
     return _otherParameters;
 }
 
-const char* FastEntityStatePdu::getOtherParameters() const
+void FastEntityStatePdu::setOtherParameters(char pX)
 {
-    return _otherParameters;
-}
-
-void FastEntityStatePdu::setOtherParameters(const char* x)
-{
-   for(int i = 0; i < 15; i++)
-   {
-        _otherParameters[i] = x[i];
-   }
+    _otherParameters = pX;
 }
 
 float FastEntityStatePdu::getXAcceleration() const
@@ -436,29 +422,14 @@ void FastEntityStatePdu::setZAngularVelocity(float pX)
     _zAngularVelocity = pX;
 }
 
-char* FastEntityStatePdu::getMarking() 
+char FastEntityStatePdu::getMarking() const
 {
     return _marking;
 }
 
-const char* FastEntityStatePdu::getMarking() const
+void FastEntityStatePdu::setMarking(char pX)
 {
-    return _marking;
-}
-
-void FastEntityStatePdu::setMarking(const char* x)
-{
-   for(int i = 0; i < 12; i++)
-   {
-        _marking[i] = x[i];
-   }
-}
-
-// An alternate method to set the value if this could be a string. This is not strictly comnpliant with the DIS standard.
-void FastEntityStatePdu::setByStringMarking(const char* x)
-{
-   std::strncpy(_marking, x, 12-1);
-   _marking[12 -1] = '\0';
+    _marking = pX;
 }
 
 int FastEntityStatePdu::getCapabilities() const
@@ -471,19 +442,19 @@ void FastEntityStatePdu::setCapabilities(int pX)
     _capabilities = pX;
 }
 
-std::vector<ArticulationParameter>& FastEntityStatePdu::getArticulationParameters() 
+ArticulationParameter& FastEntityStatePdu::getArticulationParameters() 
 {
     return _articulationParameters;
 }
 
-const std::vector<ArticulationParameter>& FastEntityStatePdu::getArticulationParameters() const
+const ArticulationParameter& FastEntityStatePdu::getArticulationParameters() const
 {
     return _articulationParameters;
 }
 
-void FastEntityStatePdu::setArticulationParameters(const std::vector<ArticulationParameter>& pX)
+void FastEntityStatePdu::setArticulationParameters(const ArticulationParameter &pX)
 {
-     _articulationParameters = pX;
+    _articulationParameters = pX;
 }
 
 void FastEntityStatePdu::marshal(DataStream& dataStream) const
@@ -493,13 +464,13 @@ void FastEntityStatePdu::marshal(DataStream& dataStream) const
     dataStream << _application;
     dataStream << _entity;
     dataStream << _forceId;
-    dataStream << ( char )_articulationParameters.size();
+    dataStream << _numberOfArticulationParameters;
     dataStream << _entityKind;
     dataStream << _domain;
     dataStream << _country;
     dataStream << _category;
     dataStream << _subcategory;
-    dataStream << _specific;
+    dataStream << _specif;
     dataStream << _extra;
     dataStream << _altEntityKind;
     dataStream << _altDomain;
@@ -519,32 +490,16 @@ void FastEntityStatePdu::marshal(DataStream& dataStream) const
     dataStream << _phi;
     dataStream << _entityAppearance;
     dataStream << _deadReckoningAlgorithm;
-
-     for(size_t idx = 0; idx < 15; idx++)
-     {
-        dataStream << _otherParameters[idx];
-     }
-
+    dataStream << _otherParameters;
     dataStream << _xAcceleration;
     dataStream << _yAcceleration;
     dataStream << _zAcceleration;
     dataStream << _xAngularVelocity;
     dataStream << _yAngularVelocity;
     dataStream << _zAngularVelocity;
-
-     for(size_t idx = 0; idx < 12; idx++)
-     {
-        dataStream << _marking[idx];
-     }
-
+    dataStream << _marking;
     dataStream << _capabilities;
-
-     for(size_t idx = 0; idx < _articulationParameters.size(); idx++)
-     {
-        ArticulationParameter x = _articulationParameters[idx];
-        x.marshal(dataStream);
-     }
-
+    _articulationParameters.marshal(dataStream);
 }
 
 void FastEntityStatePdu::unmarshal(DataStream& dataStream)
@@ -560,7 +515,7 @@ void FastEntityStatePdu::unmarshal(DataStream& dataStream)
     dataStream >> _country;
     dataStream >> _category;
     dataStream >> _subcategory;
-    dataStream >> _specific;
+    dataStream >> _specif;
     dataStream >> _extra;
     dataStream >> _altEntityKind;
     dataStream >> _altDomain;
@@ -580,33 +535,16 @@ void FastEntityStatePdu::unmarshal(DataStream& dataStream)
     dataStream >> _phi;
     dataStream >> _entityAppearance;
     dataStream >> _deadReckoningAlgorithm;
-
-     for(size_t idx = 0; idx < 15; idx++)
-     {
-        dataStream >> _otherParameters[idx];
-     }
-
+    dataStream >> _otherParameters;
     dataStream >> _xAcceleration;
     dataStream >> _yAcceleration;
     dataStream >> _zAcceleration;
     dataStream >> _xAngularVelocity;
     dataStream >> _yAngularVelocity;
     dataStream >> _zAngularVelocity;
-
-     for(size_t idx = 0; idx < 12; idx++)
-     {
-        dataStream >> _marking[idx];
-     }
-
+    dataStream >> _marking;
     dataStream >> _capabilities;
-
-     _articulationParameters.clear();
-     for(size_t idx = 0; idx < _numberOfArticulationParameters; idx++)
-     {
-        ArticulationParameter x;
-        x.unmarshal(dataStream);
-        _articulationParameters.push_back(x);
-     }
+    _articulationParameters.unmarshal(dataStream);
 }
 
 
@@ -620,12 +558,13 @@ bool FastEntityStatePdu::operator ==(const FastEntityStatePdu& rhs) const
      if( ! (_application == rhs._application) ) ivarsEqual = false;
      if( ! (_entity == rhs._entity) ) ivarsEqual = false;
      if( ! (_forceId == rhs._forceId) ) ivarsEqual = false;
+     if( ! (_numberOfArticulationParameters == rhs._numberOfArticulationParameters) ) ivarsEqual = false;
      if( ! (_entityKind == rhs._entityKind) ) ivarsEqual = false;
      if( ! (_domain == rhs._domain) ) ivarsEqual = false;
      if( ! (_country == rhs._country) ) ivarsEqual = false;
      if( ! (_category == rhs._category) ) ivarsEqual = false;
      if( ! (_subcategory == rhs._subcategory) ) ivarsEqual = false;
-     if( ! (_specific == rhs._specific) ) ivarsEqual = false;
+     if( ! (_specif == rhs._specif) ) ivarsEqual = false;
      if( ! (_extra == rhs._extra) ) ivarsEqual = false;
      if( ! (_altEntityKind == rhs._altEntityKind) ) ivarsEqual = false;
      if( ! (_altDomain == rhs._altDomain) ) ivarsEqual = false;
@@ -645,31 +584,16 @@ bool FastEntityStatePdu::operator ==(const FastEntityStatePdu& rhs) const
      if( ! (_phi == rhs._phi) ) ivarsEqual = false;
      if( ! (_entityAppearance == rhs._entityAppearance) ) ivarsEqual = false;
      if( ! (_deadReckoningAlgorithm == rhs._deadReckoningAlgorithm) ) ivarsEqual = false;
-
-     for(char idx = 0; idx < 15; idx++)
-     {
-          if(!(_otherParameters[idx] == rhs._otherParameters[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_otherParameters == rhs._otherParameters) ) ivarsEqual = false;
      if( ! (_xAcceleration == rhs._xAcceleration) ) ivarsEqual = false;
      if( ! (_yAcceleration == rhs._yAcceleration) ) ivarsEqual = false;
      if( ! (_zAcceleration == rhs._zAcceleration) ) ivarsEqual = false;
      if( ! (_xAngularVelocity == rhs._xAngularVelocity) ) ivarsEqual = false;
      if( ! (_yAngularVelocity == rhs._yAngularVelocity) ) ivarsEqual = false;
      if( ! (_zAngularVelocity == rhs._zAngularVelocity) ) ivarsEqual = false;
-
-     for(char idx = 0; idx < 12; idx++)
-     {
-          if(!(_marking[idx] == rhs._marking[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_marking == rhs._marking) ) ivarsEqual = false;
      if( ! (_capabilities == rhs._capabilities) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _articulationParameters.size(); idx++)
-     {
-        if( ! ( _articulationParameters[idx] == rhs._articulationParameters[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_articulationParameters == rhs._articulationParameters) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -689,7 +613,7 @@ int FastEntityStatePdu::getMarshalledSize() const
    marshalSize = marshalSize + 2;  // _country
    marshalSize = marshalSize + 1;  // _category
    marshalSize = marshalSize + 1;  // _subcategory
-   marshalSize = marshalSize + 1;  // _specific
+   marshalSize = marshalSize + 1;  // _specif
    marshalSize = marshalSize + 1;  // _extra
    marshalSize = marshalSize + 1;  // _altEntityKind
    marshalSize = marshalSize + 1;  // _altDomain
@@ -709,22 +633,16 @@ int FastEntityStatePdu::getMarshalledSize() const
    marshalSize = marshalSize + 4;  // _phi
    marshalSize = marshalSize + 4;  // _entityAppearance
    marshalSize = marshalSize + 1;  // _deadReckoningAlgorithm
-   marshalSize = marshalSize + 15 * 1;  // _otherParameters
+   marshalSize = marshalSize + 1;  // _otherParameters
    marshalSize = marshalSize + 4;  // _xAcceleration
    marshalSize = marshalSize + 4;  // _yAcceleration
    marshalSize = marshalSize + 4;  // _zAcceleration
    marshalSize = marshalSize + 4;  // _xAngularVelocity
    marshalSize = marshalSize + 4;  // _yAngularVelocity
    marshalSize = marshalSize + 4;  // _zAngularVelocity
-   marshalSize = marshalSize + 12 * 1;  // _marking
+   marshalSize = marshalSize + 1;  // _marking
    marshalSize = marshalSize + 4;  // _capabilities
-
-   for(int idx=0; idx < _articulationParameters.size(); idx++)
-   {
-        ArticulationParameter listElement = _articulationParameters[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _articulationParameters.getMarshalledSize();  // _articulationParameters
     return marshalSize;
 }
 

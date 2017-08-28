@@ -7,7 +7,6 @@
 #include <DIS/Orientation.h>
 #include <DIS/Point.h>
 #include <DIS/EntityType.h>
-#include <vector>
 #include <DIS/MinefieldFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -55,10 +54,10 @@ protected:
   unsigned short _protocolMode; 
 
   /** perimeter points for the minefield */
-  std::vector<Point> _perimeterPoints; 
+  Point _perimeterPoints; 
 
   /** Type of mines */
-  std::vector<EntityType> _mineType; 
+  EntityType _mineType; 
 
 
  public:
@@ -79,12 +78,14 @@ protected:
     void setForceID(unsigned char pX); 
 
     unsigned char getNumberOfPerimeterPoints() const; 
+    void setNumberOfPerimeterPoints(unsigned char pX); 
 
     EntityType& getMinefieldType(); 
     const EntityType&  getMinefieldType() const; 
     void setMinefieldType(const EntityType    &pX);
 
     unsigned short getNumberOfMineTypes() const; 
+    void setNumberOfMineTypes(unsigned short pX); 
 
     Vector3Double& getMinefieldLocation(); 
     const Vector3Double&  getMinefieldLocation() const; 
@@ -100,13 +101,13 @@ protected:
     unsigned short getProtocolMode() const; 
     void setProtocolMode(unsigned short pX); 
 
-    std::vector<Point>& getPerimeterPoints(); 
-    const std::vector<Point>& getPerimeterPoints() const; 
-    void setPerimeterPoints(const std::vector<Point>&    pX);
+    Point& getPerimeterPoints(); 
+    const Point&  getPerimeterPoints() const; 
+    void setPerimeterPoints(const Point    &pX);
 
-    std::vector<EntityType>& getMineType(); 
-    const std::vector<EntityType>& getMineType() const; 
-    void setMineType(const std::vector<EntityType>&    pX);
+    EntityType& getMineType(); 
+    const EntityType&  getMineType() const; 
+    void setMineType(const EntityType    &pX);
 
 
 virtual int getMarshalledSize() const;

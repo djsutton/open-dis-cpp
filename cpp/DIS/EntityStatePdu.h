@@ -10,7 +10,6 @@
 #include <DIS/DeadReckoningParameter.h>
 #include <DIS/Marking.h>
 #include <DIS/ArticulationParameter.h>
-#include <vector>
 #include <DIS/EntityInformationFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -63,7 +62,7 @@ protected:
   int _capabilities; 
 
   /** variable length list of articulation parameters */
-  std::vector<ArticulationParameter> _articulationParameters; 
+  ArticulationParameter _articulationParameters; 
 
 
  public:
@@ -81,6 +80,7 @@ protected:
     void setForceId(unsigned char pX); 
 
     char getNumberOfArticulationParameters() const; 
+    void setNumberOfArticulationParameters(char pX); 
 
     EntityType& getEntityType(); 
     const EntityType&  getEntityType() const; 
@@ -116,9 +116,9 @@ protected:
     int getCapabilities() const; 
     void setCapabilities(int pX); 
 
-    std::vector<ArticulationParameter>& getArticulationParameters(); 
-    const std::vector<ArticulationParameter>& getArticulationParameters() const; 
-    void setArticulationParameters(const std::vector<ArticulationParameter>&    pX);
+    ArticulationParameter& getArticulationParameters(); 
+    const ArticulationParameter&  getArticulationParameters() const; 
+    void setArticulationParameters(const ArticulationParameter    &pX);
 
 
 virtual int getMarshalledSize() const;

@@ -16,7 +16,7 @@ namespace DIS
 class EXPORT_MACRO SphericalHarmonicAntennaPattern
 {
 protected:
-  char _order; 
+  char _harmonicOrder; 
 
 
  public:
@@ -26,8 +26,8 @@ protected:
     virtual void marshal(DataStream& dataStream) const;
     virtual void unmarshal(DataStream& dataStream);
 
-    char getOrder() const; 
-    void setOrder(char pX); 
+    char getHarmonicOrder() const; 
+    void setHarmonicOrder(char pX); 
 
 
 virtual int getMarshalledSize() const;

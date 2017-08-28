@@ -9,9 +9,9 @@ DeadReckoningParameter::DeadReckoningParameter():
    _entityAngularVelocity()
 {
      // Initialize fixed length array
-     for(int lengthotherParameters= 0; lengthotherParameters < 15; lengthotherParameters++)
+     for(int idx = 0; idx < sizeof(_otherParameters); idx++)
      {
-         _otherParameters[lengthotherParameters] = 0;
+         _otherParameters[idx] = 0;
      }
 
 }
@@ -42,7 +42,7 @@ const char* DeadReckoningParameter::getOtherParameters() const
 
 void DeadReckoningParameter::setOtherParameters(const char* x)
 {
-   for(int i = 0; i < 15; i++)
+   for(int i = 0; i < sizeof(_otherParameters); i++)
    {
         _otherParameters[i] = x[i];
    }
@@ -95,7 +95,7 @@ void DeadReckoningParameter::unmarshal(DataStream& dataStream)
 {
     dataStream >> _deadReckoningAlgorithm;
 
-     for(size_t idx = 0; idx < 15; idx++)
+     for(size_t idx = 0; idx < sizeof(_otherParameters); idx++)
      {
         dataStream >> _otherParameters[idx];
      }
@@ -111,7 +111,7 @@ bool DeadReckoningParameter::operator ==(const DeadReckoningParameter& rhs) cons
 
      if( ! (_deadReckoningAlgorithm == rhs._deadReckoningAlgorithm) ) ivarsEqual = false;
 
-     for(char idx = 0; idx < 15; idx++)
+     for(char idx = 0; idx < sizeof(_otherParameters); idx++)
      {
           if(!(_otherParameters[idx] == rhs._otherParameters[idx]) ) ivarsEqual = false;
      }
@@ -127,7 +127,7 @@ int DeadReckoningParameter::getMarshalledSize() const
    int marshalSize = 0;
 
    marshalSize = marshalSize + 1;  // _deadReckoningAlgorithm
-   marshalSize = marshalSize + 15 * 1;  // _otherParameters
+   marshalSize = marshalSize + sizeof(_otherParameters);  // _otherParameters
    marshalSize = marshalSize + _entityLinearAcceleration.getMarshalledSize();  // _entityLinearAcceleration
    marshalSize = marshalSize + _entityAngularVelocity.getMarshalledSize();  // _entityAngularVelocity
     return marshalSize;

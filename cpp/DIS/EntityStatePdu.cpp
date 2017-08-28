@@ -15,14 +15,14 @@ EntityStatePdu::EntityStatePdu() : EntityInformationFamilyPdu(),
    _entityAppearance(0), 
    _deadReckoningParameters(), 
    _marking(), 
-   _capabilities(0)
+   _capabilities(0), 
+   _articulationParameters()
 {
     setPduType( 1 );
 }
 
 EntityStatePdu::~EntityStatePdu()
 {
-    _articulationParameters.clear();
 }
 
 EntityID& EntityStatePdu::getEntityID() 
@@ -52,7 +52,12 @@ void EntityStatePdu::setForceId(unsigned char pX)
 
 char EntityStatePdu::getNumberOfArticulationParameters() const
 {
-   return _articulationParameters.size();
+    return _numberOfArticulationParameters;
+}
+
+void EntityStatePdu::setNumberOfArticulationParameters(char pX)
+{
+    _numberOfArticulationParameters = pX;
 }
 
 EntityType& EntityStatePdu::getEntityType() 
@@ -180,19 +185,19 @@ void EntityStatePdu::setCapabilities(int pX)
     _capabilities = pX;
 }
 
-std::vector<ArticulationParameter>& EntityStatePdu::getArticulationParameters() 
+ArticulationParameter& EntityStatePdu::getArticulationParameters() 
 {
     return _articulationParameters;
 }
 
-const std::vector<ArticulationParameter>& EntityStatePdu::getArticulationParameters() const
+const ArticulationParameter& EntityStatePdu::getArticulationParameters() const
 {
     return _articulationParameters;
 }
 
-void EntityStatePdu::setArticulationParameters(const std::vector<ArticulationParameter>& pX)
+void EntityStatePdu::setArticulationParameters(const ArticulationParameter &pX)
 {
-     _articulationParameters = pX;
+    _articulationParameters = pX;
 }
 
 void EntityStatePdu::marshal(DataStream& dataStream) const
@@ -200,7 +205,7 @@ void EntityStatePdu::marshal(DataStream& dataStream) const
     EntityInformationFamilyPdu::marshal(dataStream); // Marshal information in superclass first
     _entityID.marshal(dataStream);
     dataStream << _forceId;
-    dataStream << ( char )_articulationParameters.size();
+    dataStream << _numberOfArticulationParameters;
     _entityType.marshal(dataStream);
     _alternativeEntityType.marshal(dataStream);
     _entityLinearVelocity.marshal(dataStream);
@@ -210,13 +215,7 @@ void EntityStatePdu::marshal(DataStream& dataStream) const
     _deadReckoningParameters.marshal(dataStream);
     _marking.marshal(dataStream);
     dataStream << _capabilities;
-
-     for(size_t idx = 0; idx < _articulationParameters.size(); idx++)
-     {
-        ArticulationParameter x = _articulationParameters[idx];
-        x.marshal(dataStream);
-     }
-
+    _articulationParameters.marshal(dataStream);
 }
 
 void EntityStatePdu::unmarshal(DataStream& dataStream)
@@ -234,14 +233,7 @@ void EntityStatePdu::unmarshal(DataStream& dataStream)
     _deadReckoningParameters.unmarshal(dataStream);
     _marking.unmarshal(dataStream);
     dataStream >> _capabilities;
-
-     _articulationParameters.clear();
-     for(size_t idx = 0; idx < _numberOfArticulationParameters; idx++)
-     {
-        ArticulationParameter x;
-        x.unmarshal(dataStream);
-        _articulationParameters.push_back(x);
-     }
+    _articulationParameters.unmarshal(dataStream);
 }
 
 
@@ -253,6 +245,7 @@ bool EntityStatePdu::operator ==(const EntityStatePdu& rhs) const
 
      if( ! (_entityID == rhs._entityID) ) ivarsEqual = false;
      if( ! (_forceId == rhs._forceId) ) ivarsEqual = false;
+     if( ! (_numberOfArticulationParameters == rhs._numberOfArticulationParameters) ) ivarsEqual = false;
      if( ! (_entityType == rhs._entityType) ) ivarsEqual = false;
      if( ! (_alternativeEntityType == rhs._alternativeEntityType) ) ivarsEqual = false;
      if( ! (_entityLinearVelocity == rhs._entityLinearVelocity) ) ivarsEqual = false;
@@ -262,12 +255,7 @@ bool EntityStatePdu::operator ==(const EntityStatePdu& rhs) const
      if( ! (_deadReckoningParameters == rhs._deadReckoningParameters) ) ivarsEqual = false;
      if( ! (_marking == rhs._marking) ) ivarsEqual = false;
      if( ! (_capabilities == rhs._capabilities) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _articulationParameters.size(); idx++)
-     {
-        if( ! ( _articulationParameters[idx] == rhs._articulationParameters[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_articulationParameters == rhs._articulationParameters) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -289,13 +277,7 @@ int EntityStatePdu::getMarshalledSize() const
    marshalSize = marshalSize + _deadReckoningParameters.getMarshalledSize();  // _deadReckoningParameters
    marshalSize = marshalSize + _marking.getMarshalledSize();  // _marking
    marshalSize = marshalSize + 4;  // _capabilities
-
-   for(int idx=0; idx < _articulationParameters.size(); idx++)
-   {
-        ArticulationParameter listElement = _articulationParameters[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _articulationParameters.getMarshalledSize();  // _articulationParameters
     return marshalSize;
 }
 

@@ -4,7 +4,6 @@
 #include <DIS/EntityID.h>
 #include <DIS/EntityID.h>
 #include <DIS/IntercomCommunicationsParameters.h>
-#include <vector>
 #include <DIS/RadioCommunicationsFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -54,8 +53,8 @@ protected:
   /** number of intercom parameters */
   unsigned int _intercomParametersLength; 
 
-  /** ^^^This is wrong--the length of the data field is variable. Using a long for now. */
-  std::vector<IntercomCommunicationsParameters> _intercomParameters; 
+  /** Must be  */
+  IntercomCommunicationsParameters _intercomParameters; 
 
 
  public:
@@ -98,10 +97,11 @@ protected:
     void setMasterCommunicationsDeviceID(unsigned short pX); 
 
     unsigned int getIntercomParametersLength() const; 
+    void setIntercomParametersLength(unsigned int pX); 
 
-    std::vector<IntercomCommunicationsParameters>& getIntercomParameters(); 
-    const std::vector<IntercomCommunicationsParameters>& getIntercomParameters() const; 
-    void setIntercomParameters(const std::vector<IntercomCommunicationsParameters>&    pX);
+    IntercomCommunicationsParameters& getIntercomParameters(); 
+    const IntercomCommunicationsParameters&  getIntercomParameters() const; 
+    void setIntercomParameters(const IntercomCommunicationsParameters    &pX);
 
 
 virtual int getMarshalledSize() const;

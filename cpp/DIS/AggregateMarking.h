@@ -20,7 +20,7 @@ protected:
   unsigned char _characterSet; 
 
   /** The characters */
-  char _characters[31]; 
+  char _characters; 
 
 
  public:
@@ -33,9 +33,8 @@ protected:
     unsigned char getCharacterSet() const; 
     void setCharacterSet(unsigned char pX); 
 
-    char*  getCharacters(); 
-    const char*  getCharacters() const; 
-    void setCharacters( const char*    pX);
+    char getCharacters() const; 
+    void setCharacters(char pX); 
 
 
 virtual int getMarshalledSize() const;

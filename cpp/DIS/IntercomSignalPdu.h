@@ -3,7 +3,6 @@
 
 #include <DIS/EntityID.h>
 #include <DIS/OneByteChunk.h>
-#include <vector>
 #include <DIS/RadioCommunicationsFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -20,10 +19,10 @@ namespace DIS
 class EXPORT_MACRO IntercomSignalPdu : public RadioCommunicationsFamilyPdu
 {
 protected:
-  /** entity ID */
-  EntityID _entityID; 
+  /** ID of the entitythat is the source of the communication */
+  EntityID _entityId; 
 
-  /** ID of communications device */
+  /** particular radio within an entity */
   unsigned short _communicationsDeviceID; 
 
   /** encoding scheme */
@@ -35,14 +34,14 @@ protected:
   /** sample rate */
   unsigned int _sampleRate; 
 
-  /** data length */
+  /** data length, in bits */
   unsigned short _dataLength; 
 
   /** samples */
   unsigned short _samples; 
 
   /** data bytes */
-  std::vector<OneByteChunk> _data; 
+  OneByteChunk _data; 
 
 
  public:
@@ -52,9 +51,9 @@ protected:
     virtual void marshal(DataStream& dataStream) const;
     virtual void unmarshal(DataStream& dataStream);
 
-    EntityID& getEntityID(); 
-    const EntityID&  getEntityID() const; 
-    void setEntityID(const EntityID    &pX);
+    EntityID& getEntityId(); 
+    const EntityID&  getEntityId() const; 
+    void setEntityId(const EntityID    &pX);
 
     unsigned short getCommunicationsDeviceID() const; 
     void setCommunicationsDeviceID(unsigned short pX); 
@@ -69,13 +68,14 @@ protected:
     void setSampleRate(unsigned int pX); 
 
     unsigned short getDataLength() const; 
+    void setDataLength(unsigned short pX); 
 
     unsigned short getSamples() const; 
     void setSamples(unsigned short pX); 
 
-    std::vector<OneByteChunk>& getData(); 
-    const std::vector<OneByteChunk>& getData() const; 
-    void setData(const std::vector<OneByteChunk>&    pX);
+    OneByteChunk& getData(); 
+    const OneByteChunk&  getData() const; 
+    void setData(const OneByteChunk    &pX);
 
 
 virtual int getMarshalledSize() const;

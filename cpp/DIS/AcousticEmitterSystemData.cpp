@@ -8,13 +8,13 @@ AcousticEmitterSystemData::AcousticEmitterSystemData():
    _numberOfBeams(0), 
    _pad2(0), 
    _acousticEmitterSystem(), 
-   _emitterLocation()
+   _emitterLocation(), 
+   _beamRecords()
 {
 }
 
 AcousticEmitterSystemData::~AcousticEmitterSystemData()
 {
-    _beamRecords.clear();
 }
 
 unsigned char AcousticEmitterSystemData::getEmitterSystemDataLength() const
@@ -29,7 +29,12 @@ void AcousticEmitterSystemData::setEmitterSystemDataLength(unsigned char pX)
 
 unsigned char AcousticEmitterSystemData::getNumberOfBeams() const
 {
-   return _beamRecords.size();
+    return _numberOfBeams;
+}
+
+void AcousticEmitterSystemData::setNumberOfBeams(unsigned char pX)
+{
+    _numberOfBeams = pX;
 }
 
 unsigned short AcousticEmitterSystemData::getPad2() const
@@ -72,35 +77,29 @@ void AcousticEmitterSystemData::setEmitterLocation(const Vector3Float &pX)
     _emitterLocation = pX;
 }
 
-std::vector<AcousticBeamData>& AcousticEmitterSystemData::getBeamRecords() 
+AcousticBeamData& AcousticEmitterSystemData::getBeamRecords() 
 {
     return _beamRecords;
 }
 
-const std::vector<AcousticBeamData>& AcousticEmitterSystemData::getBeamRecords() const
+const AcousticBeamData& AcousticEmitterSystemData::getBeamRecords() const
 {
     return _beamRecords;
 }
 
-void AcousticEmitterSystemData::setBeamRecords(const std::vector<AcousticBeamData>& pX)
+void AcousticEmitterSystemData::setBeamRecords(const AcousticBeamData &pX)
 {
-     _beamRecords = pX;
+    _beamRecords = pX;
 }
 
 void AcousticEmitterSystemData::marshal(DataStream& dataStream) const
 {
     dataStream << _emitterSystemDataLength;
-    dataStream << ( unsigned char )_beamRecords.size();
+    dataStream << _numberOfBeams;
     dataStream << _pad2;
     _acousticEmitterSystem.marshal(dataStream);
     _emitterLocation.marshal(dataStream);
-
-     for(size_t idx = 0; idx < _beamRecords.size(); idx++)
-     {
-        AcousticBeamData x = _beamRecords[idx];
-        x.marshal(dataStream);
-     }
-
+    _beamRecords.marshal(dataStream);
 }
 
 void AcousticEmitterSystemData::unmarshal(DataStream& dataStream)
@@ -110,14 +109,7 @@ void AcousticEmitterSystemData::unmarshal(DataStream& dataStream)
     dataStream >> _pad2;
     _acousticEmitterSystem.unmarshal(dataStream);
     _emitterLocation.unmarshal(dataStream);
-
-     _beamRecords.clear();
-     for(size_t idx = 0; idx < _numberOfBeams; idx++)
-     {
-        AcousticBeamData x;
-        x.unmarshal(dataStream);
-        _beamRecords.push_back(x);
-     }
+    _beamRecords.unmarshal(dataStream);
 }
 
 
@@ -126,15 +118,11 @@ bool AcousticEmitterSystemData::operator ==(const AcousticEmitterSystemData& rhs
      bool ivarsEqual = true;
 
      if( ! (_emitterSystemDataLength == rhs._emitterSystemDataLength) ) ivarsEqual = false;
+     if( ! (_numberOfBeams == rhs._numberOfBeams) ) ivarsEqual = false;
      if( ! (_pad2 == rhs._pad2) ) ivarsEqual = false;
      if( ! (_acousticEmitterSystem == rhs._acousticEmitterSystem) ) ivarsEqual = false;
      if( ! (_emitterLocation == rhs._emitterLocation) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _beamRecords.size(); idx++)
-     {
-        if( ! ( _beamRecords[idx] == rhs._beamRecords[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_beamRecords == rhs._beamRecords) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -148,13 +136,7 @@ int AcousticEmitterSystemData::getMarshalledSize() const
    marshalSize = marshalSize + 2;  // _pad2
    marshalSize = marshalSize + _acousticEmitterSystem.getMarshalledSize();  // _acousticEmitterSystem
    marshalSize = marshalSize + _emitterLocation.getMarshalledSize();  // _emitterLocation
-
-   for(int idx=0; idx < _beamRecords.size(); idx++)
-   {
-        AcousticBeamData listElement = _beamRecords[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _beamRecords.getMarshalledSize();  // _beamRecords
     return marshalSize;
 }
 

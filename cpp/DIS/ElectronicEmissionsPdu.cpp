@@ -8,7 +8,8 @@ ElectronicEmissionsPdu::ElectronicEmissionsPdu() : DistributedEmissionsFamilyPdu
    _eventID(), 
    _stateUpdateIndicator(0), 
    _numberOfSystems(0), 
-   _paddingForEmissionsPdu(0)
+   _paddingForEmissionsPdu(0), 
+   _systems()
 {
     setPduType( 23 );
     setPaddingForEmissionsPdu( 0 );
@@ -16,7 +17,6 @@ ElectronicEmissionsPdu::ElectronicEmissionsPdu() : DistributedEmissionsFamilyPdu
 
 ElectronicEmissionsPdu::~ElectronicEmissionsPdu()
 {
-    _systems.clear();
 }
 
 EntityID& ElectronicEmissionsPdu::getEmittingEntityID() 
@@ -61,7 +61,12 @@ void ElectronicEmissionsPdu::setStateUpdateIndicator(unsigned char pX)
 
 unsigned char ElectronicEmissionsPdu::getNumberOfSystems() const
 {
-   return _systems.size();
+    return _numberOfSystems;
+}
+
+void ElectronicEmissionsPdu::setNumberOfSystems(unsigned char pX)
+{
+    _numberOfSystems = pX;
 }
 
 unsigned short ElectronicEmissionsPdu::getPaddingForEmissionsPdu() const
@@ -74,19 +79,19 @@ void ElectronicEmissionsPdu::setPaddingForEmissionsPdu(unsigned short pX)
     _paddingForEmissionsPdu = pX;
 }
 
-std::vector<ElectronicEmissionSystemData>& ElectronicEmissionsPdu::getSystems() 
+ElectronicEmissionSystemData& ElectronicEmissionsPdu::getSystems() 
 {
     return _systems;
 }
 
-const std::vector<ElectronicEmissionSystemData>& ElectronicEmissionsPdu::getSystems() const
+const ElectronicEmissionSystemData& ElectronicEmissionsPdu::getSystems() const
 {
     return _systems;
 }
 
-void ElectronicEmissionsPdu::setSystems(const std::vector<ElectronicEmissionSystemData>& pX)
+void ElectronicEmissionsPdu::setSystems(const ElectronicEmissionSystemData &pX)
 {
-     _systems = pX;
+    _systems = pX;
 }
 
 void ElectronicEmissionsPdu::marshal(DataStream& dataStream) const
@@ -95,15 +100,9 @@ void ElectronicEmissionsPdu::marshal(DataStream& dataStream) const
     _emittingEntityID.marshal(dataStream);
     _eventID.marshal(dataStream);
     dataStream << _stateUpdateIndicator;
-    dataStream << ( unsigned char )_systems.size();
+    dataStream << _numberOfSystems;
     dataStream << _paddingForEmissionsPdu;
-
-     for(size_t idx = 0; idx < _systems.size(); idx++)
-     {
-        ElectronicEmissionSystemData x = _systems[idx];
-        x.marshal(dataStream);
-     }
-
+    _systems.marshal(dataStream);
 }
 
 void ElectronicEmissionsPdu::unmarshal(DataStream& dataStream)
@@ -114,14 +113,7 @@ void ElectronicEmissionsPdu::unmarshal(DataStream& dataStream)
     dataStream >> _stateUpdateIndicator;
     dataStream >> _numberOfSystems;
     dataStream >> _paddingForEmissionsPdu;
-
-     _systems.clear();
-     for(size_t idx = 0; idx < _numberOfSystems; idx++)
-     {
-        ElectronicEmissionSystemData x;
-        x.unmarshal(dataStream);
-        _systems.push_back(x);
-     }
+    _systems.unmarshal(dataStream);
 }
 
 
@@ -134,13 +126,9 @@ bool ElectronicEmissionsPdu::operator ==(const ElectronicEmissionsPdu& rhs) cons
      if( ! (_emittingEntityID == rhs._emittingEntityID) ) ivarsEqual = false;
      if( ! (_eventID == rhs._eventID) ) ivarsEqual = false;
      if( ! (_stateUpdateIndicator == rhs._stateUpdateIndicator) ) ivarsEqual = false;
+     if( ! (_numberOfSystems == rhs._numberOfSystems) ) ivarsEqual = false;
      if( ! (_paddingForEmissionsPdu == rhs._paddingForEmissionsPdu) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _systems.size(); idx++)
-     {
-        if( ! ( _systems[idx] == rhs._systems[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_systems == rhs._systems) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -155,13 +143,7 @@ int ElectronicEmissionsPdu::getMarshalledSize() const
    marshalSize = marshalSize + 1;  // _stateUpdateIndicator
    marshalSize = marshalSize + 1;  // _numberOfSystems
    marshalSize = marshalSize + 2;  // _paddingForEmissionsPdu
-
-   for(int idx=0; idx < _systems.size(); idx++)
-   {
-        ElectronicEmissionSystemData listElement = _systems[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _systems.getMarshalledSize();  // _systems
     return marshalSize;
 }
 

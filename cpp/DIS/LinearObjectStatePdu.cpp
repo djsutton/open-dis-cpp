@@ -11,14 +11,14 @@ LinearObjectStatePdu::LinearObjectStatePdu() : SyntheticEnvironmentFamilyPdu(),
    _numberOfSegments(0), 
    _requesterID(), 
    _receivingID(), 
-   _objectType()
+   _objectType(), 
+   _linearSegmentParameters()
 {
     setPduType( 44 );
 }
 
 LinearObjectStatePdu::~LinearObjectStatePdu()
 {
-    _linearSegmentParameters.clear();
 }
 
 EntityID& LinearObjectStatePdu::getObjectID() 
@@ -73,7 +73,12 @@ void LinearObjectStatePdu::setForceID(unsigned char pX)
 
 unsigned char LinearObjectStatePdu::getNumberOfSegments() const
 {
-   return _linearSegmentParameters.size();
+    return _numberOfSegments;
+}
+
+void LinearObjectStatePdu::setNumberOfSegments(unsigned char pX)
+{
+    _numberOfSegments = pX;
 }
 
 SimulationAddress& LinearObjectStatePdu::getRequesterID() 
@@ -121,19 +126,19 @@ void LinearObjectStatePdu::setObjectType(const ObjectType &pX)
     _objectType = pX;
 }
 
-std::vector<LinearSegmentParameter>& LinearObjectStatePdu::getLinearSegmentParameters() 
+LinearSegmentParameter& LinearObjectStatePdu::getLinearSegmentParameters() 
 {
     return _linearSegmentParameters;
 }
 
-const std::vector<LinearSegmentParameter>& LinearObjectStatePdu::getLinearSegmentParameters() const
+const LinearSegmentParameter& LinearObjectStatePdu::getLinearSegmentParameters() const
 {
     return _linearSegmentParameters;
 }
 
-void LinearObjectStatePdu::setLinearSegmentParameters(const std::vector<LinearSegmentParameter>& pX)
+void LinearObjectStatePdu::setLinearSegmentParameters(const LinearSegmentParameter &pX)
 {
-     _linearSegmentParameters = pX;
+    _linearSegmentParameters = pX;
 }
 
 void LinearObjectStatePdu::marshal(DataStream& dataStream) const
@@ -143,17 +148,11 @@ void LinearObjectStatePdu::marshal(DataStream& dataStream) const
     _referencedObjectID.marshal(dataStream);
     dataStream << _updateNumber;
     dataStream << _forceID;
-    dataStream << ( unsigned char )_linearSegmentParameters.size();
+    dataStream << _numberOfSegments;
     _requesterID.marshal(dataStream);
     _receivingID.marshal(dataStream);
     _objectType.marshal(dataStream);
-
-     for(size_t idx = 0; idx < _linearSegmentParameters.size(); idx++)
-     {
-        LinearSegmentParameter x = _linearSegmentParameters[idx];
-        x.marshal(dataStream);
-     }
-
+    _linearSegmentParameters.marshal(dataStream);
 }
 
 void LinearObjectStatePdu::unmarshal(DataStream& dataStream)
@@ -167,14 +166,7 @@ void LinearObjectStatePdu::unmarshal(DataStream& dataStream)
     _requesterID.unmarshal(dataStream);
     _receivingID.unmarshal(dataStream);
     _objectType.unmarshal(dataStream);
-
-     _linearSegmentParameters.clear();
-     for(size_t idx = 0; idx < _numberOfSegments; idx++)
-     {
-        LinearSegmentParameter x;
-        x.unmarshal(dataStream);
-        _linearSegmentParameters.push_back(x);
-     }
+    _linearSegmentParameters.unmarshal(dataStream);
 }
 
 
@@ -188,15 +180,11 @@ bool LinearObjectStatePdu::operator ==(const LinearObjectStatePdu& rhs) const
      if( ! (_referencedObjectID == rhs._referencedObjectID) ) ivarsEqual = false;
      if( ! (_updateNumber == rhs._updateNumber) ) ivarsEqual = false;
      if( ! (_forceID == rhs._forceID) ) ivarsEqual = false;
+     if( ! (_numberOfSegments == rhs._numberOfSegments) ) ivarsEqual = false;
      if( ! (_requesterID == rhs._requesterID) ) ivarsEqual = false;
      if( ! (_receivingID == rhs._receivingID) ) ivarsEqual = false;
      if( ! (_objectType == rhs._objectType) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _linearSegmentParameters.size(); idx++)
-     {
-        if( ! ( _linearSegmentParameters[idx] == rhs._linearSegmentParameters[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_linearSegmentParameters == rhs._linearSegmentParameters) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -214,13 +202,7 @@ int LinearObjectStatePdu::getMarshalledSize() const
    marshalSize = marshalSize + _requesterID.getMarshalledSize();  // _requesterID
    marshalSize = marshalSize + _receivingID.getMarshalledSize();  // _receivingID
    marshalSize = marshalSize + _objectType.getMarshalledSize();  // _objectType
-
-   for(int idx=0; idx < _linearSegmentParameters.size(); idx++)
-   {
-        LinearSegmentParameter listElement = _linearSegmentParameters[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _linearSegmentParameters.getMarshalledSize();  // _linearSegmentParameters
     return marshalSize;
 }
 

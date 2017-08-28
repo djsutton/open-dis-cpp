@@ -4,7 +4,6 @@
 #include <DIS/EntityID.h>
 #include <DIS/PropulsionSystemData.h>
 #include <DIS/VectoringNozzleSystemData.h>
-#include <vector>
 #include <DIS/DistributedEmissionsFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -40,10 +39,10 @@ protected:
   unsigned short _numberOfVectoringNozzleSystems; 
 
   /** variable length list of propulsion system data */
-  std::vector<PropulsionSystemData> _propulsionSystemData; 
+  PropulsionSystemData _propulsionSystemData; 
 
   /** variable length list of vectoring system data */
-  std::vector<VectoringNozzleSystemData> _vectoringSystemData; 
+  VectoringNozzleSystemData _vectoringSystemData; 
 
 
  public:
@@ -67,16 +66,18 @@ protected:
     void setRadarCrossSectionSignatureRepresentationIndex(unsigned short pX); 
 
     unsigned short getNumberOfPropulsionSystems() const; 
+    void setNumberOfPropulsionSystems(unsigned short pX); 
 
     unsigned short getNumberOfVectoringNozzleSystems() const; 
+    void setNumberOfVectoringNozzleSystems(unsigned short pX); 
 
-    std::vector<PropulsionSystemData>& getPropulsionSystemData(); 
-    const std::vector<PropulsionSystemData>& getPropulsionSystemData() const; 
-    void setPropulsionSystemData(const std::vector<PropulsionSystemData>&    pX);
+    PropulsionSystemData& getPropulsionSystemData(); 
+    const PropulsionSystemData&  getPropulsionSystemData() const; 
+    void setPropulsionSystemData(const PropulsionSystemData    &pX);
 
-    std::vector<VectoringNozzleSystemData>& getVectoringSystemData(); 
-    const std::vector<VectoringNozzleSystemData>& getVectoringSystemData() const; 
-    void setVectoringSystemData(const std::vector<VectoringNozzleSystemData>&    pX);
+    VectoringNozzleSystemData& getVectoringSystemData(); 
+    const VectoringNozzleSystemData&  getVectoringSystemData() const; 
+    void setVectoringSystemData(const VectoringNozzleSystemData    &pX);
 
 
 virtual int getMarshalledSize() const;

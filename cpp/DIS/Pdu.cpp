@@ -9,7 +9,7 @@ Pdu::Pdu():
    _pduType(0), 
    _protocolFamily(0), 
    _timestamp(0), 
-   _length(0), 
+   _pduLength(0), 
    _padding(0)
 {
 }
@@ -68,14 +68,14 @@ void Pdu::setTimestamp(unsigned int pX)
     _timestamp = pX;
 }
 
-unsigned short Pdu::getLength() const
+unsigned short Pdu::getPduLength() const
 {
     return this->getMarshalledSize();
 }
 
-void Pdu::setLength(unsigned short pX)
+void Pdu::setPduLength(unsigned short pX)
 {
-    _length = pX;
+    _pduLength = pX;
 }
 
 short Pdu::getPadding() const
@@ -95,7 +95,7 @@ void Pdu::marshal(DataStream& dataStream) const
     dataStream << _pduType;
     dataStream << _protocolFamily;
     dataStream << _timestamp;
-    dataStream << this->getLength();
+    dataStream << this->getPduLength();
     dataStream << _padding;
 }
 
@@ -106,7 +106,7 @@ void Pdu::unmarshal(DataStream& dataStream)
     dataStream >> _pduType;
     dataStream >> _protocolFamily;
     dataStream >> _timestamp;
-    dataStream >> _length;
+    dataStream >> _pduLength;
     dataStream >> _padding;
 }
 
@@ -120,7 +120,7 @@ bool Pdu::operator ==(const Pdu& rhs) const
      if( ! (_pduType == rhs._pduType) ) ivarsEqual = false;
      if( ! (_protocolFamily == rhs._protocolFamily) ) ivarsEqual = false;
      if( ! (_timestamp == rhs._timestamp) ) ivarsEqual = false;
-     if( ! (_length == rhs._length) ) ivarsEqual = false;
+     if( ! (_pduLength == rhs._pduLength) ) ivarsEqual = false;
      if( ! (_padding == rhs._padding) ) ivarsEqual = false;
 
     return ivarsEqual;
@@ -135,7 +135,7 @@ int Pdu::getMarshalledSize() const
    marshalSize = marshalSize + 1;  // _pduType
    marshalSize = marshalSize + 1;  // _protocolFamily
    marshalSize = marshalSize + 4;  // _timestamp
-   marshalSize = marshalSize + 2;  // _length
+   marshalSize = marshalSize + 2;  // _pduLength
    marshalSize = marshalSize + 2;  // _padding
     return marshalSize;
 }

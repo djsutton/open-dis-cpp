@@ -1,6 +1,7 @@
 #ifndef INTERCOMCOMMUNICATIONSPARAMETERS_H
 #define INTERCOMCOMMUNICATIONSPARAMETERS_H
 
+#include <DIS/OneByteChunk.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
 
@@ -19,11 +20,11 @@ protected:
   /** Type of intercom parameters record */
   unsigned short _recordType; 
 
-  /** length of record */
+  /** length of record-specifid field, in octets */
   unsigned short _recordLength; 
 
-  /** Jerks. Looks like the committee is forcing a lookup of the record type parameter to find out how long the field is. This is a placeholder. */
-  unsigned int _recordSpecificField; 
+  /** variable length variablelist of data parameters  */
+  OneByteChunk _parameterValues; 
 
 
  public:
@@ -39,8 +40,9 @@ protected:
     unsigned short getRecordLength() const; 
     void setRecordLength(unsigned short pX); 
 
-    unsigned int getRecordSpecificField() const; 
-    void setRecordSpecificField(unsigned int pX); 
+    OneByteChunk& getParameterValues(); 
+    const OneByteChunk&  getParameterValues() const; 
+    void setParameterValues(const OneByteChunk    &pX);
 
 
 virtual int getMarshalledSize() const;

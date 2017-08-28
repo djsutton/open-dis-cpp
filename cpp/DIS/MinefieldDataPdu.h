@@ -6,7 +6,6 @@
 #include <DIS/EntityType.h>
 #include <DIS/TwoByteChunk.h>
 #include <DIS/Vector3Float.h>
-#include <vector>
 #include <DIS/MinefieldFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -57,13 +56,13 @@ protected:
   EntityType _mineType; 
 
   /** Sensor types, each 16 bits long */
-  std::vector<TwoByteChunk> _sensorTypes; 
+  TwoByteChunk _sensorTypes; 
 
   /** Padding to get things 32-bit aligned. ^^^this is wrong--dyanmically sized padding needed */
   unsigned char _pad3; 
 
   /** Mine locations */
-  std::vector<Vector3Float> _mineLocation; 
+  Vector3Float _mineLocation; 
 
 
  public:
@@ -94,8 +93,10 @@ protected:
     void setNumberOfPdus(unsigned char pX); 
 
     unsigned char getNumberOfMinesInThisPdu() const; 
+    void setNumberOfMinesInThisPdu(unsigned char pX); 
 
     unsigned char getNumberOfSensorTypes() const; 
+    void setNumberOfSensorTypes(unsigned char pX); 
 
     unsigned char getPad2() const; 
     void setPad2(unsigned char pX); 
@@ -107,16 +108,16 @@ protected:
     const EntityType&  getMineType() const; 
     void setMineType(const EntityType    &pX);
 
-    std::vector<TwoByteChunk>& getSensorTypes(); 
-    const std::vector<TwoByteChunk>& getSensorTypes() const; 
-    void setSensorTypes(const std::vector<TwoByteChunk>&    pX);
+    TwoByteChunk& getSensorTypes(); 
+    const TwoByteChunk&  getSensorTypes() const; 
+    void setSensorTypes(const TwoByteChunk    &pX);
 
     unsigned char getPad3() const; 
     void setPad3(unsigned char pX); 
 
-    std::vector<Vector3Float>& getMineLocation(); 
-    const std::vector<Vector3Float>& getMineLocation() const; 
-    void setMineLocation(const std::vector<Vector3Float>&    pX);
+    Vector3Float& getMineLocation(); 
+    const Vector3Float&  getMineLocation() const; 
+    void setMineLocation(const Vector3Float    &pX);
 
 
 virtual int getMarshalledSize() const;

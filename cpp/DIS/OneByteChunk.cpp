@@ -3,56 +3,33 @@
 using namespace DIS;
 
 
-OneByteChunk::OneByteChunk()
+OneByteChunk::OneByteChunk():
+   _otherParameters(0)
 {
-     // Initialize fixed length array
-     for(int lengthotherParameters= 0; lengthotherParameters < 1; lengthotherParameters++)
-     {
-         _otherParameters[lengthotherParameters] = 0;
-     }
-
 }
 
 OneByteChunk::~OneByteChunk()
 {
 }
 
-char* OneByteChunk::getOtherParameters() 
+char OneByteChunk::getOtherParameters() const
 {
     return _otherParameters;
 }
 
-const char* OneByteChunk::getOtherParameters() const
+void OneByteChunk::setOtherParameters(char pX)
 {
-    return _otherParameters;
-}
-
-void OneByteChunk::setOtherParameters(const char* x)
-{
-   for(int i = 0; i < 1; i++)
-   {
-        _otherParameters[i] = x[i];
-   }
+    _otherParameters = pX;
 }
 
 void OneByteChunk::marshal(DataStream& dataStream) const
 {
-
-     for(size_t idx = 0; idx < 1; idx++)
-     {
-        dataStream << _otherParameters[idx];
-     }
-
+    dataStream << _otherParameters;
 }
 
 void OneByteChunk::unmarshal(DataStream& dataStream)
 {
-
-     for(size_t idx = 0; idx < 1; idx++)
-     {
-        dataStream >> _otherParameters[idx];
-     }
-
+    dataStream >> _otherParameters;
 }
 
 
@@ -60,12 +37,7 @@ bool OneByteChunk::operator ==(const OneByteChunk& rhs) const
  {
      bool ivarsEqual = true;
 
-
-     for(char idx = 0; idx < 1; idx++)
-     {
-          if(!(_otherParameters[idx] == rhs._otherParameters[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_otherParameters == rhs._otherParameters) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -74,7 +46,7 @@ int OneByteChunk::getMarshalledSize() const
 {
    int marshalSize = 0;
 
-   marshalSize = marshalSize + 1 * 1;  // _otherParameters
+   marshalSize = marshalSize + 1;  // _otherParameters
     return marshalSize;
 }
 

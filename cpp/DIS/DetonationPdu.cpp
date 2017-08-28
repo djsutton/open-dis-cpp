@@ -12,14 +12,14 @@ DetonationPdu::DetonationPdu() : WarfareFamilyPdu(),
    _locationInEntityCoordinates(), 
    _detonationResult(0), 
    _numberOfArticulationParameters(0), 
-   _pad(0)
+   _pad(0), 
+   _articulationParameters()
 {
     setPduType( 3 );
 }
 
 DetonationPdu::~DetonationPdu()
 {
-    _articulationParameters.clear();
 }
 
 EntityID& DetonationPdu::getMunitionID() 
@@ -124,7 +124,12 @@ void DetonationPdu::setDetonationResult(unsigned char pX)
 
 unsigned char DetonationPdu::getNumberOfArticulationParameters() const
 {
-   return _articulationParameters.size();
+    return _numberOfArticulationParameters;
+}
+
+void DetonationPdu::setNumberOfArticulationParameters(unsigned char pX)
+{
+    _numberOfArticulationParameters = pX;
 }
 
 short DetonationPdu::getPad() const
@@ -137,19 +142,19 @@ void DetonationPdu::setPad(short pX)
     _pad = pX;
 }
 
-std::vector<ArticulationParameter>& DetonationPdu::getArticulationParameters() 
+ArticulationParameter& DetonationPdu::getArticulationParameters() 
 {
     return _articulationParameters;
 }
 
-const std::vector<ArticulationParameter>& DetonationPdu::getArticulationParameters() const
+const ArticulationParameter& DetonationPdu::getArticulationParameters() const
 {
     return _articulationParameters;
 }
 
-void DetonationPdu::setArticulationParameters(const std::vector<ArticulationParameter>& pX)
+void DetonationPdu::setArticulationParameters(const ArticulationParameter &pX)
 {
-     _articulationParameters = pX;
+    _articulationParameters = pX;
 }
 
 void DetonationPdu::marshal(DataStream& dataStream) const
@@ -162,15 +167,9 @@ void DetonationPdu::marshal(DataStream& dataStream) const
     _burstDescriptor.marshal(dataStream);
     _locationInEntityCoordinates.marshal(dataStream);
     dataStream << _detonationResult;
-    dataStream << ( unsigned char )_articulationParameters.size();
+    dataStream << _numberOfArticulationParameters;
     dataStream << _pad;
-
-     for(size_t idx = 0; idx < _articulationParameters.size(); idx++)
-     {
-        ArticulationParameter x = _articulationParameters[idx];
-        x.marshal(dataStream);
-     }
-
+    _articulationParameters.marshal(dataStream);
 }
 
 void DetonationPdu::unmarshal(DataStream& dataStream)
@@ -185,14 +184,7 @@ void DetonationPdu::unmarshal(DataStream& dataStream)
     dataStream >> _detonationResult;
     dataStream >> _numberOfArticulationParameters;
     dataStream >> _pad;
-
-     _articulationParameters.clear();
-     for(size_t idx = 0; idx < _numberOfArticulationParameters; idx++)
-     {
-        ArticulationParameter x;
-        x.unmarshal(dataStream);
-        _articulationParameters.push_back(x);
-     }
+    _articulationParameters.unmarshal(dataStream);
 }
 
 
@@ -209,13 +201,9 @@ bool DetonationPdu::operator ==(const DetonationPdu& rhs) const
      if( ! (_burstDescriptor == rhs._burstDescriptor) ) ivarsEqual = false;
      if( ! (_locationInEntityCoordinates == rhs._locationInEntityCoordinates) ) ivarsEqual = false;
      if( ! (_detonationResult == rhs._detonationResult) ) ivarsEqual = false;
+     if( ! (_numberOfArticulationParameters == rhs._numberOfArticulationParameters) ) ivarsEqual = false;
      if( ! (_pad == rhs._pad) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _articulationParameters.size(); idx++)
-     {
-        if( ! ( _articulationParameters[idx] == rhs._articulationParameters[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_articulationParameters == rhs._articulationParameters) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -234,13 +222,7 @@ int DetonationPdu::getMarshalledSize() const
    marshalSize = marshalSize + 1;  // _detonationResult
    marshalSize = marshalSize + 1;  // _numberOfArticulationParameters
    marshalSize = marshalSize + 2;  // _pad
-
-   for(int idx=0; idx < _articulationParameters.size(); idx++)
-   {
-        ArticulationParameter listElement = _articulationParameters[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _articulationParameters.getMarshalledSize();  // _articulationParameters
     return marshalSize;
 }
 

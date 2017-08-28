@@ -17,14 +17,14 @@ GriddedDataPdu::GriddedDataPdu() : SyntheticEnvironmentFamilyPdu(),
    _totalValues(0), 
    _vectorDimension(0), 
    _padding1(0), 
-   _padding2(0)
+   _padding2(0), 
+   _gridDataList()
 {
     setPduType( 42 );
 }
 
 GriddedDataPdu::~GriddedDataPdu()
 {
-    _gridDataList.clear();
 }
 
 EntityID& GriddedDataPdu::getEnvironmentalSimulationApplicationID() 
@@ -84,7 +84,12 @@ void GriddedDataPdu::setCoordinateSystem(unsigned short pX)
 
 unsigned char GriddedDataPdu::getNumberOfGridAxes() const
 {
-   return _gridDataList.size();
+    return _numberOfGridAxes;
+}
+
+void GriddedDataPdu::setNumberOfGridAxes(unsigned char pX)
+{
+    _numberOfGridAxes = pX;
 }
 
 unsigned char GriddedDataPdu::getConstantGrid() const
@@ -177,19 +182,19 @@ void GriddedDataPdu::setPadding2(unsigned char pX)
     _padding2 = pX;
 }
 
-std::vector<GridAxisRecord>& GriddedDataPdu::getGridDataList() 
+GridAxisRecord& GriddedDataPdu::getGridDataList() 
 {
     return _gridDataList;
 }
 
-const std::vector<GridAxisRecord>& GriddedDataPdu::getGridDataList() const
+const GridAxisRecord& GriddedDataPdu::getGridDataList() const
 {
     return _gridDataList;
 }
 
-void GriddedDataPdu::setGridDataList(const std::vector<GridAxisRecord>& pX)
+void GriddedDataPdu::setGridDataList(const GridAxisRecord &pX)
 {
-     _gridDataList = pX;
+    _gridDataList = pX;
 }
 
 void GriddedDataPdu::marshal(DataStream& dataStream) const
@@ -200,7 +205,7 @@ void GriddedDataPdu::marshal(DataStream& dataStream) const
     dataStream << _pduNumber;
     dataStream << _pduTotal;
     dataStream << _coordinateSystem;
-    dataStream << ( unsigned char )_gridDataList.size();
+    dataStream << _numberOfGridAxes;
     dataStream << _constantGrid;
     _environmentType.marshal(dataStream);
     _orientation.marshal(dataStream);
@@ -209,13 +214,7 @@ void GriddedDataPdu::marshal(DataStream& dataStream) const
     dataStream << _vectorDimension;
     dataStream << _padding1;
     dataStream << _padding2;
-
-     for(size_t idx = 0; idx < _gridDataList.size(); idx++)
-     {
-        GridAxisRecord x = _gridDataList[idx];
-        x.marshal(dataStream);
-     }
-
+    _gridDataList.marshal(dataStream);
 }
 
 void GriddedDataPdu::unmarshal(DataStream& dataStream)
@@ -235,14 +234,7 @@ void GriddedDataPdu::unmarshal(DataStream& dataStream)
     dataStream >> _vectorDimension;
     dataStream >> _padding1;
     dataStream >> _padding2;
-
-     _gridDataList.clear();
-     for(size_t idx = 0; idx < _numberOfGridAxes; idx++)
-     {
-        GridAxisRecord x;
-        x.unmarshal(dataStream);
-        _gridDataList.push_back(x);
-     }
+    _gridDataList.unmarshal(dataStream);
 }
 
 
@@ -257,6 +249,7 @@ bool GriddedDataPdu::operator ==(const GriddedDataPdu& rhs) const
      if( ! (_pduNumber == rhs._pduNumber) ) ivarsEqual = false;
      if( ! (_pduTotal == rhs._pduTotal) ) ivarsEqual = false;
      if( ! (_coordinateSystem == rhs._coordinateSystem) ) ivarsEqual = false;
+     if( ! (_numberOfGridAxes == rhs._numberOfGridAxes) ) ivarsEqual = false;
      if( ! (_constantGrid == rhs._constantGrid) ) ivarsEqual = false;
      if( ! (_environmentType == rhs._environmentType) ) ivarsEqual = false;
      if( ! (_orientation == rhs._orientation) ) ivarsEqual = false;
@@ -265,12 +258,7 @@ bool GriddedDataPdu::operator ==(const GriddedDataPdu& rhs) const
      if( ! (_vectorDimension == rhs._vectorDimension) ) ivarsEqual = false;
      if( ! (_padding1 == rhs._padding1) ) ivarsEqual = false;
      if( ! (_padding2 == rhs._padding2) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _gridDataList.size(); idx++)
-     {
-        if( ! ( _gridDataList[idx] == rhs._gridDataList[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_gridDataList == rhs._gridDataList) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -294,13 +282,7 @@ int GriddedDataPdu::getMarshalledSize() const
    marshalSize = marshalSize + 1;  // _vectorDimension
    marshalSize = marshalSize + 2;  // _padding1
    marshalSize = marshalSize + 1;  // _padding2
-
-   for(int idx=0; idx < _gridDataList.size(); idx++)
-   {
-        GridAxisRecord listElement = _gridDataList[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _gridDataList.getMarshalledSize();  // _gridDataList
     return marshalSize;
 }
 

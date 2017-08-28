@@ -7,15 +7,15 @@ EventReportReliablePdu::EventReportReliablePdu() : SimulationManagementWithRelia
    _eventType(0), 
    _pad1(0), 
    _numberOfFixedDatumRecords(0), 
-   _numberOfVariableDatumRecords(0)
+   _numberOfVariableDatumRecords(0), 
+   _fixedDatumRecords(), 
+   _variableDatumRecords()
 {
     setPduType( 61 );
 }
 
 EventReportReliablePdu::~EventReportReliablePdu()
 {
-    _fixedDatumRecords.clear();
-    _variableDatumRecords.clear();
 }
 
 unsigned short EventReportReliablePdu::getEventType() const
@@ -40,42 +40,52 @@ void EventReportReliablePdu::setPad1(unsigned int pX)
 
 unsigned int EventReportReliablePdu::getNumberOfFixedDatumRecords() const
 {
-   return _fixedDatumRecords.size();
+    return _numberOfFixedDatumRecords;
+}
+
+void EventReportReliablePdu::setNumberOfFixedDatumRecords(unsigned int pX)
+{
+    _numberOfFixedDatumRecords = pX;
 }
 
 unsigned int EventReportReliablePdu::getNumberOfVariableDatumRecords() const
 {
-   return _variableDatumRecords.size();
+    return _numberOfVariableDatumRecords;
 }
 
-std::vector<FixedDatum>& EventReportReliablePdu::getFixedDatumRecords() 
+void EventReportReliablePdu::setNumberOfVariableDatumRecords(unsigned int pX)
+{
+    _numberOfVariableDatumRecords = pX;
+}
+
+FixedDatum& EventReportReliablePdu::getFixedDatumRecords() 
 {
     return _fixedDatumRecords;
 }
 
-const std::vector<FixedDatum>& EventReportReliablePdu::getFixedDatumRecords() const
+const FixedDatum& EventReportReliablePdu::getFixedDatumRecords() const
 {
     return _fixedDatumRecords;
 }
 
-void EventReportReliablePdu::setFixedDatumRecords(const std::vector<FixedDatum>& pX)
+void EventReportReliablePdu::setFixedDatumRecords(const FixedDatum &pX)
 {
-     _fixedDatumRecords = pX;
+    _fixedDatumRecords = pX;
 }
 
-std::vector<VariableDatum>& EventReportReliablePdu::getVariableDatumRecords() 
+VariableDatum& EventReportReliablePdu::getVariableDatumRecords() 
 {
     return _variableDatumRecords;
 }
 
-const std::vector<VariableDatum>& EventReportReliablePdu::getVariableDatumRecords() const
+const VariableDatum& EventReportReliablePdu::getVariableDatumRecords() const
 {
     return _variableDatumRecords;
 }
 
-void EventReportReliablePdu::setVariableDatumRecords(const std::vector<VariableDatum>& pX)
+void EventReportReliablePdu::setVariableDatumRecords(const VariableDatum &pX)
 {
-     _variableDatumRecords = pX;
+    _variableDatumRecords = pX;
 }
 
 void EventReportReliablePdu::marshal(DataStream& dataStream) const
@@ -83,22 +93,10 @@ void EventReportReliablePdu::marshal(DataStream& dataStream) const
     SimulationManagementWithReliabilityFamilyPdu::marshal(dataStream); // Marshal information in superclass first
     dataStream << _eventType;
     dataStream << _pad1;
-    dataStream << ( unsigned int )_fixedDatumRecords.size();
-    dataStream << ( unsigned int )_variableDatumRecords.size();
-
-     for(size_t idx = 0; idx < _fixedDatumRecords.size(); idx++)
-     {
-        FixedDatum x = _fixedDatumRecords[idx];
-        x.marshal(dataStream);
-     }
-
-
-     for(size_t idx = 0; idx < _variableDatumRecords.size(); idx++)
-     {
-        VariableDatum x = _variableDatumRecords[idx];
-        x.marshal(dataStream);
-     }
-
+    dataStream << _numberOfFixedDatumRecords;
+    dataStream << _numberOfVariableDatumRecords;
+    _fixedDatumRecords.marshal(dataStream);
+    _variableDatumRecords.marshal(dataStream);
 }
 
 void EventReportReliablePdu::unmarshal(DataStream& dataStream)
@@ -108,22 +106,8 @@ void EventReportReliablePdu::unmarshal(DataStream& dataStream)
     dataStream >> _pad1;
     dataStream >> _numberOfFixedDatumRecords;
     dataStream >> _numberOfVariableDatumRecords;
-
-     _fixedDatumRecords.clear();
-     for(size_t idx = 0; idx < _numberOfFixedDatumRecords; idx++)
-     {
-        FixedDatum x;
-        x.unmarshal(dataStream);
-        _fixedDatumRecords.push_back(x);
-     }
-
-     _variableDatumRecords.clear();
-     for(size_t idx = 0; idx < _numberOfVariableDatumRecords; idx++)
-     {
-        VariableDatum x;
-        x.unmarshal(dataStream);
-        _variableDatumRecords.push_back(x);
-     }
+    _fixedDatumRecords.unmarshal(dataStream);
+    _variableDatumRecords.unmarshal(dataStream);
 }
 
 
@@ -135,18 +119,10 @@ bool EventReportReliablePdu::operator ==(const EventReportReliablePdu& rhs) cons
 
      if( ! (_eventType == rhs._eventType) ) ivarsEqual = false;
      if( ! (_pad1 == rhs._pad1) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _fixedDatumRecords.size(); idx++)
-     {
-        if( ! ( _fixedDatumRecords[idx] == rhs._fixedDatumRecords[idx]) ) ivarsEqual = false;
-     }
-
-
-     for(size_t idx = 0; idx < _variableDatumRecords.size(); idx++)
-     {
-        if( ! ( _variableDatumRecords[idx] == rhs._variableDatumRecords[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_numberOfFixedDatumRecords == rhs._numberOfFixedDatumRecords) ) ivarsEqual = false;
+     if( ! (_numberOfVariableDatumRecords == rhs._numberOfVariableDatumRecords) ) ivarsEqual = false;
+     if( ! (_fixedDatumRecords == rhs._fixedDatumRecords) ) ivarsEqual = false;
+     if( ! (_variableDatumRecords == rhs._variableDatumRecords) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -160,20 +136,8 @@ int EventReportReliablePdu::getMarshalledSize() const
    marshalSize = marshalSize + 4;  // _pad1
    marshalSize = marshalSize + 4;  // _numberOfFixedDatumRecords
    marshalSize = marshalSize + 4;  // _numberOfVariableDatumRecords
-
-   for(int idx=0; idx < _fixedDatumRecords.size(); idx++)
-   {
-        FixedDatum listElement = _fixedDatumRecords[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
-
-   for(int idx=0; idx < _variableDatumRecords.size(); idx++)
-   {
-        VariableDatum listElement = _variableDatumRecords[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _fixedDatumRecords.getMarshalledSize();  // _fixedDatumRecords
+   marshalSize = marshalSize + _variableDatumRecords.getMarshalledSize();  // _variableDatumRecords
     return marshalSize;
 }
 

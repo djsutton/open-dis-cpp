@@ -6,7 +6,6 @@
 #include <DIS/EntityType.h>
 #include <DIS/Point.h>
 #include <DIS/TwoByteChunk.h>
-#include <vector>
 #include <DIS/MinefieldFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -48,10 +47,10 @@ protected:
   EntityType _requestedMineType; 
 
   /** perimeter points of request */
-  std::vector<Point> _requestedPerimeterPoints; 
+  Point _requestedPerimeterPoints; 
 
   /** Sensor types, each 16 bits long */
-  std::vector<TwoByteChunk> _sensorTypes; 
+  TwoByteChunk _sensorTypes; 
 
 
  public:
@@ -73,11 +72,13 @@ protected:
     void setRequestID(unsigned char pX); 
 
     unsigned char getNumberOfPerimeterPoints() const; 
+    void setNumberOfPerimeterPoints(unsigned char pX); 
 
     unsigned char getPad2() const; 
     void setPad2(unsigned char pX); 
 
     unsigned char getNumberOfSensorTypes() const; 
+    void setNumberOfSensorTypes(unsigned char pX); 
 
     unsigned int getDataFilter() const; 
     void setDataFilter(unsigned int pX); 
@@ -86,13 +87,13 @@ protected:
     const EntityType&  getRequestedMineType() const; 
     void setRequestedMineType(const EntityType    &pX);
 
-    std::vector<Point>& getRequestedPerimeterPoints(); 
-    const std::vector<Point>& getRequestedPerimeterPoints() const; 
-    void setRequestedPerimeterPoints(const std::vector<Point>&    pX);
+    Point& getRequestedPerimeterPoints(); 
+    const Point&  getRequestedPerimeterPoints() const; 
+    void setRequestedPerimeterPoints(const Point    &pX);
 
-    std::vector<TwoByteChunk>& getSensorTypes(); 
-    const std::vector<TwoByteChunk>& getSensorTypes() const; 
-    void setSensorTypes(const std::vector<TwoByteChunk>&    pX);
+    TwoByteChunk& getSensorTypes(); 
+    const TwoByteChunk&  getSensorTypes() const; 
+    void setSensorTypes(const TwoByteChunk    &pX);
 
 
 virtual int getMarshalledSize() const;

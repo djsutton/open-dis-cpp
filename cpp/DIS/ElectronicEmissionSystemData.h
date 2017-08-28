@@ -4,7 +4,6 @@
 #include <DIS/EmitterSystem.h>
 #include <DIS/Vector3Float.h>
 #include <DIS/ElectronicEmissionBeamData.h>
-#include <vector>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
 
@@ -35,8 +34,8 @@ protected:
   /** Location with respect to the entity */
   Vector3Float _location; 
 
-  /** variable length list of beam data records */
-  std::vector<ElectronicEmissionBeamData> _beamDataRecords; 
+  /** variable length variablelist of beam data records */
+  ElectronicEmissionBeamData _beamDataRecords; 
 
 
  public:
@@ -50,6 +49,7 @@ protected:
     void setSystemDataLength(unsigned char pX); 
 
     unsigned char getNumberOfBeams() const; 
+    void setNumberOfBeams(unsigned char pX); 
 
     unsigned short getEmissionsPadding2() const; 
     void setEmissionsPadding2(unsigned short pX); 
@@ -62,9 +62,9 @@ protected:
     const Vector3Float&  getLocation() const; 
     void setLocation(const Vector3Float    &pX);
 
-    std::vector<ElectronicEmissionBeamData>& getBeamDataRecords(); 
-    const std::vector<ElectronicEmissionBeamData>& getBeamDataRecords() const; 
-    void setBeamDataRecords(const std::vector<ElectronicEmissionBeamData>&    pX);
+    ElectronicEmissionBeamData& getBeamDataRecords(); 
+    const ElectronicEmissionBeamData&  getBeamDataRecords() const; 
+    void setBeamDataRecords(const ElectronicEmissionBeamData    &pX);
 
 
 virtual int getMarshalledSize() const;

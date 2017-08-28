@@ -4,7 +4,6 @@
 #include <DIS/EntityID.h>
 #include <DIS/EntityType.h>
 #include <DIS/Environment.h>
-#include <vector>
 #include <DIS/SyntheticEnvironmentFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -40,7 +39,7 @@ protected:
   unsigned short _sequenceNumber; 
 
   /** environemt records */
-  std::vector<Environment> _environmentRecords; 
+  Environment _environmentRecords; 
 
 
  public:
@@ -65,13 +64,14 @@ protected:
     void setEnvironmentStatus(unsigned char pX); 
 
     unsigned char getNumberOfEnvironmentRecords() const; 
+    void setNumberOfEnvironmentRecords(unsigned char pX); 
 
     unsigned short getSequenceNumber() const; 
     void setSequenceNumber(unsigned short pX); 
 
-    std::vector<Environment>& getEnvironmentRecords(); 
-    const std::vector<Environment>& getEnvironmentRecords() const; 
-    void setEnvironmentRecords(const std::vector<Environment>&    pX);
+    Environment& getEnvironmentRecords(); 
+    const Environment&  getEnvironmentRecords() const; 
+    void setEnvironmentRecords(const Environment    &pX);
 
 
 virtual int getMarshalledSize() const;

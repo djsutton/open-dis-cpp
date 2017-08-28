@@ -3,7 +3,6 @@
 
 #include <DIS/FixedDatum.h>
 #include <DIS/VariableDatum.h>
-#include <vector>
 #include <DIS/SimulationManagementFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -33,10 +32,10 @@ protected:
   unsigned int _numberOfVariableDatumRecords; 
 
   /** variable length list of fixed datums */
-  std::vector<FixedDatum> _fixedDatums; 
+  FixedDatum _fixedDatums; 
 
   /** variable length list of variable length datums */
-  std::vector<VariableDatum> _variableDatums; 
+  VariableDatum _variableDatums; 
 
 
  public:
@@ -53,16 +52,18 @@ protected:
     void setRequestStatus(unsigned int pX); 
 
     unsigned int getNumberOfFixedDatumRecords() const; 
+    void setNumberOfFixedDatumRecords(unsigned int pX); 
 
     unsigned int getNumberOfVariableDatumRecords() const; 
+    void setNumberOfVariableDatumRecords(unsigned int pX); 
 
-    std::vector<FixedDatum>& getFixedDatums(); 
-    const std::vector<FixedDatum>& getFixedDatums() const; 
-    void setFixedDatums(const std::vector<FixedDatum>&    pX);
+    FixedDatum& getFixedDatums(); 
+    const FixedDatum&  getFixedDatums() const; 
+    void setFixedDatums(const FixedDatum    &pX);
 
-    std::vector<VariableDatum>& getVariableDatums(); 
-    const std::vector<VariableDatum>& getVariableDatums() const; 
-    void setVariableDatums(const std::vector<VariableDatum>&    pX);
+    VariableDatum& getVariableDatums(); 
+    const VariableDatum&  getVariableDatums() const; 
+    void setVariableDatums(const VariableDatum    &pX);
 
 
 virtual int getMarshalledSize() const;

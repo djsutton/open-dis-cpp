@@ -9,15 +9,15 @@ SeesPdu::SeesPdu() : DistributedEmissionsFamilyPdu(),
    _acousticSignatureRepresentationIndex(0), 
    _radarCrossSectionSignatureRepresentationIndex(0), 
    _numberOfPropulsionSystems(0), 
-   _numberOfVectoringNozzleSystems(0)
+   _numberOfVectoringNozzleSystems(0), 
+   _propulsionSystemData(), 
+   _vectoringSystemData()
 {
     setPduType( 30 );
 }
 
 SeesPdu::~SeesPdu()
 {
-    _propulsionSystemData.clear();
-    _vectoringSystemData.clear();
 }
 
 EntityID& SeesPdu::getOrginatingEntityID() 
@@ -67,42 +67,52 @@ void SeesPdu::setRadarCrossSectionSignatureRepresentationIndex(unsigned short pX
 
 unsigned short SeesPdu::getNumberOfPropulsionSystems() const
 {
-   return _propulsionSystemData.size();
+    return _numberOfPropulsionSystems;
+}
+
+void SeesPdu::setNumberOfPropulsionSystems(unsigned short pX)
+{
+    _numberOfPropulsionSystems = pX;
 }
 
 unsigned short SeesPdu::getNumberOfVectoringNozzleSystems() const
 {
-   return _vectoringSystemData.size();
+    return _numberOfVectoringNozzleSystems;
 }
 
-std::vector<PropulsionSystemData>& SeesPdu::getPropulsionSystemData() 
+void SeesPdu::setNumberOfVectoringNozzleSystems(unsigned short pX)
+{
+    _numberOfVectoringNozzleSystems = pX;
+}
+
+PropulsionSystemData& SeesPdu::getPropulsionSystemData() 
 {
     return _propulsionSystemData;
 }
 
-const std::vector<PropulsionSystemData>& SeesPdu::getPropulsionSystemData() const
+const PropulsionSystemData& SeesPdu::getPropulsionSystemData() const
 {
     return _propulsionSystemData;
 }
 
-void SeesPdu::setPropulsionSystemData(const std::vector<PropulsionSystemData>& pX)
+void SeesPdu::setPropulsionSystemData(const PropulsionSystemData &pX)
 {
-     _propulsionSystemData = pX;
+    _propulsionSystemData = pX;
 }
 
-std::vector<VectoringNozzleSystemData>& SeesPdu::getVectoringSystemData() 
+VectoringNozzleSystemData& SeesPdu::getVectoringSystemData() 
 {
     return _vectoringSystemData;
 }
 
-const std::vector<VectoringNozzleSystemData>& SeesPdu::getVectoringSystemData() const
+const VectoringNozzleSystemData& SeesPdu::getVectoringSystemData() const
 {
     return _vectoringSystemData;
 }
 
-void SeesPdu::setVectoringSystemData(const std::vector<VectoringNozzleSystemData>& pX)
+void SeesPdu::setVectoringSystemData(const VectoringNozzleSystemData &pX)
 {
-     _vectoringSystemData = pX;
+    _vectoringSystemData = pX;
 }
 
 void SeesPdu::marshal(DataStream& dataStream) const
@@ -112,22 +122,10 @@ void SeesPdu::marshal(DataStream& dataStream) const
     dataStream << _infraredSignatureRepresentationIndex;
     dataStream << _acousticSignatureRepresentationIndex;
     dataStream << _radarCrossSectionSignatureRepresentationIndex;
-    dataStream << ( unsigned short )_propulsionSystemData.size();
-    dataStream << ( unsigned short )_vectoringSystemData.size();
-
-     for(size_t idx = 0; idx < _propulsionSystemData.size(); idx++)
-     {
-        PropulsionSystemData x = _propulsionSystemData[idx];
-        x.marshal(dataStream);
-     }
-
-
-     for(size_t idx = 0; idx < _vectoringSystemData.size(); idx++)
-     {
-        VectoringNozzleSystemData x = _vectoringSystemData[idx];
-        x.marshal(dataStream);
-     }
-
+    dataStream << _numberOfPropulsionSystems;
+    dataStream << _numberOfVectoringNozzleSystems;
+    _propulsionSystemData.marshal(dataStream);
+    _vectoringSystemData.marshal(dataStream);
 }
 
 void SeesPdu::unmarshal(DataStream& dataStream)
@@ -139,22 +137,8 @@ void SeesPdu::unmarshal(DataStream& dataStream)
     dataStream >> _radarCrossSectionSignatureRepresentationIndex;
     dataStream >> _numberOfPropulsionSystems;
     dataStream >> _numberOfVectoringNozzleSystems;
-
-     _propulsionSystemData.clear();
-     for(size_t idx = 0; idx < _numberOfPropulsionSystems; idx++)
-     {
-        PropulsionSystemData x;
-        x.unmarshal(dataStream);
-        _propulsionSystemData.push_back(x);
-     }
-
-     _vectoringSystemData.clear();
-     for(size_t idx = 0; idx < _numberOfVectoringNozzleSystems; idx++)
-     {
-        VectoringNozzleSystemData x;
-        x.unmarshal(dataStream);
-        _vectoringSystemData.push_back(x);
-     }
+    _propulsionSystemData.unmarshal(dataStream);
+    _vectoringSystemData.unmarshal(dataStream);
 }
 
 
@@ -168,18 +152,10 @@ bool SeesPdu::operator ==(const SeesPdu& rhs) const
      if( ! (_infraredSignatureRepresentationIndex == rhs._infraredSignatureRepresentationIndex) ) ivarsEqual = false;
      if( ! (_acousticSignatureRepresentationIndex == rhs._acousticSignatureRepresentationIndex) ) ivarsEqual = false;
      if( ! (_radarCrossSectionSignatureRepresentationIndex == rhs._radarCrossSectionSignatureRepresentationIndex) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _propulsionSystemData.size(); idx++)
-     {
-        if( ! ( _propulsionSystemData[idx] == rhs._propulsionSystemData[idx]) ) ivarsEqual = false;
-     }
-
-
-     for(size_t idx = 0; idx < _vectoringSystemData.size(); idx++)
-     {
-        if( ! ( _vectoringSystemData[idx] == rhs._vectoringSystemData[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_numberOfPropulsionSystems == rhs._numberOfPropulsionSystems) ) ivarsEqual = false;
+     if( ! (_numberOfVectoringNozzleSystems == rhs._numberOfVectoringNozzleSystems) ) ivarsEqual = false;
+     if( ! (_propulsionSystemData == rhs._propulsionSystemData) ) ivarsEqual = false;
+     if( ! (_vectoringSystemData == rhs._vectoringSystemData) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -195,20 +171,8 @@ int SeesPdu::getMarshalledSize() const
    marshalSize = marshalSize + 2;  // _radarCrossSectionSignatureRepresentationIndex
    marshalSize = marshalSize + 2;  // _numberOfPropulsionSystems
    marshalSize = marshalSize + 2;  // _numberOfVectoringNozzleSystems
-
-   for(int idx=0; idx < _propulsionSystemData.size(); idx++)
-   {
-        PropulsionSystemData listElement = _propulsionSystemData[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
-
-   for(int idx=0; idx < _vectoringSystemData.size(); idx++)
-   {
-        VectoringNozzleSystemData listElement = _vectoringSystemData[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _propulsionSystemData.getMarshalledSize();  // _propulsionSystemData
+   marshalSize = marshalSize + _vectoringSystemData.getMarshalledSize();  // _vectoringSystemData
     return marshalSize;
 }
 

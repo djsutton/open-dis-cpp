@@ -9,9 +9,9 @@ Marking::Marking():
    _characterSet(0)
 {
      // Initialize fixed length array
-     for(int lengthcharacters= 0; lengthcharacters < 11; lengthcharacters++)
+     for(int idx = 0; idx < sizeof(_characters); idx++)
      {
-         _characters[lengthcharacters] = 0;
+         _characters[idx] = 0;
      }
 
 }
@@ -42,7 +42,7 @@ const char* Marking::getCharacters() const
 
 void Marking::setCharacters(const char* x)
 {
-   for(int i = 0; i < 11; i++)
+   for(int i = 0; i < sizeof(_characters); i++)
    {
         _characters[i] = x[i];
    }
@@ -51,15 +51,15 @@ void Marking::setCharacters(const char* x)
 // An alternate method to set the value if this could be a string. This is not strictly comnpliant with the DIS standard.
 void Marking::setByStringCharacters(const char* x)
 {
-   std::strncpy(_characters, x, 11-1);
-   _characters[11 -1] = '\0';
+   std::strncpy(_characters, x, sizeof(_characters)-1);
+   _characters[sizeof(_characters) -1] = '\0';
 }
 
 void Marking::marshal(DataStream& dataStream) const
 {
     dataStream << _characterSet;
 
-     for(size_t idx = 0; idx < 11; idx++)
+     for(size_t idx = 0; idx < sizeof(_characters); idx++)
      {
         dataStream << _characters[idx];
      }
@@ -70,7 +70,7 @@ void Marking::unmarshal(DataStream& dataStream)
 {
     dataStream >> _characterSet;
 
-     for(size_t idx = 0; idx < 11; idx++)
+     for(size_t idx = 0; idx < sizeof(_characters); idx++)
      {
         dataStream >> _characters[idx];
      }
@@ -84,7 +84,7 @@ bool Marking::operator ==(const Marking& rhs) const
 
      if( ! (_characterSet == rhs._characterSet) ) ivarsEqual = false;
 
-     for(char idx = 0; idx < 11; idx++)
+     for(char idx = 0; idx < sizeof(_characters); idx++)
      {
           if(!(_characters[idx] == rhs._characters[idx]) ) ivarsEqual = false;
      }
@@ -98,7 +98,7 @@ int Marking::getMarshalledSize() const
    int marshalSize = 0;
 
    marshalSize = marshalSize + 1;  // _characterSet
-   marshalSize = marshalSize + 11 * 1;  // _characters
+   marshalSize = marshalSize + sizeof(_characters);  // _characters
     return marshalSize;
 }
 

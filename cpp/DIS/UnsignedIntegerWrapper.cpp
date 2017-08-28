@@ -1,57 +1,55 @@
-#ifndef VARIABLEDATUM_H
-#define VARIABLEDATUM_H
+#include <DIS/UnsignedIntegerWrapper.h> 
 
-#include <DIS/OneByteChunk.h>
-#include <DIS/DataStream.h>
-#include <DIS/msLibMacro.h>
+using namespace DIS;
 
 
-namespace DIS
+UnsignedIntegerWrapper::UnsignedIntegerWrapper():
+   _wrapper(0)
 {
-// Section 5.2.32. Variable Datum Record
-
-// Copyright (c) 2007-2009, MOVES Institute, Naval Postgraduate School. All rights reserved. 
-//
-// @author DMcG, jkg
-
-class EXPORT_MACRO VariableDatum
-{
-protected:
-  /** ID of the variable datum */
-  unsigned int _variableDatumID; 
-
-  /** length of the variable datums, in bits. Note that this is not programmatically tied to the size of the variableData. The variable data field may be 64 bits long but only 16 bits of it could actually be used. */
-  unsigned int _variableDatumLength; 
-
-  /** data can be any length, but must increase in 8 byte quanta. This requires some postprocessing patches. Note that setting the data allocates a new internal array to account for the possibly increased size. The default initial size is 64 bits. */
-  OneByteChunk _variableData; 
-
-
- public:
-    VariableDatum();
-    virtual ~VariableDatum();
-
-    virtual void marshal(DataStream& dataStream) const;
-    virtual void unmarshal(DataStream& dataStream);
-
-    unsigned int getVariableDatumID() const; 
-    void setVariableDatumID(unsigned int pX); 
-
-    unsigned int getVariableDatumLength() const; 
-    void setVariableDatumLength(unsigned int pX); 
-
-    OneByteChunk& getVariableData(); 
-    const OneByteChunk&  getVariableData() const; 
-    void setVariableData(const OneByteChunk    &pX);
-
-
-virtual int getMarshalledSize() const;
-
-     bool operator  ==(const VariableDatum& rhs) const;
-};
 }
 
-#endif
+UnsignedIntegerWrapper::~UnsignedIntegerWrapper()
+{
+}
+
+unsigned int UnsignedIntegerWrapper::getWrapper() const
+{
+    return _wrapper;
+}
+
+void UnsignedIntegerWrapper::setWrapper(unsigned int pX)
+{
+    _wrapper = pX;
+}
+
+void UnsignedIntegerWrapper::marshal(DataStream& dataStream) const
+{
+    dataStream << _wrapper;
+}
+
+void UnsignedIntegerWrapper::unmarshal(DataStream& dataStream)
+{
+    dataStream >> _wrapper;
+}
+
+
+bool UnsignedIntegerWrapper::operator ==(const UnsignedIntegerWrapper& rhs) const
+ {
+     bool ivarsEqual = true;
+
+     if( ! (_wrapper == rhs._wrapper) ) ivarsEqual = false;
+
+    return ivarsEqual;
+ }
+
+int UnsignedIntegerWrapper::getMarshalledSize() const
+{
+   int marshalSize = 0;
+
+   marshalSize = marshalSize + 4;  // _wrapper
+    return marshalSize;
+}
+
 // Copyright (c) 1995-2009 held by the author(s).  All rights reserved.
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions

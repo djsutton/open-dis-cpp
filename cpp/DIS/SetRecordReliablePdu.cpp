@@ -8,14 +8,14 @@ SetRecordReliablePdu::SetRecordReliablePdu() : SimulationManagementWithReliabili
    _requiredReliabilityService(0), 
    _pad1(0), 
    _pad2(0), 
-   _numberOfRecordSets(0)
+   _numberOfRecordSets(0), 
+   _recordSets()
 {
     setPduType( 64 );
 }
 
 SetRecordReliablePdu::~SetRecordReliablePdu()
 {
-    _recordSets.clear();
 }
 
 unsigned int SetRecordReliablePdu::getRequestID() const
@@ -60,22 +60,27 @@ void SetRecordReliablePdu::setPad2(unsigned char pX)
 
 unsigned int SetRecordReliablePdu::getNumberOfRecordSets() const
 {
-   return _recordSets.size();
+    return _numberOfRecordSets;
 }
 
-std::vector<RecordSet>& SetRecordReliablePdu::getRecordSets() 
+void SetRecordReliablePdu::setNumberOfRecordSets(unsigned int pX)
+{
+    _numberOfRecordSets = pX;
+}
+
+RecordSet& SetRecordReliablePdu::getRecordSets() 
 {
     return _recordSets;
 }
 
-const std::vector<RecordSet>& SetRecordReliablePdu::getRecordSets() const
+const RecordSet& SetRecordReliablePdu::getRecordSets() const
 {
     return _recordSets;
 }
 
-void SetRecordReliablePdu::setRecordSets(const std::vector<RecordSet>& pX)
+void SetRecordReliablePdu::setRecordSets(const RecordSet &pX)
 {
-     _recordSets = pX;
+    _recordSets = pX;
 }
 
 void SetRecordReliablePdu::marshal(DataStream& dataStream) const
@@ -85,14 +90,8 @@ void SetRecordReliablePdu::marshal(DataStream& dataStream) const
     dataStream << _requiredReliabilityService;
     dataStream << _pad1;
     dataStream << _pad2;
-    dataStream << ( unsigned int )_recordSets.size();
-
-     for(size_t idx = 0; idx < _recordSets.size(); idx++)
-     {
-        RecordSet x = _recordSets[idx];
-        x.marshal(dataStream);
-     }
-
+    dataStream << _numberOfRecordSets;
+    _recordSets.marshal(dataStream);
 }
 
 void SetRecordReliablePdu::unmarshal(DataStream& dataStream)
@@ -103,14 +102,7 @@ void SetRecordReliablePdu::unmarshal(DataStream& dataStream)
     dataStream >> _pad1;
     dataStream >> _pad2;
     dataStream >> _numberOfRecordSets;
-
-     _recordSets.clear();
-     for(size_t idx = 0; idx < _numberOfRecordSets; idx++)
-     {
-        RecordSet x;
-        x.unmarshal(dataStream);
-        _recordSets.push_back(x);
-     }
+    _recordSets.unmarshal(dataStream);
 }
 
 
@@ -124,12 +116,8 @@ bool SetRecordReliablePdu::operator ==(const SetRecordReliablePdu& rhs) const
      if( ! (_requiredReliabilityService == rhs._requiredReliabilityService) ) ivarsEqual = false;
      if( ! (_pad1 == rhs._pad1) ) ivarsEqual = false;
      if( ! (_pad2 == rhs._pad2) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _recordSets.size(); idx++)
-     {
-        if( ! ( _recordSets[idx] == rhs._recordSets[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_numberOfRecordSets == rhs._numberOfRecordSets) ) ivarsEqual = false;
+     if( ! (_recordSets == rhs._recordSets) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -144,13 +132,7 @@ int SetRecordReliablePdu::getMarshalledSize() const
    marshalSize = marshalSize + 2;  // _pad1
    marshalSize = marshalSize + 1;  // _pad2
    marshalSize = marshalSize + 4;  // _numberOfRecordSets
-
-   for(int idx=0; idx < _recordSets.size(); idx++)
-   {
-        RecordSet listElement = _recordSets[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _recordSets.getMarshalledSize();  // _recordSets
     return marshalSize;
 }
 

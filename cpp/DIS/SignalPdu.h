@@ -1,8 +1,8 @@
 #ifndef SIGNALPDU_H
 #define SIGNALPDU_H
 
+#include <DIS/EntityID.h>
 #include <DIS/OneByteChunk.h>
-#include <vector>
 #include <DIS/RadioCommunicationsFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -10,7 +10,7 @@
 
 namespace DIS
 {
-// Section 5.3.8.2. Detailed information about a radio transmitter. This PDU requires        manually written code to complete. The encodingScheme field can be used in multiple        ways, which requires hand-written code to finish. UNFINISHED
+// Section 5.3.8.2. Detailed information about a radio transmitter. This PDU requires manually written code to complete. The encodingScheme field can be used in multiple ways, which requires hand-written code to finish. UNFINISHED
 
 // Copyright (c) 2007-2009, MOVES Institute, Naval Postgraduate School. All rights reserved. 
 //
@@ -19,6 +19,12 @@ namespace DIS
 class EXPORT_MACRO SignalPdu : public RadioCommunicationsFamilyPdu
 {
 protected:
+  /** ID of the entity that is the source of the communication, ie contains the radio */
+  EntityID _entityId; 
+
+  /** particular radio within an entity */
+  unsigned short _radioId; 
+
   /** encoding scheme used, and enumeration */
   unsigned short _encodingScheme; 
 
@@ -28,14 +34,14 @@ protected:
   /** sample rate */
   unsigned int _sampleRate; 
 
-  /** length od data */
-  short _dataLength; 
+  /** length of data, in bits */
+  unsigned short _dataLength; 
 
-  /** number of samples */
-  short _samples; 
+  /** number of samples. If the PDU contains encoded audio, this should be zero. */
+  unsigned short _samples; 
 
-  /** list of eight bit values */
-  std::vector<OneByteChunk> _data; 
+  /** list of eight bit values. Must be padded to fall on a 32 bit boundary. */
+  OneByteChunk _data; 
 
 
  public:
@@ -44,6 +50,13 @@ protected:
 
     virtual void marshal(DataStream& dataStream) const;
     virtual void unmarshal(DataStream& dataStream);
+
+    EntityID& getEntityId(); 
+    const EntityID&  getEntityId() const; 
+    void setEntityId(const EntityID    &pX);
+
+    unsigned short getRadioId() const; 
+    void setRadioId(unsigned short pX); 
 
     unsigned short getEncodingScheme() const; 
     void setEncodingScheme(unsigned short pX); 
@@ -54,14 +67,15 @@ protected:
     unsigned int getSampleRate() const; 
     void setSampleRate(unsigned int pX); 
 
-    short getDataLength() const; 
+    unsigned short getDataLength() const; 
+    void setDataLength(unsigned short pX); 
 
-    short getSamples() const; 
-    void setSamples(short pX); 
+    unsigned short getSamples() const; 
+    void setSamples(unsigned short pX); 
 
-    std::vector<OneByteChunk>& getData(); 
-    const std::vector<OneByteChunk>& getData() const; 
-    void setData(const std::vector<OneByteChunk>&    pX);
+    OneByteChunk& getData(); 
+    const OneByteChunk&  getData() const; 
+    void setData(const OneByteChunk    &pX);
 
 
 virtual int getMarshalledSize() const;

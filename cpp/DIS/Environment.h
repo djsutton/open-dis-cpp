@@ -23,7 +23,7 @@ protected:
   unsigned char _length; 
 
   /** Identify the sequentially numbered record index */
-  unsigned char _index; 
+  unsigned char _recordIndex; 
 
   /** padding */
   unsigned char _padding1; 
@@ -48,8 +48,8 @@ protected:
     unsigned char getLength() const; 
     void setLength(unsigned char pX); 
 
-    unsigned char getIndex() const; 
-    void setIndex(unsigned char pX); 
+    unsigned char getRecordIndex() const; 
+    void setRecordIndex(unsigned char pX); 
 
     unsigned char getPadding1() const; 
     void setPadding1(unsigned char pX); 

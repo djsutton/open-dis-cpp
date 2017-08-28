@@ -13,7 +13,6 @@
 #include <DIS/EntityType.h>
 #include <DIS/EntityType.h>
 #include <DIS/VariableDatum.h>
-#include <vector>
 #include <DIS/EntityManagementFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -73,25 +72,25 @@ protected:
   unsigned short _numberOfSilentEntityTypes; 
 
   /** aggregates  list */
-  std::vector<AggregateID> _aggregateIDList; 
+  AggregateID _aggregateIDList; 
 
   /** entity ID list */
-  std::vector<EntityID> _entityIDList; 
+  EntityID _entityIDList; 
 
   /** ^^^padding to put the start of the next list on a 32 bit boundary. This needs to be fixed */
   unsigned char _pad2; 
 
   /** silent entity types */
-  std::vector<EntityType> _silentAggregateSystemList; 
+  EntityType _silentAggregateSystemList; 
 
   /** silent entity types */
-  std::vector<EntityType> _silentEntitySystemList; 
+  EntityType _silentEntitySystemList; 
 
   /** number of variable datum records */
   unsigned int _numberOfVariableDatumRecords; 
 
   /** variableDatums */
-  std::vector<VariableDatum> _variableDatumList; 
+  VariableDatum _variableDatumList; 
 
 
  public:
@@ -139,37 +138,42 @@ protected:
     void setVelocity(const Vector3Float    &pX);
 
     unsigned short getNumberOfDisAggregates() const; 
+    void setNumberOfDisAggregates(unsigned short pX); 
 
     unsigned short getNumberOfDisEntities() const; 
+    void setNumberOfDisEntities(unsigned short pX); 
 
     unsigned short getNumberOfSilentAggregateTypes() const; 
+    void setNumberOfSilentAggregateTypes(unsigned short pX); 
 
     unsigned short getNumberOfSilentEntityTypes() const; 
+    void setNumberOfSilentEntityTypes(unsigned short pX); 
 
-    std::vector<AggregateID>& getAggregateIDList(); 
-    const std::vector<AggregateID>& getAggregateIDList() const; 
-    void setAggregateIDList(const std::vector<AggregateID>&    pX);
+    AggregateID& getAggregateIDList(); 
+    const AggregateID&  getAggregateIDList() const; 
+    void setAggregateIDList(const AggregateID    &pX);
 
-    std::vector<EntityID>& getEntityIDList(); 
-    const std::vector<EntityID>& getEntityIDList() const; 
-    void setEntityIDList(const std::vector<EntityID>&    pX);
+    EntityID& getEntityIDList(); 
+    const EntityID&  getEntityIDList() const; 
+    void setEntityIDList(const EntityID    &pX);
 
     unsigned char getPad2() const; 
     void setPad2(unsigned char pX); 
 
-    std::vector<EntityType>& getSilentAggregateSystemList(); 
-    const std::vector<EntityType>& getSilentAggregateSystemList() const; 
-    void setSilentAggregateSystemList(const std::vector<EntityType>&    pX);
+    EntityType& getSilentAggregateSystemList(); 
+    const EntityType&  getSilentAggregateSystemList() const; 
+    void setSilentAggregateSystemList(const EntityType    &pX);
 
-    std::vector<EntityType>& getSilentEntitySystemList(); 
-    const std::vector<EntityType>& getSilentEntitySystemList() const; 
-    void setSilentEntitySystemList(const std::vector<EntityType>&    pX);
+    EntityType& getSilentEntitySystemList(); 
+    const EntityType&  getSilentEntitySystemList() const; 
+    void setSilentEntitySystemList(const EntityType    &pX);
 
     unsigned int getNumberOfVariableDatumRecords() const; 
+    void setNumberOfVariableDatumRecords(unsigned int pX); 
 
-    std::vector<VariableDatum>& getVariableDatumList(); 
-    const std::vector<VariableDatum>& getVariableDatumList() const; 
-    void setVariableDatumList(const std::vector<VariableDatum>&    pX);
+    VariableDatum& getVariableDatumList(); 
+    const VariableDatum&  getVariableDatumList() const; 
+    void setVariableDatumList(const VariableDatum    &pX);
 
 
 virtual int getMarshalledSize() const;

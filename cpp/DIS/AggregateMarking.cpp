@@ -4,14 +4,9 @@ using namespace DIS;
 
 
 AggregateMarking::AggregateMarking():
-   _characterSet(0)
+   _characterSet(0), 
+   _characters(0)
 {
-     // Initialize fixed length array
-     for(int lengthcharacters= 0; lengthcharacters < 31; lengthcharacters++)
-     {
-         _characters[lengthcharacters] = 0;
-     }
-
 }
 
 AggregateMarking::~AggregateMarking()
@@ -28,44 +23,26 @@ void AggregateMarking::setCharacterSet(unsigned char pX)
     _characterSet = pX;
 }
 
-char* AggregateMarking::getCharacters() 
+char AggregateMarking::getCharacters() const
 {
     return _characters;
 }
 
-const char* AggregateMarking::getCharacters() const
+void AggregateMarking::setCharacters(char pX)
 {
-    return _characters;
-}
-
-void AggregateMarking::setCharacters(const char* x)
-{
-   for(int i = 0; i < 31; i++)
-   {
-        _characters[i] = x[i];
-   }
+    _characters = pX;
 }
 
 void AggregateMarking::marshal(DataStream& dataStream) const
 {
     dataStream << _characterSet;
-
-     for(size_t idx = 0; idx < 31; idx++)
-     {
-        dataStream << _characters[idx];
-     }
-
+    dataStream << _characters;
 }
 
 void AggregateMarking::unmarshal(DataStream& dataStream)
 {
     dataStream >> _characterSet;
-
-     for(size_t idx = 0; idx < 31; idx++)
-     {
-        dataStream >> _characters[idx];
-     }
-
+    dataStream >> _characters;
 }
 
 
@@ -74,12 +51,7 @@ bool AggregateMarking::operator ==(const AggregateMarking& rhs) const
      bool ivarsEqual = true;
 
      if( ! (_characterSet == rhs._characterSet) ) ivarsEqual = false;
-
-     for(char idx = 0; idx < 31; idx++)
-     {
-          if(!(_characters[idx] == rhs._characters[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_characters == rhs._characters) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -89,7 +61,7 @@ int AggregateMarking::getMarshalledSize() const
    int marshalSize = 0;
 
    marshalSize = marshalSize + 1;  // _characterSet
-   marshalSize = marshalSize + 31 * 1;  // _characters
+   marshalSize = marshalSize + 1;  // _characters
     return marshalSize;
 }
 

@@ -3,7 +3,6 @@
 
 #include <DIS/FundamentalParameterData.h>
 #include <DIS/TrackJamTarget.h>
-#include <vector>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
 
@@ -46,8 +45,8 @@ protected:
   /** identify jamming techniques used */
   unsigned int _jammingModeSequence; 
 
-  /** variable length list of track/jam targets */
-  std::vector<TrackJamTarget> _trackJamTargets; 
+  /** variable length variablelist of track/jam targets */
+  TrackJamTarget _trackJamTargets; 
 
 
  public:
@@ -74,6 +73,7 @@ protected:
     void setBeamFunction(unsigned char pX); 
 
     unsigned char getNumberOfTrackJamTargets() const; 
+    void setNumberOfTrackJamTargets(unsigned char pX); 
 
     unsigned char getHighDensityTrackJam() const; 
     void setHighDensityTrackJam(unsigned char pX); 
@@ -84,9 +84,9 @@ protected:
     unsigned int getJammingModeSequence() const; 
     void setJammingModeSequence(unsigned int pX); 
 
-    std::vector<TrackJamTarget>& getTrackJamTargets(); 
-    const std::vector<TrackJamTarget>& getTrackJamTargets() const; 
-    void setTrackJamTargets(const std::vector<TrackJamTarget>&    pX);
+    TrackJamTarget& getTrackJamTargets(); 
+    const TrackJamTarget&  getTrackJamTargets() const; 
+    void setTrackJamTargets(const TrackJamTarget    &pX);
 
 
 virtual int getMarshalledSize() const;

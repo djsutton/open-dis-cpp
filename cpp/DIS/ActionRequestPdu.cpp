@@ -7,15 +7,15 @@ ActionRequestPdu::ActionRequestPdu() : SimulationManagementFamilyPdu(),
    _requestID(0), 
    _actionID(0), 
    _numberOfFixedDatumRecords(0), 
-   _numberOfVariableDatumRecords(0)
+   _numberOfVariableDatumRecords(0), 
+   _fixedDatums(), 
+   _variableDatums()
 {
     setPduType( 16 );
 }
 
 ActionRequestPdu::~ActionRequestPdu()
 {
-    _fixedDatums.clear();
-    _variableDatums.clear();
 }
 
 unsigned int ActionRequestPdu::getRequestID() const
@@ -40,42 +40,52 @@ void ActionRequestPdu::setActionID(unsigned int pX)
 
 unsigned int ActionRequestPdu::getNumberOfFixedDatumRecords() const
 {
-   return _fixedDatums.size();
+    return _numberOfFixedDatumRecords;
+}
+
+void ActionRequestPdu::setNumberOfFixedDatumRecords(unsigned int pX)
+{
+    _numberOfFixedDatumRecords = pX;
 }
 
 unsigned int ActionRequestPdu::getNumberOfVariableDatumRecords() const
 {
-   return _variableDatums.size();
+    return _numberOfVariableDatumRecords;
 }
 
-std::vector<FixedDatum>& ActionRequestPdu::getFixedDatums() 
+void ActionRequestPdu::setNumberOfVariableDatumRecords(unsigned int pX)
+{
+    _numberOfVariableDatumRecords = pX;
+}
+
+FixedDatum& ActionRequestPdu::getFixedDatums() 
 {
     return _fixedDatums;
 }
 
-const std::vector<FixedDatum>& ActionRequestPdu::getFixedDatums() const
+const FixedDatum& ActionRequestPdu::getFixedDatums() const
 {
     return _fixedDatums;
 }
 
-void ActionRequestPdu::setFixedDatums(const std::vector<FixedDatum>& pX)
+void ActionRequestPdu::setFixedDatums(const FixedDatum &pX)
 {
-     _fixedDatums = pX;
+    _fixedDatums = pX;
 }
 
-std::vector<VariableDatum>& ActionRequestPdu::getVariableDatums() 
+VariableDatum& ActionRequestPdu::getVariableDatums() 
 {
     return _variableDatums;
 }
 
-const std::vector<VariableDatum>& ActionRequestPdu::getVariableDatums() const
+const VariableDatum& ActionRequestPdu::getVariableDatums() const
 {
     return _variableDatums;
 }
 
-void ActionRequestPdu::setVariableDatums(const std::vector<VariableDatum>& pX)
+void ActionRequestPdu::setVariableDatums(const VariableDatum &pX)
 {
-     _variableDatums = pX;
+    _variableDatums = pX;
 }
 
 void ActionRequestPdu::marshal(DataStream& dataStream) const
@@ -83,22 +93,10 @@ void ActionRequestPdu::marshal(DataStream& dataStream) const
     SimulationManagementFamilyPdu::marshal(dataStream); // Marshal information in superclass first
     dataStream << _requestID;
     dataStream << _actionID;
-    dataStream << ( unsigned int )_fixedDatums.size();
-    dataStream << ( unsigned int )_variableDatums.size();
-
-     for(size_t idx = 0; idx < _fixedDatums.size(); idx++)
-     {
-        FixedDatum x = _fixedDatums[idx];
-        x.marshal(dataStream);
-     }
-
-
-     for(size_t idx = 0; idx < _variableDatums.size(); idx++)
-     {
-        VariableDatum x = _variableDatums[idx];
-        x.marshal(dataStream);
-     }
-
+    dataStream << _numberOfFixedDatumRecords;
+    dataStream << _numberOfVariableDatumRecords;
+    _fixedDatums.marshal(dataStream);
+    _variableDatums.marshal(dataStream);
 }
 
 void ActionRequestPdu::unmarshal(DataStream& dataStream)
@@ -108,22 +106,8 @@ void ActionRequestPdu::unmarshal(DataStream& dataStream)
     dataStream >> _actionID;
     dataStream >> _numberOfFixedDatumRecords;
     dataStream >> _numberOfVariableDatumRecords;
-
-     _fixedDatums.clear();
-     for(size_t idx = 0; idx < _numberOfFixedDatumRecords; idx++)
-     {
-        FixedDatum x;
-        x.unmarshal(dataStream);
-        _fixedDatums.push_back(x);
-     }
-
-     _variableDatums.clear();
-     for(size_t idx = 0; idx < _numberOfVariableDatumRecords; idx++)
-     {
-        VariableDatum x;
-        x.unmarshal(dataStream);
-        _variableDatums.push_back(x);
-     }
+    _fixedDatums.unmarshal(dataStream);
+    _variableDatums.unmarshal(dataStream);
 }
 
 
@@ -135,18 +119,10 @@ bool ActionRequestPdu::operator ==(const ActionRequestPdu& rhs) const
 
      if( ! (_requestID == rhs._requestID) ) ivarsEqual = false;
      if( ! (_actionID == rhs._actionID) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _fixedDatums.size(); idx++)
-     {
-        if( ! ( _fixedDatums[idx] == rhs._fixedDatums[idx]) ) ivarsEqual = false;
-     }
-
-
-     for(size_t idx = 0; idx < _variableDatums.size(); idx++)
-     {
-        if( ! ( _variableDatums[idx] == rhs._variableDatums[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_numberOfFixedDatumRecords == rhs._numberOfFixedDatumRecords) ) ivarsEqual = false;
+     if( ! (_numberOfVariableDatumRecords == rhs._numberOfVariableDatumRecords) ) ivarsEqual = false;
+     if( ! (_fixedDatums == rhs._fixedDatums) ) ivarsEqual = false;
+     if( ! (_variableDatums == rhs._variableDatums) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -160,20 +136,8 @@ int ActionRequestPdu::getMarshalledSize() const
    marshalSize = marshalSize + 4;  // _actionID
    marshalSize = marshalSize + 4;  // _numberOfFixedDatumRecords
    marshalSize = marshalSize + 4;  // _numberOfVariableDatumRecords
-
-   for(int idx=0; idx < _fixedDatums.size(); idx++)
-   {
-        FixedDatum listElement = _fixedDatums[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
-
-   for(int idx=0; idx < _variableDatums.size(); idx++)
-   {
-        VariableDatum listElement = _variableDatums[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _fixedDatums.getMarshalledSize();  // _fixedDatums
+   marshalSize = marshalSize + _variableDatums.getMarshalledSize();  // _variableDatums
     return marshalSize;
 }
 

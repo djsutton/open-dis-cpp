@@ -17,7 +17,7 @@ class EXPORT_MACRO SixByteChunk
 {
 protected:
   /** six bytes of arbitrary data */
-  char _otherParameters[6]; 
+  char _otherParameters; 
 
 
  public:
@@ -27,9 +27,8 @@ protected:
     virtual void marshal(DataStream& dataStream) const;
     virtual void unmarshal(DataStream& dataStream);
 
-    char*  getOtherParameters(); 
-    const char*  getOtherParameters() const; 
-    void setOtherParameters( const char*    pX);
+    char getOtherParameters() const; 
+    void setOtherParameters(char pX); 
 
 
 virtual int getMarshalledSize() const;

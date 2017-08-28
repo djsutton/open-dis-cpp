@@ -6,7 +6,6 @@
 #include <DIS/Vector3Double.h>
 #include <DIS/Orientation.h>
 #include <DIS/ArticulationParameter.h>
-#include <vector>
 #include <DIS/EntityInformationFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -44,7 +43,7 @@ protected:
   /** a series of bit flags that are used to help draw the entity, such as smoking, on fire, etc. */
   int _entityAppearance; 
 
-  std::vector<ArticulationParameter> _articulationParameters; 
+  ArticulationParameter _articulationParameters; 
 
 
  public:
@@ -62,6 +61,7 @@ protected:
     void setPadding1(char pX); 
 
     unsigned char getNumberOfArticulationParameters() const; 
+    void setNumberOfArticulationParameters(unsigned char pX); 
 
     Vector3Float& getEntityLinearVelocity(); 
     const Vector3Float&  getEntityLinearVelocity() const; 
@@ -78,9 +78,9 @@ protected:
     int getEntityAppearance() const; 
     void setEntityAppearance(int pX); 
 
-    std::vector<ArticulationParameter>& getArticulationParameters(); 
-    const std::vector<ArticulationParameter>& getArticulationParameters() const; 
-    void setArticulationParameters(const std::vector<ArticulationParameter>&    pX);
+    ArticulationParameter& getArticulationParameters(); 
+    const ArticulationParameter&  getArticulationParameters() const; 
+    void setArticulationParameters(const ArticulationParameter    &pX);
 
 
 virtual int getMarshalledSize() const;

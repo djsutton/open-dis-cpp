@@ -4,7 +4,6 @@
 #include <DIS/AcousticEmitterSystem.h>
 #include <DIS/Vector3Float.h>
 #include <DIS/AcousticBeamData.h>
-#include <vector>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
 
@@ -36,7 +35,7 @@ protected:
   Vector3Float _emitterLocation; 
 
   /** For each beam in numberOfBeams, an emitter system. This is not right--the beam records need to be at the end of the PDU, rather than attached to each system. */
-  std::vector<AcousticBeamData> _beamRecords; 
+  AcousticBeamData _beamRecords; 
 
 
  public:
@@ -50,6 +49,7 @@ protected:
     void setEmitterSystemDataLength(unsigned char pX); 
 
     unsigned char getNumberOfBeams() const; 
+    void setNumberOfBeams(unsigned char pX); 
 
     unsigned short getPad2() const; 
     void setPad2(unsigned short pX); 
@@ -62,9 +62,9 @@ protected:
     const Vector3Float&  getEmitterLocation() const; 
     void setEmitterLocation(const Vector3Float    &pX);
 
-    std::vector<AcousticBeamData>& getBeamRecords(); 
-    const std::vector<AcousticBeamData>& getBeamRecords() const; 
-    void setBeamRecords(const std::vector<AcousticBeamData>&    pX);
+    AcousticBeamData& getBeamRecords(); 
+    const AcousticBeamData&  getBeamRecords() const; 
+    void setBeamRecords(const AcousticBeamData    &pX);
 
 
 virtual int getMarshalledSize() const;

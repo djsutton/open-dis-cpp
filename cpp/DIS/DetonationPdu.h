@@ -8,7 +8,6 @@
 #include <DIS/BurstDescriptor.h>
 #include <DIS/Vector3Float.h>
 #include <DIS/ArticulationParameter.h>
-#include <vector>
 #include <DIS/WarfareFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -52,7 +51,7 @@ protected:
   /** padding */
   short _pad; 
 
-  std::vector<ArticulationParameter> _articulationParameters; 
+  ArticulationParameter _articulationParameters; 
 
 
  public:
@@ -90,13 +89,14 @@ protected:
     void setDetonationResult(unsigned char pX); 
 
     unsigned char getNumberOfArticulationParameters() const; 
+    void setNumberOfArticulationParameters(unsigned char pX); 
 
     short getPad() const; 
     void setPad(short pX); 
 
-    std::vector<ArticulationParameter>& getArticulationParameters(); 
-    const std::vector<ArticulationParameter>& getArticulationParameters() const; 
-    void setArticulationParameters(const std::vector<ArticulationParameter>&    pX);
+    ArticulationParameter& getArticulationParameters(); 
+    const ArticulationParameter&  getArticulationParameters() const; 
+    void setArticulationParameters(const ArticulationParameter    &pX);
 
 
 virtual int getMarshalledSize() const;

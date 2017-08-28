@@ -4,7 +4,7 @@ using namespace DIS;
 
 
 SphericalHarmonicAntennaPattern::SphericalHarmonicAntennaPattern():
-   _order(0)
+   _harmonicOrder(0)
 {
 }
 
@@ -12,24 +12,24 @@ SphericalHarmonicAntennaPattern::~SphericalHarmonicAntennaPattern()
 {
 }
 
-char SphericalHarmonicAntennaPattern::getOrder() const
+char SphericalHarmonicAntennaPattern::getHarmonicOrder() const
 {
-    return _order;
+    return _harmonicOrder;
 }
 
-void SphericalHarmonicAntennaPattern::setOrder(char pX)
+void SphericalHarmonicAntennaPattern::setHarmonicOrder(char pX)
 {
-    _order = pX;
+    _harmonicOrder = pX;
 }
 
 void SphericalHarmonicAntennaPattern::marshal(DataStream& dataStream) const
 {
-    dataStream << _order;
+    dataStream << _harmonicOrder;
 }
 
 void SphericalHarmonicAntennaPattern::unmarshal(DataStream& dataStream)
 {
-    dataStream >> _order;
+    dataStream >> _harmonicOrder;
 }
 
 
@@ -37,7 +37,7 @@ bool SphericalHarmonicAntennaPattern::operator ==(const SphericalHarmonicAntenna
  {
      bool ivarsEqual = true;
 
-     if( ! (_order == rhs._order) ) ivarsEqual = false;
+     if( ! (_harmonicOrder == rhs._harmonicOrder) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -46,7 +46,7 @@ int SphericalHarmonicAntennaPattern::getMarshalledSize() const
 {
    int marshalSize = 0;
 
-   marshalSize = marshalSize + 1;  // _order
+   marshalSize = marshalSize + 1;  // _harmonicOrder
     return marshalSize;
 }
 

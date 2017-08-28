@@ -7,7 +7,6 @@
 #include <DIS/SimulationAddress.h>
 #include <DIS/ObjectType.h>
 #include <DIS/LinearSegmentParameter.h>
-#include <vector>
 #include <DIS/SyntheticEnvironmentFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -49,7 +48,7 @@ protected:
   ObjectType _objectType; 
 
   /** Linear segment parameters */
-  std::vector<LinearSegmentParameter> _linearSegmentParameters; 
+  LinearSegmentParameter _linearSegmentParameters; 
 
 
  public:
@@ -74,6 +73,7 @@ protected:
     void setForceID(unsigned char pX); 
 
     unsigned char getNumberOfSegments() const; 
+    void setNumberOfSegments(unsigned char pX); 
 
     SimulationAddress& getRequesterID(); 
     const SimulationAddress&  getRequesterID() const; 
@@ -87,9 +87,9 @@ protected:
     const ObjectType&  getObjectType() const; 
     void setObjectType(const ObjectType    &pX);
 
-    std::vector<LinearSegmentParameter>& getLinearSegmentParameters(); 
-    const std::vector<LinearSegmentParameter>& getLinearSegmentParameters() const; 
-    void setLinearSegmentParameters(const std::vector<LinearSegmentParameter>&    pX);
+    LinearSegmentParameter& getLinearSegmentParameters(); 
+    const LinearSegmentParameter&  getLinearSegmentParameters() const; 
+    void setLinearSegmentParameters(const LinearSegmentParameter    &pX);
 
 
 virtual int getMarshalledSize() const;

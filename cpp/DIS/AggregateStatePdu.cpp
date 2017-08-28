@@ -18,19 +18,19 @@ AggregateStatePdu::AggregateStatePdu() : EntityManagementFamilyPdu(),
    _numberOfDisEntities(0), 
    _numberOfSilentAggregateTypes(0), 
    _numberOfSilentEntityTypes(0), 
+   _aggregateIDList(), 
+   _entityIDList(), 
    _pad2(0), 
-   _numberOfVariableDatumRecords(0)
+   _silentAggregateSystemList(), 
+   _silentEntitySystemList(), 
+   _numberOfVariableDatumRecords(0), 
+   _variableDatumList()
 {
     setPduType( 33 );
 }
 
 AggregateStatePdu::~AggregateStatePdu()
 {
-    _aggregateIDList.clear();
-    _entityIDList.clear();
-    _silentAggregateSystemList.clear();
-    _silentEntitySystemList.clear();
-    _variableDatumList.clear();
 }
 
 EntityID& AggregateStatePdu::getAggregateID() 
@@ -170,52 +170,72 @@ void AggregateStatePdu::setVelocity(const Vector3Float &pX)
 
 unsigned short AggregateStatePdu::getNumberOfDisAggregates() const
 {
-   return _aggregateIDList.size();
+    return _numberOfDisAggregates;
+}
+
+void AggregateStatePdu::setNumberOfDisAggregates(unsigned short pX)
+{
+    _numberOfDisAggregates = pX;
 }
 
 unsigned short AggregateStatePdu::getNumberOfDisEntities() const
 {
-   return _entityIDList.size();
+    return _numberOfDisEntities;
+}
+
+void AggregateStatePdu::setNumberOfDisEntities(unsigned short pX)
+{
+    _numberOfDisEntities = pX;
 }
 
 unsigned short AggregateStatePdu::getNumberOfSilentAggregateTypes() const
 {
-   return _silentAggregateSystemList.size();
+    return _numberOfSilentAggregateTypes;
+}
+
+void AggregateStatePdu::setNumberOfSilentAggregateTypes(unsigned short pX)
+{
+    _numberOfSilentAggregateTypes = pX;
 }
 
 unsigned short AggregateStatePdu::getNumberOfSilentEntityTypes() const
 {
-   return _silentEntitySystemList.size();
+    return _numberOfSilentEntityTypes;
 }
 
-std::vector<AggregateID>& AggregateStatePdu::getAggregateIDList() 
+void AggregateStatePdu::setNumberOfSilentEntityTypes(unsigned short pX)
+{
+    _numberOfSilentEntityTypes = pX;
+}
+
+AggregateID& AggregateStatePdu::getAggregateIDList() 
 {
     return _aggregateIDList;
 }
 
-const std::vector<AggregateID>& AggregateStatePdu::getAggregateIDList() const
+const AggregateID& AggregateStatePdu::getAggregateIDList() const
 {
     return _aggregateIDList;
 }
 
-void AggregateStatePdu::setAggregateIDList(const std::vector<AggregateID>& pX)
+void AggregateStatePdu::setAggregateIDList(const AggregateID &pX)
 {
-     _aggregateIDList = pX;
+    _aggregateIDList = pX;
 }
 
-std::vector<EntityID>& AggregateStatePdu::getEntityIDList() 
+EntityID& AggregateStatePdu::getEntityIDList() 
 {
     return _entityIDList;
 }
 
-const std::vector<EntityID>& AggregateStatePdu::getEntityIDList() const
+const EntityID& AggregateStatePdu::getEntityIDList() const
 {
     return _entityIDList;
 }
 
-void AggregateStatePdu::setEntityIDList(const std::vector<EntityID>& pX)
+void AggregateStatePdu::setEntityIDList(const EntityID &pX)
 {
-     _entityIDList = pX;
+    _entityIDList = pX;
 }
 
 unsigned char AggregateStatePdu::getPad2() const
@@ -228,54 +248,59 @@ void AggregateStatePdu::setPad2(unsigned char pX)
     _pad2 = pX;
 }
 
-std::vector<EntityType>& AggregateStatePdu::getSilentAggregateSystemList() 
+EntityType& AggregateStatePdu::getSilentAggregateSystemList() 
 {
     return _silentAggregateSystemList;
 }
 
-const std::vector<EntityType>& AggregateStatePdu::getSilentAggregateSystemList() const
+const EntityType& AggregateStatePdu::getSilentAggregateSystemList() const
 {
     return _silentAggregateSystemList;
 }
 
-void AggregateStatePdu::setSilentAggregateSystemList(const std::vector<EntityType>& pX)
+void AggregateStatePdu::setSilentAggregateSystemList(const EntityType &pX)
 {
-     _silentAggregateSystemList = pX;
+    _silentAggregateSystemList = pX;
 }
 
-std::vector<EntityType>& AggregateStatePdu::getSilentEntitySystemList() 
+EntityType& AggregateStatePdu::getSilentEntitySystemList() 
 {
     return _silentEntitySystemList;
 }
 
-const std::vector<EntityType>& AggregateStatePdu::getSilentEntitySystemList() const
+const EntityType& AggregateStatePdu::getSilentEntitySystemList() const
 {
     return _silentEntitySystemList;
 }
 
-void AggregateStatePdu::setSilentEntitySystemList(const std::vector<EntityType>& pX)
+void AggregateStatePdu::setSilentEntitySystemList(const EntityType &pX)
 {
-     _silentEntitySystemList = pX;
+    _silentEntitySystemList = pX;
 }
 
 unsigned int AggregateStatePdu::getNumberOfVariableDatumRecords() const
 {
-   return _variableDatumList.size();
+    return _numberOfVariableDatumRecords;
 }
 
-std::vector<VariableDatum>& AggregateStatePdu::getVariableDatumList() 
+void AggregateStatePdu::setNumberOfVariableDatumRecords(unsigned int pX)
+{
+    _numberOfVariableDatumRecords = pX;
+}
+
+VariableDatum& AggregateStatePdu::getVariableDatumList() 
 {
     return _variableDatumList;
 }
 
-const std::vector<VariableDatum>& AggregateStatePdu::getVariableDatumList() const
+const VariableDatum& AggregateStatePdu::getVariableDatumList() const
 {
     return _variableDatumList;
 }
 
-void AggregateStatePdu::setVariableDatumList(const std::vector<VariableDatum>& pX)
+void AggregateStatePdu::setVariableDatumList(const VariableDatum &pX)
 {
-     _variableDatumList = pX;
+    _variableDatumList = pX;
 }
 
 void AggregateStatePdu::marshal(DataStream& dataStream) const
@@ -291,47 +316,17 @@ void AggregateStatePdu::marshal(DataStream& dataStream) const
     _orientation.marshal(dataStream);
     _centerOfMass.marshal(dataStream);
     _velocity.marshal(dataStream);
-    dataStream << ( unsigned short )_aggregateIDList.size();
-    dataStream << ( unsigned short )_entityIDList.size();
-    dataStream << ( unsigned short )_silentAggregateSystemList.size();
-    dataStream << ( unsigned short )_silentEntitySystemList.size();
-
-     for(size_t idx = 0; idx < _aggregateIDList.size(); idx++)
-     {
-        AggregateID x = _aggregateIDList[idx];
-        x.marshal(dataStream);
-     }
-
-
-     for(size_t idx = 0; idx < _entityIDList.size(); idx++)
-     {
-        EntityID x = _entityIDList[idx];
-        x.marshal(dataStream);
-     }
-
+    dataStream << _numberOfDisAggregates;
+    dataStream << _numberOfDisEntities;
+    dataStream << _numberOfSilentAggregateTypes;
+    dataStream << _numberOfSilentEntityTypes;
+    _aggregateIDList.marshal(dataStream);
+    _entityIDList.marshal(dataStream);
     dataStream << _pad2;
-
-     for(size_t idx = 0; idx < _silentAggregateSystemList.size(); idx++)
-     {
-        EntityType x = _silentAggregateSystemList[idx];
-        x.marshal(dataStream);
-     }
-
-
-     for(size_t idx = 0; idx < _silentEntitySystemList.size(); idx++)
-     {
-        EntityType x = _silentEntitySystemList[idx];
-        x.marshal(dataStream);
-     }
-
-    dataStream << ( unsigned int )_variableDatumList.size();
-
-     for(size_t idx = 0; idx < _variableDatumList.size(); idx++)
-     {
-        VariableDatum x = _variableDatumList[idx];
-        x.marshal(dataStream);
-     }
-
+    _silentAggregateSystemList.marshal(dataStream);
+    _silentEntitySystemList.marshal(dataStream);
+    dataStream << _numberOfVariableDatumRecords;
+    _variableDatumList.marshal(dataStream);
 }
 
 void AggregateStatePdu::unmarshal(DataStream& dataStream)
@@ -351,48 +346,13 @@ void AggregateStatePdu::unmarshal(DataStream& dataStream)
     dataStream >> _numberOfDisEntities;
     dataStream >> _numberOfSilentAggregateTypes;
     dataStream >> _numberOfSilentEntityTypes;
-
-     _aggregateIDList.clear();
-     for(size_t idx = 0; idx < _numberOfDisAggregates; idx++)
-     {
-        AggregateID x;
-        x.unmarshal(dataStream);
-        _aggregateIDList.push_back(x);
-     }
-
-     _entityIDList.clear();
-     for(size_t idx = 0; idx < _numberOfDisEntities; idx++)
-     {
-        EntityID x;
-        x.unmarshal(dataStream);
-        _entityIDList.push_back(x);
-     }
+    _aggregateIDList.unmarshal(dataStream);
+    _entityIDList.unmarshal(dataStream);
     dataStream >> _pad2;
-
-     _silentAggregateSystemList.clear();
-     for(size_t idx = 0; idx < _numberOfSilentAggregateTypes; idx++)
-     {
-        EntityType x;
-        x.unmarshal(dataStream);
-        _silentAggregateSystemList.push_back(x);
-     }
-
-     _silentEntitySystemList.clear();
-     for(size_t idx = 0; idx < _numberOfSilentEntityTypes; idx++)
-     {
-        EntityType x;
-        x.unmarshal(dataStream);
-        _silentEntitySystemList.push_back(x);
-     }
+    _silentAggregateSystemList.unmarshal(dataStream);
+    _silentEntitySystemList.unmarshal(dataStream);
     dataStream >> _numberOfVariableDatumRecords;
-
-     _variableDatumList.clear();
-     for(size_t idx = 0; idx < _numberOfVariableDatumRecords; idx++)
-     {
-        VariableDatum x;
-        x.unmarshal(dataStream);
-        _variableDatumList.push_back(x);
-     }
+    _variableDatumList.unmarshal(dataStream);
 }
 
 
@@ -412,37 +372,17 @@ bool AggregateStatePdu::operator ==(const AggregateStatePdu& rhs) const
      if( ! (_orientation == rhs._orientation) ) ivarsEqual = false;
      if( ! (_centerOfMass == rhs._centerOfMass) ) ivarsEqual = false;
      if( ! (_velocity == rhs._velocity) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _aggregateIDList.size(); idx++)
-     {
-        if( ! ( _aggregateIDList[idx] == rhs._aggregateIDList[idx]) ) ivarsEqual = false;
-     }
-
-
-     for(size_t idx = 0; idx < _entityIDList.size(); idx++)
-     {
-        if( ! ( _entityIDList[idx] == rhs._entityIDList[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_numberOfDisAggregates == rhs._numberOfDisAggregates) ) ivarsEqual = false;
+     if( ! (_numberOfDisEntities == rhs._numberOfDisEntities) ) ivarsEqual = false;
+     if( ! (_numberOfSilentAggregateTypes == rhs._numberOfSilentAggregateTypes) ) ivarsEqual = false;
+     if( ! (_numberOfSilentEntityTypes == rhs._numberOfSilentEntityTypes) ) ivarsEqual = false;
+     if( ! (_aggregateIDList == rhs._aggregateIDList) ) ivarsEqual = false;
+     if( ! (_entityIDList == rhs._entityIDList) ) ivarsEqual = false;
      if( ! (_pad2 == rhs._pad2) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _silentAggregateSystemList.size(); idx++)
-     {
-        if( ! ( _silentAggregateSystemList[idx] == rhs._silentAggregateSystemList[idx]) ) ivarsEqual = false;
-     }
-
-
-     for(size_t idx = 0; idx < _silentEntitySystemList.size(); idx++)
-     {
-        if( ! ( _silentEntitySystemList[idx] == rhs._silentEntitySystemList[idx]) ) ivarsEqual = false;
-     }
-
-
-     for(size_t idx = 0; idx < _variableDatumList.size(); idx++)
-     {
-        if( ! ( _variableDatumList[idx] == rhs._variableDatumList[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_silentAggregateSystemList == rhs._silentAggregateSystemList) ) ivarsEqual = false;
+     if( ! (_silentEntitySystemList == rhs._silentEntitySystemList) ) ivarsEqual = false;
+     if( ! (_numberOfVariableDatumRecords == rhs._numberOfVariableDatumRecords) ) ivarsEqual = false;
+     if( ! (_variableDatumList == rhs._variableDatumList) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -466,43 +406,13 @@ int AggregateStatePdu::getMarshalledSize() const
    marshalSize = marshalSize + 2;  // _numberOfDisEntities
    marshalSize = marshalSize + 2;  // _numberOfSilentAggregateTypes
    marshalSize = marshalSize + 2;  // _numberOfSilentEntityTypes
-
-   for(int idx=0; idx < _aggregateIDList.size(); idx++)
-   {
-        AggregateID listElement = _aggregateIDList[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
-
-   for(int idx=0; idx < _entityIDList.size(); idx++)
-   {
-        EntityID listElement = _entityIDList[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _aggregateIDList.getMarshalledSize();  // _aggregateIDList
+   marshalSize = marshalSize + _entityIDList.getMarshalledSize();  // _entityIDList
    marshalSize = marshalSize + 1;  // _pad2
-
-   for(int idx=0; idx < _silentAggregateSystemList.size(); idx++)
-   {
-        EntityType listElement = _silentAggregateSystemList[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
-
-   for(int idx=0; idx < _silentEntitySystemList.size(); idx++)
-   {
-        EntityType listElement = _silentEntitySystemList[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _silentAggregateSystemList.getMarshalledSize();  // _silentAggregateSystemList
+   marshalSize = marshalSize + _silentEntitySystemList.getMarshalledSize();  // _silentEntitySystemList
    marshalSize = marshalSize + 4;  // _numberOfVariableDatumRecords
-
-   for(int idx=0; idx < _variableDatumList.size(); idx++)
-   {
-        VariableDatum listElement = _variableDatumList[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _variableDatumList.getMarshalledSize();  // _variableDatumList
     return marshalSize;
 }
 

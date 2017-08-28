@@ -13,15 +13,15 @@ MinefieldStatePdu::MinefieldStatePdu() : MinefieldFamilyPdu(),
    _minefieldLocation(), 
    _minefieldOrientation(), 
    _appearance(0), 
-   _protocolMode(0)
+   _protocolMode(0), 
+   _perimeterPoints(), 
+   _mineType()
 {
     setPduType( 37 );
 }
 
 MinefieldStatePdu::~MinefieldStatePdu()
 {
-    _perimeterPoints.clear();
-    _mineType.clear();
 }
 
 EntityID& MinefieldStatePdu::getMinefieldID() 
@@ -61,7 +61,12 @@ void MinefieldStatePdu::setForceID(unsigned char pX)
 
 unsigned char MinefieldStatePdu::getNumberOfPerimeterPoints() const
 {
-   return _perimeterPoints.size();
+    return _numberOfPerimeterPoints;
+}
+
+void MinefieldStatePdu::setNumberOfPerimeterPoints(unsigned char pX)
+{
+    _numberOfPerimeterPoints = pX;
 }
 
 EntityType& MinefieldStatePdu::getMinefieldType() 
@@ -81,7 +86,12 @@ void MinefieldStatePdu::setMinefieldType(const EntityType &pX)
 
 unsigned short MinefieldStatePdu::getNumberOfMineTypes() const
 {
-   return _mineType.size();
+    return _numberOfMineTypes;
+}
+
+void MinefieldStatePdu::setNumberOfMineTypes(unsigned short pX)
+{
+    _numberOfMineTypes = pX;
 }
 
 Vector3Double& MinefieldStatePdu::getMinefieldLocation() 
@@ -134,34 +144,34 @@ void MinefieldStatePdu::setProtocolMode(unsigned short pX)
     _protocolMode = pX;
 }
 
-std::vector<Point>& MinefieldStatePdu::getPerimeterPoints() 
+Point& MinefieldStatePdu::getPerimeterPoints() 
 {
     return _perimeterPoints;
 }
 
-const std::vector<Point>& MinefieldStatePdu::getPerimeterPoints() const
+const Point& MinefieldStatePdu::getPerimeterPoints() const
 {
     return _perimeterPoints;
 }
 
-void MinefieldStatePdu::setPerimeterPoints(const std::vector<Point>& pX)
+void MinefieldStatePdu::setPerimeterPoints(const Point &pX)
 {
-     _perimeterPoints = pX;
+    _perimeterPoints = pX;
 }
 
-std::vector<EntityType>& MinefieldStatePdu::getMineType() 
+EntityType& MinefieldStatePdu::getMineType() 
 {
     return _mineType;
 }
 
-const std::vector<EntityType>& MinefieldStatePdu::getMineType() const
+const EntityType& MinefieldStatePdu::getMineType() const
 {
     return _mineType;
 }
 
-void MinefieldStatePdu::setMineType(const std::vector<EntityType>& pX)
+void MinefieldStatePdu::setMineType(const EntityType &pX)
 {
-     _mineType = pX;
+    _mineType = pX;
 }
 
 void MinefieldStatePdu::marshal(DataStream& dataStream) const
@@ -170,27 +180,15 @@ void MinefieldStatePdu::marshal(DataStream& dataStream) const
     _minefieldID.marshal(dataStream);
     dataStream << _minefieldSequence;
     dataStream << _forceID;
-    dataStream << ( unsigned char )_perimeterPoints.size();
+    dataStream << _numberOfPerimeterPoints;
     _minefieldType.marshal(dataStream);
-    dataStream << ( unsigned short )_mineType.size();
+    dataStream << _numberOfMineTypes;
     _minefieldLocation.marshal(dataStream);
     _minefieldOrientation.marshal(dataStream);
     dataStream << _appearance;
     dataStream << _protocolMode;
-
-     for(size_t idx = 0; idx < _perimeterPoints.size(); idx++)
-     {
-        Point x = _perimeterPoints[idx];
-        x.marshal(dataStream);
-     }
-
-
-     for(size_t idx = 0; idx < _mineType.size(); idx++)
-     {
-        EntityType x = _mineType[idx];
-        x.marshal(dataStream);
-     }
-
+    _perimeterPoints.marshal(dataStream);
+    _mineType.marshal(dataStream);
 }
 
 void MinefieldStatePdu::unmarshal(DataStream& dataStream)
@@ -206,22 +204,8 @@ void MinefieldStatePdu::unmarshal(DataStream& dataStream)
     _minefieldOrientation.unmarshal(dataStream);
     dataStream >> _appearance;
     dataStream >> _protocolMode;
-
-     _perimeterPoints.clear();
-     for(size_t idx = 0; idx < _numberOfPerimeterPoints; idx++)
-     {
-        Point x;
-        x.unmarshal(dataStream);
-        _perimeterPoints.push_back(x);
-     }
-
-     _mineType.clear();
-     for(size_t idx = 0; idx < _numberOfMineTypes; idx++)
-     {
-        EntityType x;
-        x.unmarshal(dataStream);
-        _mineType.push_back(x);
-     }
+    _perimeterPoints.unmarshal(dataStream);
+    _mineType.unmarshal(dataStream);
 }
 
 
@@ -234,23 +218,15 @@ bool MinefieldStatePdu::operator ==(const MinefieldStatePdu& rhs) const
      if( ! (_minefieldID == rhs._minefieldID) ) ivarsEqual = false;
      if( ! (_minefieldSequence == rhs._minefieldSequence) ) ivarsEqual = false;
      if( ! (_forceID == rhs._forceID) ) ivarsEqual = false;
+     if( ! (_numberOfPerimeterPoints == rhs._numberOfPerimeterPoints) ) ivarsEqual = false;
      if( ! (_minefieldType == rhs._minefieldType) ) ivarsEqual = false;
+     if( ! (_numberOfMineTypes == rhs._numberOfMineTypes) ) ivarsEqual = false;
      if( ! (_minefieldLocation == rhs._minefieldLocation) ) ivarsEqual = false;
      if( ! (_minefieldOrientation == rhs._minefieldOrientation) ) ivarsEqual = false;
      if( ! (_appearance == rhs._appearance) ) ivarsEqual = false;
      if( ! (_protocolMode == rhs._protocolMode) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _perimeterPoints.size(); idx++)
-     {
-        if( ! ( _perimeterPoints[idx] == rhs._perimeterPoints[idx]) ) ivarsEqual = false;
-     }
-
-
-     for(size_t idx = 0; idx < _mineType.size(); idx++)
-     {
-        if( ! ( _mineType[idx] == rhs._mineType[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_perimeterPoints == rhs._perimeterPoints) ) ivarsEqual = false;
+     if( ! (_mineType == rhs._mineType) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -270,20 +246,8 @@ int MinefieldStatePdu::getMarshalledSize() const
    marshalSize = marshalSize + _minefieldOrientation.getMarshalledSize();  // _minefieldOrientation
    marshalSize = marshalSize + 2;  // _appearance
    marshalSize = marshalSize + 2;  // _protocolMode
-
-   for(int idx=0; idx < _perimeterPoints.size(); idx++)
-   {
-        Point listElement = _perimeterPoints[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
-
-   for(int idx=0; idx < _mineType.size(); idx++)
-   {
-        EntityType listElement = _mineType[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _perimeterPoints.getMarshalledSize();  // _perimeterPoints
+   marshalSize = marshalSize + _mineType.getMarshalledSize();  // _mineType
     return marshalSize;
 }
 

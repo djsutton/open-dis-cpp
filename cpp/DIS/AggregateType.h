@@ -31,8 +31,8 @@ protected:
   /** subcategory of entity */
   unsigned char _subcategory; 
 
-  /** specific info based on subcategory field */
-  unsigned char _specific; 
+  /** specific info based on subcategory field, sql has a reserved word for specific */
+  unsigned char _specificInfo; 
 
   unsigned char _extra; 
 
@@ -59,8 +59,8 @@ protected:
     unsigned char getSubcategory() const; 
     void setSubcategory(unsigned char pX); 
 
-    unsigned char getSpecific() const; 
-    void setSpecific(unsigned char pX); 
+    unsigned char getSpecificInfo() const; 
+    void setSpecificInfo(unsigned char pX); 
 
     unsigned char getExtra() const; 
     void setExtra(unsigned char pX); 

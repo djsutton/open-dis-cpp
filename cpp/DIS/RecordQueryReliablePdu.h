@@ -2,7 +2,6 @@
 #define RECORDQUERYRELIABLEPDU_H
 
 #include <DIS/FourByteChunk.h>
-#include <vector>
 #include <DIS/SimulationManagementWithReliabilityFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -41,7 +40,7 @@ protected:
   unsigned int _numberOfRecords; 
 
   /** record IDs */
-  std::vector<FourByteChunk> _recordIDs; 
+  FourByteChunk _recordIDs; 
 
 
  public:
@@ -70,10 +69,11 @@ protected:
     void setTime(unsigned int pX); 
 
     unsigned int getNumberOfRecords() const; 
+    void setNumberOfRecords(unsigned int pX); 
 
-    std::vector<FourByteChunk>& getRecordIDs(); 
-    const std::vector<FourByteChunk>& getRecordIDs() const; 
-    void setRecordIDs(const std::vector<FourByteChunk>&    pX);
+    FourByteChunk& getRecordIDs(); 
+    const FourByteChunk&  getRecordIDs() const; 
+    void setRecordIDs(const FourByteChunk    &pX);
 
 
 virtual int getMarshalledSize() const;

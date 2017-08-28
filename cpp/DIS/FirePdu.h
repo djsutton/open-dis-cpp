@@ -39,8 +39,8 @@ protected:
   /** Velocity of the ammunition */
   Vector3Float _velocity; 
 
-  /** range to the target */
-  float _range; 
+  /** range to the target. Note the word range is a SQL reserved word. */
+  float _rangeToTarget; 
 
 
  public:
@@ -73,8 +73,8 @@ protected:
     const Vector3Float&  getVelocity() const; 
     void setVelocity(const Vector3Float    &pX);
 
-    float getRange() const; 
-    void setRange(float pX); 
+    float getRangeToTarget() const; 
+    void setRangeToTarget(float pX); 
 
 
 virtual int getMarshalledSize() const;

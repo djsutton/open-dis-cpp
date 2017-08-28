@@ -8,14 +8,14 @@ ServiceRequestPdu::ServiceRequestPdu() : LogisticsFamilyPdu(),
    _servicingEntityID(), 
    _serviceTypeRequested(0), 
    _numberOfSupplyTypes(0), 
-   _serviceRequestPadding(0)
+   _serviceRequestPadding(0), 
+   _supplies()
 {
     setPduType( 5 );
 }
 
 ServiceRequestPdu::~ServiceRequestPdu()
 {
-    _supplies.clear();
 }
 
 EntityID& ServiceRequestPdu::getRequestingEntityID() 
@@ -60,7 +60,12 @@ void ServiceRequestPdu::setServiceTypeRequested(unsigned char pX)
 
 unsigned char ServiceRequestPdu::getNumberOfSupplyTypes() const
 {
-   return _supplies.size();
+    return _numberOfSupplyTypes;
+}
+
+void ServiceRequestPdu::setNumberOfSupplyTypes(unsigned char pX)
+{
+    _numberOfSupplyTypes = pX;
 }
 
 short ServiceRequestPdu::getServiceRequestPadding() const
@@ -73,19 +78,19 @@ void ServiceRequestPdu::setServiceRequestPadding(short pX)
     _serviceRequestPadding = pX;
 }
 
-std::vector<SupplyQuantity>& ServiceRequestPdu::getSupplies() 
+SupplyQuantity& ServiceRequestPdu::getSupplies() 
 {
     return _supplies;
 }
 
-const std::vector<SupplyQuantity>& ServiceRequestPdu::getSupplies() const
+const SupplyQuantity& ServiceRequestPdu::getSupplies() const
 {
     return _supplies;
 }
 
-void ServiceRequestPdu::setSupplies(const std::vector<SupplyQuantity>& pX)
+void ServiceRequestPdu::setSupplies(const SupplyQuantity &pX)
 {
-     _supplies = pX;
+    _supplies = pX;
 }
 
 void ServiceRequestPdu::marshal(DataStream& dataStream) const
@@ -94,15 +99,9 @@ void ServiceRequestPdu::marshal(DataStream& dataStream) const
     _requestingEntityID.marshal(dataStream);
     _servicingEntityID.marshal(dataStream);
     dataStream << _serviceTypeRequested;
-    dataStream << ( unsigned char )_supplies.size();
+    dataStream << _numberOfSupplyTypes;
     dataStream << _serviceRequestPadding;
-
-     for(size_t idx = 0; idx < _supplies.size(); idx++)
-     {
-        SupplyQuantity x = _supplies[idx];
-        x.marshal(dataStream);
-     }
-
+    _supplies.marshal(dataStream);
 }
 
 void ServiceRequestPdu::unmarshal(DataStream& dataStream)
@@ -113,14 +112,7 @@ void ServiceRequestPdu::unmarshal(DataStream& dataStream)
     dataStream >> _serviceTypeRequested;
     dataStream >> _numberOfSupplyTypes;
     dataStream >> _serviceRequestPadding;
-
-     _supplies.clear();
-     for(size_t idx = 0; idx < _numberOfSupplyTypes; idx++)
-     {
-        SupplyQuantity x;
-        x.unmarshal(dataStream);
-        _supplies.push_back(x);
-     }
+    _supplies.unmarshal(dataStream);
 }
 
 
@@ -133,13 +125,9 @@ bool ServiceRequestPdu::operator ==(const ServiceRequestPdu& rhs) const
      if( ! (_requestingEntityID == rhs._requestingEntityID) ) ivarsEqual = false;
      if( ! (_servicingEntityID == rhs._servicingEntityID) ) ivarsEqual = false;
      if( ! (_serviceTypeRequested == rhs._serviceTypeRequested) ) ivarsEqual = false;
+     if( ! (_numberOfSupplyTypes == rhs._numberOfSupplyTypes) ) ivarsEqual = false;
      if( ! (_serviceRequestPadding == rhs._serviceRequestPadding) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _supplies.size(); idx++)
-     {
-        if( ! ( _supplies[idx] == rhs._supplies[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_supplies == rhs._supplies) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -154,13 +142,7 @@ int ServiceRequestPdu::getMarshalledSize() const
    marshalSize = marshalSize + 1;  // _serviceTypeRequested
    marshalSize = marshalSize + 1;  // _numberOfSupplyTypes
    marshalSize = marshalSize + 2;  // _serviceRequestPadding
-
-   for(int idx=0; idx < _supplies.size(); idx++)
-   {
-        SupplyQuantity listElement = _supplies[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _supplies.getMarshalledSize();  // _supplies
     return marshalSize;
 }
 

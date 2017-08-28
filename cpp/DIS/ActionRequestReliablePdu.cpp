@@ -10,15 +10,15 @@ ActionRequestReliablePdu::ActionRequestReliablePdu() : SimulationManagementWithR
    _requestID(0), 
    _actionID(0), 
    _numberOfFixedDatumRecords(0), 
-   _numberOfVariableDatumRecords(0)
+   _numberOfVariableDatumRecords(0), 
+   _fixedDatumRecords(), 
+   _variableDatumRecords()
 {
     setPduType( 56 );
 }
 
 ActionRequestReliablePdu::~ActionRequestReliablePdu()
 {
-    _fixedDatumRecords.clear();
-    _variableDatumRecords.clear();
 }
 
 unsigned char ActionRequestReliablePdu::getRequiredReliabilityService() const
@@ -73,42 +73,52 @@ void ActionRequestReliablePdu::setActionID(unsigned int pX)
 
 unsigned int ActionRequestReliablePdu::getNumberOfFixedDatumRecords() const
 {
-   return _fixedDatumRecords.size();
+    return _numberOfFixedDatumRecords;
+}
+
+void ActionRequestReliablePdu::setNumberOfFixedDatumRecords(unsigned int pX)
+{
+    _numberOfFixedDatumRecords = pX;
 }
 
 unsigned int ActionRequestReliablePdu::getNumberOfVariableDatumRecords() const
 {
-   return _variableDatumRecords.size();
+    return _numberOfVariableDatumRecords;
 }
 
-std::vector<FixedDatum>& ActionRequestReliablePdu::getFixedDatumRecords() 
+void ActionRequestReliablePdu::setNumberOfVariableDatumRecords(unsigned int pX)
+{
+    _numberOfVariableDatumRecords = pX;
+}
+
+FixedDatum& ActionRequestReliablePdu::getFixedDatumRecords() 
 {
     return _fixedDatumRecords;
 }
 
-const std::vector<FixedDatum>& ActionRequestReliablePdu::getFixedDatumRecords() const
+const FixedDatum& ActionRequestReliablePdu::getFixedDatumRecords() const
 {
     return _fixedDatumRecords;
 }
 
-void ActionRequestReliablePdu::setFixedDatumRecords(const std::vector<FixedDatum>& pX)
+void ActionRequestReliablePdu::setFixedDatumRecords(const FixedDatum &pX)
 {
-     _fixedDatumRecords = pX;
+    _fixedDatumRecords = pX;
 }
 
-std::vector<VariableDatum>& ActionRequestReliablePdu::getVariableDatumRecords() 
+VariableDatum& ActionRequestReliablePdu::getVariableDatumRecords() 
 {
     return _variableDatumRecords;
 }
 
-const std::vector<VariableDatum>& ActionRequestReliablePdu::getVariableDatumRecords() const
+const VariableDatum& ActionRequestReliablePdu::getVariableDatumRecords() const
 {
     return _variableDatumRecords;
 }
 
-void ActionRequestReliablePdu::setVariableDatumRecords(const std::vector<VariableDatum>& pX)
+void ActionRequestReliablePdu::setVariableDatumRecords(const VariableDatum &pX)
 {
-     _variableDatumRecords = pX;
+    _variableDatumRecords = pX;
 }
 
 void ActionRequestReliablePdu::marshal(DataStream& dataStream) const
@@ -119,22 +129,10 @@ void ActionRequestReliablePdu::marshal(DataStream& dataStream) const
     dataStream << _pad2;
     dataStream << _requestID;
     dataStream << _actionID;
-    dataStream << ( unsigned int )_fixedDatumRecords.size();
-    dataStream << ( unsigned int )_variableDatumRecords.size();
-
-     for(size_t idx = 0; idx < _fixedDatumRecords.size(); idx++)
-     {
-        FixedDatum x = _fixedDatumRecords[idx];
-        x.marshal(dataStream);
-     }
-
-
-     for(size_t idx = 0; idx < _variableDatumRecords.size(); idx++)
-     {
-        VariableDatum x = _variableDatumRecords[idx];
-        x.marshal(dataStream);
-     }
-
+    dataStream << _numberOfFixedDatumRecords;
+    dataStream << _numberOfVariableDatumRecords;
+    _fixedDatumRecords.marshal(dataStream);
+    _variableDatumRecords.marshal(dataStream);
 }
 
 void ActionRequestReliablePdu::unmarshal(DataStream& dataStream)
@@ -147,22 +145,8 @@ void ActionRequestReliablePdu::unmarshal(DataStream& dataStream)
     dataStream >> _actionID;
     dataStream >> _numberOfFixedDatumRecords;
     dataStream >> _numberOfVariableDatumRecords;
-
-     _fixedDatumRecords.clear();
-     for(size_t idx = 0; idx < _numberOfFixedDatumRecords; idx++)
-     {
-        FixedDatum x;
-        x.unmarshal(dataStream);
-        _fixedDatumRecords.push_back(x);
-     }
-
-     _variableDatumRecords.clear();
-     for(size_t idx = 0; idx < _numberOfVariableDatumRecords; idx++)
-     {
-        VariableDatum x;
-        x.unmarshal(dataStream);
-        _variableDatumRecords.push_back(x);
-     }
+    _fixedDatumRecords.unmarshal(dataStream);
+    _variableDatumRecords.unmarshal(dataStream);
 }
 
 
@@ -177,18 +161,10 @@ bool ActionRequestReliablePdu::operator ==(const ActionRequestReliablePdu& rhs) 
      if( ! (_pad2 == rhs._pad2) ) ivarsEqual = false;
      if( ! (_requestID == rhs._requestID) ) ivarsEqual = false;
      if( ! (_actionID == rhs._actionID) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _fixedDatumRecords.size(); idx++)
-     {
-        if( ! ( _fixedDatumRecords[idx] == rhs._fixedDatumRecords[idx]) ) ivarsEqual = false;
-     }
-
-
-     for(size_t idx = 0; idx < _variableDatumRecords.size(); idx++)
-     {
-        if( ! ( _variableDatumRecords[idx] == rhs._variableDatumRecords[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_numberOfFixedDatumRecords == rhs._numberOfFixedDatumRecords) ) ivarsEqual = false;
+     if( ! (_numberOfVariableDatumRecords == rhs._numberOfVariableDatumRecords) ) ivarsEqual = false;
+     if( ! (_fixedDatumRecords == rhs._fixedDatumRecords) ) ivarsEqual = false;
+     if( ! (_variableDatumRecords == rhs._variableDatumRecords) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -205,20 +181,8 @@ int ActionRequestReliablePdu::getMarshalledSize() const
    marshalSize = marshalSize + 4;  // _actionID
    marshalSize = marshalSize + 4;  // _numberOfFixedDatumRecords
    marshalSize = marshalSize + 4;  // _numberOfVariableDatumRecords
-
-   for(int idx=0; idx < _fixedDatumRecords.size(); idx++)
-   {
-        FixedDatum listElement = _fixedDatumRecords[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
-
-   for(int idx=0; idx < _variableDatumRecords.size(); idx++)
-   {
-        VariableDatum listElement = _variableDatumRecords[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _fixedDatumRecords.getMarshalledSize();  // _fixedDatumRecords
+   marshalSize = marshalSize + _variableDatumRecords.getMarshalledSize();  // _variableDatumRecords
     return marshalSize;
 }
 

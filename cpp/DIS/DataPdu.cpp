@@ -7,15 +7,15 @@ DataPdu::DataPdu() : SimulationManagementFamilyPdu(),
    _requestID(0), 
    _padding1(0), 
    _numberOfFixedDatumRecords(0), 
-   _numberOfVariableDatumRecords(0)
+   _numberOfVariableDatumRecords(0), 
+   _fixedDatums(), 
+   _variableDatums()
 {
     setPduType( 20 );
 }
 
 DataPdu::~DataPdu()
 {
-    _fixedDatums.clear();
-    _variableDatums.clear();
 }
 
 unsigned int DataPdu::getRequestID() const
@@ -40,42 +40,52 @@ void DataPdu::setPadding1(unsigned int pX)
 
 unsigned int DataPdu::getNumberOfFixedDatumRecords() const
 {
-   return _fixedDatums.size();
+    return _numberOfFixedDatumRecords;
+}
+
+void DataPdu::setNumberOfFixedDatumRecords(unsigned int pX)
+{
+    _numberOfFixedDatumRecords = pX;
 }
 
 unsigned int DataPdu::getNumberOfVariableDatumRecords() const
 {
-   return _variableDatums.size();
+    return _numberOfVariableDatumRecords;
 }
 
-std::vector<FixedDatum>& DataPdu::getFixedDatums() 
+void DataPdu::setNumberOfVariableDatumRecords(unsigned int pX)
+{
+    _numberOfVariableDatumRecords = pX;
+}
+
+FixedDatum& DataPdu::getFixedDatums() 
 {
     return _fixedDatums;
 }
 
-const std::vector<FixedDatum>& DataPdu::getFixedDatums() const
+const FixedDatum& DataPdu::getFixedDatums() const
 {
     return _fixedDatums;
 }
 
-void DataPdu::setFixedDatums(const std::vector<FixedDatum>& pX)
+void DataPdu::setFixedDatums(const FixedDatum &pX)
 {
-     _fixedDatums = pX;
+    _fixedDatums = pX;
 }
 
-std::vector<VariableDatum>& DataPdu::getVariableDatums() 
+VariableDatum& DataPdu::getVariableDatums() 
 {
     return _variableDatums;
 }
 
-const std::vector<VariableDatum>& DataPdu::getVariableDatums() const
+const VariableDatum& DataPdu::getVariableDatums() const
 {
     return _variableDatums;
 }
 
-void DataPdu::setVariableDatums(const std::vector<VariableDatum>& pX)
+void DataPdu::setVariableDatums(const VariableDatum &pX)
 {
-     _variableDatums = pX;
+    _variableDatums = pX;
 }
 
 void DataPdu::marshal(DataStream& dataStream) const
@@ -83,22 +93,10 @@ void DataPdu::marshal(DataStream& dataStream) const
     SimulationManagementFamilyPdu::marshal(dataStream); // Marshal information in superclass first
     dataStream << _requestID;
     dataStream << _padding1;
-    dataStream << ( unsigned int )_fixedDatums.size();
-    dataStream << ( unsigned int )_variableDatums.size();
-
-     for(size_t idx = 0; idx < _fixedDatums.size(); idx++)
-     {
-        FixedDatum x = _fixedDatums[idx];
-        x.marshal(dataStream);
-     }
-
-
-     for(size_t idx = 0; idx < _variableDatums.size(); idx++)
-     {
-        VariableDatum x = _variableDatums[idx];
-        x.marshal(dataStream);
-     }
-
+    dataStream << _numberOfFixedDatumRecords;
+    dataStream << _numberOfVariableDatumRecords;
+    _fixedDatums.marshal(dataStream);
+    _variableDatums.marshal(dataStream);
 }
 
 void DataPdu::unmarshal(DataStream& dataStream)
@@ -108,22 +106,8 @@ void DataPdu::unmarshal(DataStream& dataStream)
     dataStream >> _padding1;
     dataStream >> _numberOfFixedDatumRecords;
     dataStream >> _numberOfVariableDatumRecords;
-
-     _fixedDatums.clear();
-     for(size_t idx = 0; idx < _numberOfFixedDatumRecords; idx++)
-     {
-        FixedDatum x;
-        x.unmarshal(dataStream);
-        _fixedDatums.push_back(x);
-     }
-
-     _variableDatums.clear();
-     for(size_t idx = 0; idx < _numberOfVariableDatumRecords; idx++)
-     {
-        VariableDatum x;
-        x.unmarshal(dataStream);
-        _variableDatums.push_back(x);
-     }
+    _fixedDatums.unmarshal(dataStream);
+    _variableDatums.unmarshal(dataStream);
 }
 
 
@@ -135,18 +119,10 @@ bool DataPdu::operator ==(const DataPdu& rhs) const
 
      if( ! (_requestID == rhs._requestID) ) ivarsEqual = false;
      if( ! (_padding1 == rhs._padding1) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _fixedDatums.size(); idx++)
-     {
-        if( ! ( _fixedDatums[idx] == rhs._fixedDatums[idx]) ) ivarsEqual = false;
-     }
-
-
-     for(size_t idx = 0; idx < _variableDatums.size(); idx++)
-     {
-        if( ! ( _variableDatums[idx] == rhs._variableDatums[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_numberOfFixedDatumRecords == rhs._numberOfFixedDatumRecords) ) ivarsEqual = false;
+     if( ! (_numberOfVariableDatumRecords == rhs._numberOfVariableDatumRecords) ) ivarsEqual = false;
+     if( ! (_fixedDatums == rhs._fixedDatums) ) ivarsEqual = false;
+     if( ! (_variableDatums == rhs._variableDatums) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -160,20 +136,8 @@ int DataPdu::getMarshalledSize() const
    marshalSize = marshalSize + 4;  // _padding1
    marshalSize = marshalSize + 4;  // _numberOfFixedDatumRecords
    marshalSize = marshalSize + 4;  // _numberOfVariableDatumRecords
-
-   for(int idx=0; idx < _fixedDatums.size(); idx++)
-   {
-        FixedDatum listElement = _fixedDatums[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
-
-   for(int idx=0; idx < _variableDatums.size(); idx++)
-   {
-        VariableDatum listElement = _variableDatums[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _fixedDatums.getMarshalledSize();  // _fixedDatums
+   marshalSize = marshalSize + _variableDatums.getMarshalledSize();  // _variableDatums
     return marshalSize;
 }
 

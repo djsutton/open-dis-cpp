@@ -2,7 +2,6 @@
 #define GRIDAXISRECORDREPRESENTATION0_H
 
 #include <DIS/OneByteChunk.h>
-#include <vector>
 #include <DIS/GridAxisRecord.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -22,8 +21,8 @@ protected:
   /** number of bytes of environmental state data */
   unsigned short _numberOfBytes; 
 
-  /** variable length list of data parameters ^^^this is wrong--need padding as well */
-  std::vector<OneByteChunk> _dataValues; 
+  /** variable length variablelist of data parameters ^^^this is wrong--need padding as well */
+  OneByteChunk _dataValues; 
 
 
  public:
@@ -34,10 +33,11 @@ protected:
     virtual void unmarshal(DataStream& dataStream);
 
     unsigned short getNumberOfBytes() const; 
+    void setNumberOfBytes(unsigned short pX); 
 
-    std::vector<OneByteChunk>& getDataValues(); 
-    const std::vector<OneByteChunk>& getDataValues() const; 
-    void setDataValues(const std::vector<OneByteChunk>&    pX);
+    OneByteChunk& getDataValues(); 
+    const OneByteChunk&  getDataValues() const; 
+    void setDataValues(const OneByteChunk    &pX);
 
 
 virtual int getMarshalledSize() const;

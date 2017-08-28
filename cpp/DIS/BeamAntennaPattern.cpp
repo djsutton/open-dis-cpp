@@ -6,6 +6,7 @@ using namespace DIS;
 BeamAntennaPattern::BeamAntennaPattern():
    _beamDirection(), 
    _azimuthBeamwidth(0), 
+   _elevationBeamwidth(0), 
    _referenceSystem(0), 
    _padding1(0), 
    _padding2(0), 
@@ -42,6 +43,16 @@ float BeamAntennaPattern::getAzimuthBeamwidth() const
 void BeamAntennaPattern::setAzimuthBeamwidth(float pX)
 {
     _azimuthBeamwidth = pX;
+}
+
+float BeamAntennaPattern::getElevationBeamwidth() const
+{
+    return _elevationBeamwidth;
+}
+
+void BeamAntennaPattern::setElevationBeamwidth(float pX)
+{
+    _elevationBeamwidth = pX;
 }
 
 float BeamAntennaPattern::getReferenceSystem() const
@@ -108,6 +119,7 @@ void BeamAntennaPattern::marshal(DataStream& dataStream) const
 {
     _beamDirection.marshal(dataStream);
     dataStream << _azimuthBeamwidth;
+    dataStream << _elevationBeamwidth;
     dataStream << _referenceSystem;
     dataStream << _padding1;
     dataStream << _padding2;
@@ -120,6 +132,7 @@ void BeamAntennaPattern::unmarshal(DataStream& dataStream)
 {
     _beamDirection.unmarshal(dataStream);
     dataStream >> _azimuthBeamwidth;
+    dataStream >> _elevationBeamwidth;
     dataStream >> _referenceSystem;
     dataStream >> _padding1;
     dataStream >> _padding2;
@@ -135,6 +148,7 @@ bool BeamAntennaPattern::operator ==(const BeamAntennaPattern& rhs) const
 
      if( ! (_beamDirection == rhs._beamDirection) ) ivarsEqual = false;
      if( ! (_azimuthBeamwidth == rhs._azimuthBeamwidth) ) ivarsEqual = false;
+     if( ! (_elevationBeamwidth == rhs._elevationBeamwidth) ) ivarsEqual = false;
      if( ! (_referenceSystem == rhs._referenceSystem) ) ivarsEqual = false;
      if( ! (_padding1 == rhs._padding1) ) ivarsEqual = false;
      if( ! (_padding2 == rhs._padding2) ) ivarsEqual = false;
@@ -151,6 +165,7 @@ int BeamAntennaPattern::getMarshalledSize() const
 
    marshalSize = marshalSize + _beamDirection.getMarshalledSize();  // _beamDirection
    marshalSize = marshalSize + 4;  // _azimuthBeamwidth
+   marshalSize = marshalSize + 4;  // _elevationBeamwidth
    marshalSize = marshalSize + 4;  // _referenceSystem
    marshalSize = marshalSize + 2;  // _padding1
    marshalSize = marshalSize + 1;  // _padding2

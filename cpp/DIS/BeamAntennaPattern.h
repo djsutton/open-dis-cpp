@@ -22,6 +22,8 @@ protected:
 
   float _azimuthBeamwidth; 
 
+  float _elevationBeamwidth; 
+
   float _referenceSystem; 
 
   short _padding1; 
@@ -51,6 +53,9 @@ protected:
 
     float getAzimuthBeamwidth() const; 
     void setAzimuthBeamwidth(float pX); 
+
+    float getElevationBeamwidth() const; 
+    void setElevationBeamwidth(float pX); 
 
     float getReferenceSystem() const; 
     void setReferenceSystem(float pX); 

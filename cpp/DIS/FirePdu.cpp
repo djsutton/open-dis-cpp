@@ -10,7 +10,7 @@ FirePdu::FirePdu() : WarfareFamilyPdu(),
    _locationInWorldCoordinates(), 
    _burstDescriptor(), 
    _velocity(), 
-   _range(0.0)
+   _rangeToTarget(0.0)
 {
     setPduType( 2 );
 }
@@ -104,14 +104,14 @@ void FirePdu::setVelocity(const Vector3Float &pX)
     _velocity = pX;
 }
 
-float FirePdu::getRange() const
+float FirePdu::getRangeToTarget() const
 {
-    return _range;
+    return _rangeToTarget;
 }
 
-void FirePdu::setRange(float pX)
+void FirePdu::setRangeToTarget(float pX)
 {
-    _range = pX;
+    _rangeToTarget = pX;
 }
 
 void FirePdu::marshal(DataStream& dataStream) const
@@ -123,7 +123,7 @@ void FirePdu::marshal(DataStream& dataStream) const
     _locationInWorldCoordinates.marshal(dataStream);
     _burstDescriptor.marshal(dataStream);
     _velocity.marshal(dataStream);
-    dataStream << _range;
+    dataStream << _rangeToTarget;
 }
 
 void FirePdu::unmarshal(DataStream& dataStream)
@@ -135,7 +135,7 @@ void FirePdu::unmarshal(DataStream& dataStream)
     _locationInWorldCoordinates.unmarshal(dataStream);
     _burstDescriptor.unmarshal(dataStream);
     _velocity.unmarshal(dataStream);
-    dataStream >> _range;
+    dataStream >> _rangeToTarget;
 }
 
 
@@ -151,7 +151,7 @@ bool FirePdu::operator ==(const FirePdu& rhs) const
      if( ! (_locationInWorldCoordinates == rhs._locationInWorldCoordinates) ) ivarsEqual = false;
      if( ! (_burstDescriptor == rhs._burstDescriptor) ) ivarsEqual = false;
      if( ! (_velocity == rhs._velocity) ) ivarsEqual = false;
-     if( ! (_range == rhs._range) ) ivarsEqual = false;
+     if( ! (_rangeToTarget == rhs._rangeToTarget) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -167,7 +167,7 @@ int FirePdu::getMarshalledSize() const
    marshalSize = marshalSize + _locationInWorldCoordinates.getMarshalledSize();  // _locationInWorldCoordinates
    marshalSize = marshalSize + _burstDescriptor.getMarshalledSize();  // _burstDescriptor
    marshalSize = marshalSize + _velocity.getMarshalledSize();  // _velocity
-   marshalSize = marshalSize + 4;  // _range
+   marshalSize = marshalSize + 4;  // _rangeToTarget
     return marshalSize;
 }
 

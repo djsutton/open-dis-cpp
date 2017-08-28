@@ -10,14 +10,14 @@ TransferControlRequestPdu::TransferControlRequestPdu() : EntityManagementFamilyP
    _requiredReliabilityService(0), 
    _tranferType(0), 
    _transferEntityID(), 
-   _numberOfRecordSets(0)
+   _numberOfRecordSets(0), 
+   _recordSets()
 {
     setPduType( 35 );
 }
 
 TransferControlRequestPdu::~TransferControlRequestPdu()
 {
-    _recordSets.clear();
 }
 
 EntityID& TransferControlRequestPdu::getOrginatingEntityID() 
@@ -97,22 +97,27 @@ void TransferControlRequestPdu::setTransferEntityID(const EntityID &pX)
 
 unsigned char TransferControlRequestPdu::getNumberOfRecordSets() const
 {
-   return _recordSets.size();
+    return _numberOfRecordSets;
 }
 
-std::vector<RecordSet>& TransferControlRequestPdu::getRecordSets() 
+void TransferControlRequestPdu::setNumberOfRecordSets(unsigned char pX)
+{
+    _numberOfRecordSets = pX;
+}
+
+RecordSet& TransferControlRequestPdu::getRecordSets() 
 {
     return _recordSets;
 }
 
-const std::vector<RecordSet>& TransferControlRequestPdu::getRecordSets() const
+const RecordSet& TransferControlRequestPdu::getRecordSets() const
 {
     return _recordSets;
 }
 
-void TransferControlRequestPdu::setRecordSets(const std::vector<RecordSet>& pX)
+void TransferControlRequestPdu::setRecordSets(const RecordSet &pX)
 {
-     _recordSets = pX;
+    _recordSets = pX;
 }
 
 void TransferControlRequestPdu::marshal(DataStream& dataStream) const
@@ -124,14 +129,8 @@ void TransferControlRequestPdu::marshal(DataStream& dataStream) const
     dataStream << _requiredReliabilityService;
     dataStream << _tranferType;
     _transferEntityID.marshal(dataStream);
-    dataStream << ( unsigned char )_recordSets.size();
-
-     for(size_t idx = 0; idx < _recordSets.size(); idx++)
-     {
-        RecordSet x = _recordSets[idx];
-        x.marshal(dataStream);
-     }
-
+    dataStream << _numberOfRecordSets;
+    _recordSets.marshal(dataStream);
 }
 
 void TransferControlRequestPdu::unmarshal(DataStream& dataStream)
@@ -144,14 +143,7 @@ void TransferControlRequestPdu::unmarshal(DataStream& dataStream)
     dataStream >> _tranferType;
     _transferEntityID.unmarshal(dataStream);
     dataStream >> _numberOfRecordSets;
-
-     _recordSets.clear();
-     for(size_t idx = 0; idx < _numberOfRecordSets; idx++)
-     {
-        RecordSet x;
-        x.unmarshal(dataStream);
-        _recordSets.push_back(x);
-     }
+    _recordSets.unmarshal(dataStream);
 }
 
 
@@ -167,12 +159,8 @@ bool TransferControlRequestPdu::operator ==(const TransferControlRequestPdu& rhs
      if( ! (_requiredReliabilityService == rhs._requiredReliabilityService) ) ivarsEqual = false;
      if( ! (_tranferType == rhs._tranferType) ) ivarsEqual = false;
      if( ! (_transferEntityID == rhs._transferEntityID) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _recordSets.size(); idx++)
-     {
-        if( ! ( _recordSets[idx] == rhs._recordSets[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_numberOfRecordSets == rhs._numberOfRecordSets) ) ivarsEqual = false;
+     if( ! (_recordSets == rhs._recordSets) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -189,13 +177,7 @@ int TransferControlRequestPdu::getMarshalledSize() const
    marshalSize = marshalSize + 1;  // _tranferType
    marshalSize = marshalSize + _transferEntityID.getMarshalledSize();  // _transferEntityID
    marshalSize = marshalSize + 1;  // _numberOfRecordSets
-
-   for(int idx=0; idx < _recordSets.size(); idx++)
-   {
-        RecordSet listElement = _recordSets[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _recordSets.getMarshalledSize();  // _recordSets
     return marshalSize;
 }
 

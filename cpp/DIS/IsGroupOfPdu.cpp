@@ -9,14 +9,14 @@ IsGroupOfPdu::IsGroupOfPdu() : EntityManagementFamilyPdu(),
    _numberOfGroupedEntities(0), 
    _pad2(0), 
    _latitude(0.0), 
-   _longitude(0.0)
+   _longitude(0.0), 
+   _groupedEntityDescriptions()
 {
     setPduType( 34 );
 }
 
 IsGroupOfPdu::~IsGroupOfPdu()
 {
-    _groupedEntityDescriptions.clear();
 }
 
 EntityID& IsGroupOfPdu::getGroupEntityID() 
@@ -46,7 +46,12 @@ void IsGroupOfPdu::setGroupedEntityCategory(unsigned char pX)
 
 unsigned char IsGroupOfPdu::getNumberOfGroupedEntities() const
 {
-   return _groupedEntityDescriptions.size();
+    return _numberOfGroupedEntities;
+}
+
+void IsGroupOfPdu::setNumberOfGroupedEntities(unsigned char pX)
+{
+    _numberOfGroupedEntities = pX;
 }
 
 unsigned int IsGroupOfPdu::getPad2() const
@@ -79,19 +84,19 @@ void IsGroupOfPdu::setLongitude(double pX)
     _longitude = pX;
 }
 
-std::vector<VariableDatum>& IsGroupOfPdu::getGroupedEntityDescriptions() 
+VariableDatum& IsGroupOfPdu::getGroupedEntityDescriptions() 
 {
     return _groupedEntityDescriptions;
 }
 
-const std::vector<VariableDatum>& IsGroupOfPdu::getGroupedEntityDescriptions() const
+const VariableDatum& IsGroupOfPdu::getGroupedEntityDescriptions() const
 {
     return _groupedEntityDescriptions;
 }
 
-void IsGroupOfPdu::setGroupedEntityDescriptions(const std::vector<VariableDatum>& pX)
+void IsGroupOfPdu::setGroupedEntityDescriptions(const VariableDatum &pX)
 {
-     _groupedEntityDescriptions = pX;
+    _groupedEntityDescriptions = pX;
 }
 
 void IsGroupOfPdu::marshal(DataStream& dataStream) const
@@ -99,17 +104,11 @@ void IsGroupOfPdu::marshal(DataStream& dataStream) const
     EntityManagementFamilyPdu::marshal(dataStream); // Marshal information in superclass first
     _groupEntityID.marshal(dataStream);
     dataStream << _groupedEntityCategory;
-    dataStream << ( unsigned char )_groupedEntityDescriptions.size();
+    dataStream << _numberOfGroupedEntities;
     dataStream << _pad2;
     dataStream << _latitude;
     dataStream << _longitude;
-
-     for(size_t idx = 0; idx < _groupedEntityDescriptions.size(); idx++)
-     {
-        VariableDatum x = _groupedEntityDescriptions[idx];
-        x.marshal(dataStream);
-     }
-
+    _groupedEntityDescriptions.marshal(dataStream);
 }
 
 void IsGroupOfPdu::unmarshal(DataStream& dataStream)
@@ -121,14 +120,7 @@ void IsGroupOfPdu::unmarshal(DataStream& dataStream)
     dataStream >> _pad2;
     dataStream >> _latitude;
     dataStream >> _longitude;
-
-     _groupedEntityDescriptions.clear();
-     for(size_t idx = 0; idx < _numberOfGroupedEntities; idx++)
-     {
-        VariableDatum x;
-        x.unmarshal(dataStream);
-        _groupedEntityDescriptions.push_back(x);
-     }
+    _groupedEntityDescriptions.unmarshal(dataStream);
 }
 
 
@@ -140,15 +132,11 @@ bool IsGroupOfPdu::operator ==(const IsGroupOfPdu& rhs) const
 
      if( ! (_groupEntityID == rhs._groupEntityID) ) ivarsEqual = false;
      if( ! (_groupedEntityCategory == rhs._groupedEntityCategory) ) ivarsEqual = false;
+     if( ! (_numberOfGroupedEntities == rhs._numberOfGroupedEntities) ) ivarsEqual = false;
      if( ! (_pad2 == rhs._pad2) ) ivarsEqual = false;
      if( ! (_latitude == rhs._latitude) ) ivarsEqual = false;
      if( ! (_longitude == rhs._longitude) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _groupedEntityDescriptions.size(); idx++)
-     {
-        if( ! ( _groupedEntityDescriptions[idx] == rhs._groupedEntityDescriptions[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_groupedEntityDescriptions == rhs._groupedEntityDescriptions) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -164,13 +152,7 @@ int IsGroupOfPdu::getMarshalledSize() const
    marshalSize = marshalSize + 4;  // _pad2
    marshalSize = marshalSize + 8;  // _latitude
    marshalSize = marshalSize + 8;  // _longitude
-
-   for(int idx=0; idx < _groupedEntityDescriptions.size(); idx++)
-   {
-        VariableDatum listElement = _groupedEntityDescriptions[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _groupedEntityDescriptions.getMarshalledSize();  // _groupedEntityDescriptions
     return marshalSize;
 }
 

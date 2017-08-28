@@ -5,7 +5,6 @@
 #include <DIS/BeamData.h>
 #include <DIS/BeamData.h>
 #include <DIS/FundamentalParameterDataIff.h>
-#include <vector>
 #include <DIS/IffAtcNavAidsLayer1Pdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -32,7 +31,7 @@ protected:
   BeamData _secondaryOperationalData; 
 
   /** variable length list of fundamental parameters. ^^^This is wrong */
-  std::vector<FundamentalParameterDataIff> _fundamentalIffParameters; 
+  FundamentalParameterDataIff _fundamentalIffParameters; 
 
 
  public:
@@ -54,9 +53,9 @@ protected:
     const BeamData&  getSecondaryOperationalData() const; 
     void setSecondaryOperationalData(const BeamData    &pX);
 
-    std::vector<FundamentalParameterDataIff>& getFundamentalIffParameters(); 
-    const std::vector<FundamentalParameterDataIff>& getFundamentalIffParameters() const; 
-    void setFundamentalIffParameters(const std::vector<FundamentalParameterDataIff>&    pX);
+    FundamentalParameterDataIff& getFundamentalIffParameters(); 
+    const FundamentalParameterDataIff&  getFundamentalIffParameters() const; 
+    void setFundamentalIffParameters(const FundamentalParameterDataIff    &pX);
 
 
 virtual int getMarshalledSize() const;

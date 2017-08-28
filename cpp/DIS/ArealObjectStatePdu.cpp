@@ -13,14 +13,14 @@ ArealObjectStatePdu::ArealObjectStatePdu() : SyntheticEnvironmentFamilyPdu(),
    _objectAppearance(), 
    _numberOfPoints(0), 
    _requesterID(), 
-   _receivingID()
+   _receivingID(), 
+   _objectLocation()
 {
     setPduType( 45 );
 }
 
 ArealObjectStatePdu::~ArealObjectStatePdu()
 {
-    _objectLocation.clear();
 }
 
 EntityID& ArealObjectStatePdu::getObjectID() 
@@ -115,7 +115,12 @@ void ArealObjectStatePdu::setObjectAppearance(const SixByteChunk &pX)
 
 unsigned short ArealObjectStatePdu::getNumberOfPoints() const
 {
-   return _objectLocation.size();
+    return _numberOfPoints;
+}
+
+void ArealObjectStatePdu::setNumberOfPoints(unsigned short pX)
+{
+    _numberOfPoints = pX;
 }
 
 SimulationAddress& ArealObjectStatePdu::getRequesterID() 
@@ -148,19 +153,19 @@ void ArealObjectStatePdu::setReceivingID(const SimulationAddress &pX)
     _receivingID = pX;
 }
 
-std::vector<Vector3Double>& ArealObjectStatePdu::getObjectLocation() 
+Vector3Double& ArealObjectStatePdu::getObjectLocation() 
 {
     return _objectLocation;
 }
 
-const std::vector<Vector3Double>& ArealObjectStatePdu::getObjectLocation() const
+const Vector3Double& ArealObjectStatePdu::getObjectLocation() const
 {
     return _objectLocation;
 }
 
-void ArealObjectStatePdu::setObjectLocation(const std::vector<Vector3Double>& pX)
+void ArealObjectStatePdu::setObjectLocation(const Vector3Double &pX)
 {
-     _objectLocation = pX;
+    _objectLocation = pX;
 }
 
 void ArealObjectStatePdu::marshal(DataStream& dataStream) const
@@ -173,16 +178,10 @@ void ArealObjectStatePdu::marshal(DataStream& dataStream) const
     dataStream << _modifications;
     _objectType.marshal(dataStream);
     _objectAppearance.marshal(dataStream);
-    dataStream << ( unsigned short )_objectLocation.size();
+    dataStream << _numberOfPoints;
     _requesterID.marshal(dataStream);
     _receivingID.marshal(dataStream);
-
-     for(size_t idx = 0; idx < _objectLocation.size(); idx++)
-     {
-        Vector3Double x = _objectLocation[idx];
-        x.marshal(dataStream);
-     }
-
+    _objectLocation.marshal(dataStream);
 }
 
 void ArealObjectStatePdu::unmarshal(DataStream& dataStream)
@@ -198,14 +197,7 @@ void ArealObjectStatePdu::unmarshal(DataStream& dataStream)
     dataStream >> _numberOfPoints;
     _requesterID.unmarshal(dataStream);
     _receivingID.unmarshal(dataStream);
-
-     _objectLocation.clear();
-     for(size_t idx = 0; idx < _numberOfPoints; idx++)
-     {
-        Vector3Double x;
-        x.unmarshal(dataStream);
-        _objectLocation.push_back(x);
-     }
+    _objectLocation.unmarshal(dataStream);
 }
 
 
@@ -222,14 +214,10 @@ bool ArealObjectStatePdu::operator ==(const ArealObjectStatePdu& rhs) const
      if( ! (_modifications == rhs._modifications) ) ivarsEqual = false;
      if( ! (_objectType == rhs._objectType) ) ivarsEqual = false;
      if( ! (_objectAppearance == rhs._objectAppearance) ) ivarsEqual = false;
+     if( ! (_numberOfPoints == rhs._numberOfPoints) ) ivarsEqual = false;
      if( ! (_requesterID == rhs._requesterID) ) ivarsEqual = false;
      if( ! (_receivingID == rhs._receivingID) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _objectLocation.size(); idx++)
-     {
-        if( ! ( _objectLocation[idx] == rhs._objectLocation[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_objectLocation == rhs._objectLocation) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -249,13 +237,7 @@ int ArealObjectStatePdu::getMarshalledSize() const
    marshalSize = marshalSize + 2;  // _numberOfPoints
    marshalSize = marshalSize + _requesterID.getMarshalledSize();  // _requesterID
    marshalSize = marshalSize + _receivingID.getMarshalledSize();  // _receivingID
-
-   for(int idx=0; idx < _objectLocation.size(); idx++)
-   {
-        Vector3Double listElement = _objectLocation[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _objectLocation.getMarshalledSize();  // _objectLocation
     return marshalSize;
 }
 

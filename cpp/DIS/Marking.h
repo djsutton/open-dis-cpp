@@ -20,7 +20,7 @@ protected:
   unsigned char _characterSet; 
 
   /** The characters */
-  char _characters[11]; 
+  char _characters[12]; 
 
 
  public:

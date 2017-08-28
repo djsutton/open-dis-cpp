@@ -5,13 +5,13 @@ using namespace DIS;
 
 VariableDatum::VariableDatum():
    _variableDatumID(0), 
-   _variableDatumLength(0)
+   _variableDatumLength(0), 
+   _variableData()
 {
 }
 
 VariableDatum::~VariableDatum()
 {
-    _variableDatums.clear();
 }
 
 unsigned int VariableDatum::getVariableDatumID() const
@@ -26,49 +26,41 @@ void VariableDatum::setVariableDatumID(unsigned int pX)
 
 unsigned int VariableDatum::getVariableDatumLength() const
 {
-   return _variableDatums.size();
+    return _variableDatumLength;
 }
 
-std::vector<EightByteChunk>& VariableDatum::getVariableDatums() 
+void VariableDatum::setVariableDatumLength(unsigned int pX)
 {
-    return _variableDatums;
+    _variableDatumLength = pX;
 }
 
-const std::vector<EightByteChunk>& VariableDatum::getVariableDatums() const
+OneByteChunk& VariableDatum::getVariableData() 
 {
-    return _variableDatums;
+    return _variableData;
 }
 
-void VariableDatum::setVariableDatums(const std::vector<EightByteChunk>& pX)
+const OneByteChunk& VariableDatum::getVariableData() const
 {
-     _variableDatums = pX;
+    return _variableData;
+}
+
+void VariableDatum::setVariableData(const OneByteChunk &pX)
+{
+    _variableData = pX;
 }
 
 void VariableDatum::marshal(DataStream& dataStream) const
 {
     dataStream << _variableDatumID;
-    dataStream << ( unsigned int )_variableDatums.size();
-
-     for(size_t idx = 0; idx < _variableDatums.size(); idx++)
-     {
-        EightByteChunk x = _variableDatums[idx];
-        x.marshal(dataStream);
-     }
-
+    dataStream << _variableDatumLength;
+    _variableData.marshal(dataStream);
 }
 
 void VariableDatum::unmarshal(DataStream& dataStream)
 {
     dataStream >> _variableDatumID;
     dataStream >> _variableDatumLength;
-
-     _variableDatums.clear();
-     for(size_t idx = 0; idx < _variableDatumLength; idx++)
-     {
-        EightByteChunk x;
-        x.unmarshal(dataStream);
-        _variableDatums.push_back(x);
-     }
+    _variableData.unmarshal(dataStream);
 }
 
 
@@ -77,12 +69,8 @@ bool VariableDatum::operator ==(const VariableDatum& rhs) const
      bool ivarsEqual = true;
 
      if( ! (_variableDatumID == rhs._variableDatumID) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _variableDatums.size(); idx++)
-     {
-        if( ! ( _variableDatums[idx] == rhs._variableDatums[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_variableDatumLength == rhs._variableDatumLength) ) ivarsEqual = false;
+     if( ! (_variableData == rhs._variableData) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -93,13 +81,7 @@ int VariableDatum::getMarshalledSize() const
 
    marshalSize = marshalSize + 4;  // _variableDatumID
    marshalSize = marshalSize + 4;  // _variableDatumLength
-
-   for(int idx=0; idx < _variableDatums.size(); idx++)
-   {
-        EightByteChunk listElement = _variableDatums[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _variableData.getMarshalledSize();  // _variableData
     return marshalSize;
 }
 

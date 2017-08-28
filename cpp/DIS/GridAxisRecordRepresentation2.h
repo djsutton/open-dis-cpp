@@ -2,7 +2,6 @@
 #define GRIDAXISRECORDREPRESENTATION2_H
 
 #include <DIS/FourByteChunk.h>
-#include <vector>
 #include <DIS/GridAxisRecord.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -23,7 +22,7 @@ protected:
   unsigned short _numberOfValues; 
 
   /** variable length list of data parameters ^^^this is wrong--need padding as well */
-  std::vector<FourByteChunk> _dataValues; 
+  FourByteChunk _dataValues; 
 
 
  public:
@@ -34,10 +33,11 @@ protected:
     virtual void unmarshal(DataStream& dataStream);
 
     unsigned short getNumberOfValues() const; 
+    void setNumberOfValues(unsigned short pX); 
 
-    std::vector<FourByteChunk>& getDataValues(); 
-    const std::vector<FourByteChunk>& getDataValues() const; 
-    void setDataValues(const std::vector<FourByteChunk>&    pX);
+    FourByteChunk& getDataValues(); 
+    const FourByteChunk&  getDataValues() const; 
+    void setDataValues(const FourByteChunk    &pX);
 
 
 virtual int getMarshalledSize() const;

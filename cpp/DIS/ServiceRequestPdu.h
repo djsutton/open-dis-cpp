@@ -4,7 +4,6 @@
 #include <DIS/EntityID.h>
 #include <DIS/EntityID.h>
 #include <DIS/SupplyQuantity.h>
-#include <vector>
 #include <DIS/LogisticsFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -36,7 +35,7 @@ protected:
   /** padding */
   short _serviceRequestPadding; 
 
-  std::vector<SupplyQuantity> _supplies; 
+  SupplyQuantity _supplies; 
 
 
  public:
@@ -58,13 +57,14 @@ protected:
     void setServiceTypeRequested(unsigned char pX); 
 
     unsigned char getNumberOfSupplyTypes() const; 
+    void setNumberOfSupplyTypes(unsigned char pX); 
 
     short getServiceRequestPadding() const; 
     void setServiceRequestPadding(short pX); 
 
-    std::vector<SupplyQuantity>& getSupplies(); 
-    const std::vector<SupplyQuantity>& getSupplies() const; 
-    void setSupplies(const std::vector<SupplyQuantity>&    pX);
+    SupplyQuantity& getSupplies(); 
+    const SupplyQuantity&  getSupplies() const; 
+    void setSupplies(const SupplyQuantity    &pX);
 
 
 virtual int getMarshalledSize() const;

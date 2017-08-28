@@ -1,13 +1,13 @@
 #ifndef TRANSMITTERPDU_H
 #define TRANSMITTERPDU_H
 
+#include <DIS/EntityID.h>
 #include <DIS/RadioEntityType.h>
 #include <DIS/Vector3Double.h>
 #include <DIS/Vector3Float.h>
 #include <DIS/ModulationType.h>
-#include <DIS/Vector3Float.h>
-#include <DIS/Vector3Float.h>
-#include <vector>
+#include <DIS/ModulationType.h>
+#include <DIS/BeamAntennaPattern.h>
 #include <DIS/RadioCommunicationsFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -24,6 +24,12 @@ namespace DIS
 class EXPORT_MACRO TransmitterPdu : public RadioCommunicationsFamilyPdu
 {
 protected:
+  /** ID of the entity that is the source of the communication, ie contains the radio */
+  EntityID _entityId; 
+
+  /** particular radio within an entity */
+  unsigned short _radioId; 
+
   /** linear accelleration of entity */
   RadioEntityType _radioEntityType; 
 
@@ -39,7 +45,7 @@ protected:
   /** Location of antenna */
   Vector3Double _antennaLocation; 
 
-  /** relative location of antenna */
+  /** relative location of antenna, in entity coordinates */
   Vector3Float _relativeAntennaLocation; 
 
   /** antenna pattern type */
@@ -76,10 +82,10 @@ protected:
   unsigned char _padding3; 
 
   /** variable length list of modulation parameters */
-  std::vector<Vector3Float> _modulationParametersList; 
+  ModulationType _modulationParametersList; 
 
   /** variable length list of antenna pattern records */
-  std::vector<Vector3Float> _antennaPatternList; 
+  BeamAntennaPattern _antennaPatternList; 
 
 
  public:
@@ -88,6 +94,13 @@ protected:
 
     virtual void marshal(DataStream& dataStream) const;
     virtual void unmarshal(DataStream& dataStream);
+
+    EntityID& getEntityId(); 
+    const EntityID&  getEntityId() const; 
+    void setEntityId(const EntityID    &pX);
+
+    unsigned short getRadioId() const; 
+    void setRadioId(unsigned short pX); 
 
     RadioEntityType& getRadioEntityType(); 
     const RadioEntityType&  getRadioEntityType() const; 
@@ -114,6 +127,7 @@ protected:
     void setAntennaPatternType(unsigned short pX); 
 
     unsigned short getAntennaPatternCount() const; 
+    void setAntennaPatternCount(unsigned short pX); 
 
     long getFrequency() const; 
     void setFrequency(long pX); 
@@ -135,6 +149,7 @@ protected:
     void setCryptoKeyId(unsigned short pX); 
 
     unsigned char getModulationParameterCount() const; 
+    void setModulationParameterCount(unsigned char pX); 
 
     unsigned short getPadding2() const; 
     void setPadding2(unsigned short pX); 
@@ -142,13 +157,13 @@ protected:
     unsigned char getPadding3() const; 
     void setPadding3(unsigned char pX); 
 
-    std::vector<Vector3Float>& getModulationParametersList(); 
-    const std::vector<Vector3Float>& getModulationParametersList() const; 
-    void setModulationParametersList(const std::vector<Vector3Float>&    pX);
+    ModulationType& getModulationParametersList(); 
+    const ModulationType&  getModulationParametersList() const; 
+    void setModulationParametersList(const ModulationType    &pX);
 
-    std::vector<Vector3Float>& getAntennaPatternList(); 
-    const std::vector<Vector3Float>& getAntennaPatternList() const; 
-    void setAntennaPatternList(const std::vector<Vector3Float>&    pX);
+    BeamAntennaPattern& getAntennaPatternList(); 
+    const BeamAntennaPattern&  getAntennaPatternList() const; 
+    void setAntennaPatternList(const BeamAntennaPattern    &pX);
 
 
 virtual int getMarshalledSize() const;

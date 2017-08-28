@@ -6,7 +6,7 @@ using namespace DIS;
 IntercomCommunicationsParameters::IntercomCommunicationsParameters():
    _recordType(0), 
    _recordLength(0), 
-   _recordSpecificField(0)
+   _parameterValues()
 {
 }
 
@@ -34,28 +34,33 @@ void IntercomCommunicationsParameters::setRecordLength(unsigned short pX)
     _recordLength = pX;
 }
 
-unsigned int IntercomCommunicationsParameters::getRecordSpecificField() const
+OneByteChunk& IntercomCommunicationsParameters::getParameterValues() 
 {
-    return _recordSpecificField;
+    return _parameterValues;
 }
 
-void IntercomCommunicationsParameters::setRecordSpecificField(unsigned int pX)
+const OneByteChunk& IntercomCommunicationsParameters::getParameterValues() const
 {
-    _recordSpecificField = pX;
+    return _parameterValues;
+}
+
+void IntercomCommunicationsParameters::setParameterValues(const OneByteChunk &pX)
+{
+    _parameterValues = pX;
 }
 
 void IntercomCommunicationsParameters::marshal(DataStream& dataStream) const
 {
     dataStream << _recordType;
     dataStream << _recordLength;
-    dataStream << _recordSpecificField;
+    _parameterValues.marshal(dataStream);
 }
 
 void IntercomCommunicationsParameters::unmarshal(DataStream& dataStream)
 {
     dataStream >> _recordType;
     dataStream >> _recordLength;
-    dataStream >> _recordSpecificField;
+    _parameterValues.unmarshal(dataStream);
 }
 
 
@@ -65,7 +70,7 @@ bool IntercomCommunicationsParameters::operator ==(const IntercomCommunicationsP
 
      if( ! (_recordType == rhs._recordType) ) ivarsEqual = false;
      if( ! (_recordLength == rhs._recordLength) ) ivarsEqual = false;
-     if( ! (_recordSpecificField == rhs._recordSpecificField) ) ivarsEqual = false;
+     if( ! (_parameterValues == rhs._parameterValues) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -76,7 +81,7 @@ int IntercomCommunicationsParameters::getMarshalledSize() const
 
    marshalSize = marshalSize + 2;  // _recordType
    marshalSize = marshalSize + 2;  // _recordLength
-   marshalSize = marshalSize + 4;  // _recordSpecificField
+   marshalSize = marshalSize + _parameterValues.getMarshalledSize();  // _parameterValues
     return marshalSize;
 }
 

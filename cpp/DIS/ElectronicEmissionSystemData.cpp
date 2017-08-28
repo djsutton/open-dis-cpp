@@ -8,13 +8,13 @@ ElectronicEmissionSystemData::ElectronicEmissionSystemData():
    _numberOfBeams(0), 
    _emissionsPadding2(0), 
    _emitterSystem(), 
-   _location()
+   _location(), 
+   _beamDataRecords()
 {
 }
 
 ElectronicEmissionSystemData::~ElectronicEmissionSystemData()
 {
-    _beamDataRecords.clear();
 }
 
 unsigned char ElectronicEmissionSystemData::getSystemDataLength() const
@@ -29,7 +29,12 @@ void ElectronicEmissionSystemData::setSystemDataLength(unsigned char pX)
 
 unsigned char ElectronicEmissionSystemData::getNumberOfBeams() const
 {
-   return _beamDataRecords.size();
+    return _numberOfBeams;
+}
+
+void ElectronicEmissionSystemData::setNumberOfBeams(unsigned char pX)
+{
+    _numberOfBeams = pX;
 }
 
 unsigned short ElectronicEmissionSystemData::getEmissionsPadding2() const
@@ -72,35 +77,29 @@ void ElectronicEmissionSystemData::setLocation(const Vector3Float &pX)
     _location = pX;
 }
 
-std::vector<ElectronicEmissionBeamData>& ElectronicEmissionSystemData::getBeamDataRecords() 
+ElectronicEmissionBeamData& ElectronicEmissionSystemData::getBeamDataRecords() 
 {
     return _beamDataRecords;
 }
 
-const std::vector<ElectronicEmissionBeamData>& ElectronicEmissionSystemData::getBeamDataRecords() const
+const ElectronicEmissionBeamData& ElectronicEmissionSystemData::getBeamDataRecords() const
 {
     return _beamDataRecords;
 }
 
-void ElectronicEmissionSystemData::setBeamDataRecords(const std::vector<ElectronicEmissionBeamData>& pX)
+void ElectronicEmissionSystemData::setBeamDataRecords(const ElectronicEmissionBeamData &pX)
 {
-     _beamDataRecords = pX;
+    _beamDataRecords = pX;
 }
 
 void ElectronicEmissionSystemData::marshal(DataStream& dataStream) const
 {
     dataStream << _systemDataLength;
-    dataStream << ( unsigned char )_beamDataRecords.size();
+    dataStream << _numberOfBeams;
     dataStream << _emissionsPadding2;
     _emitterSystem.marshal(dataStream);
     _location.marshal(dataStream);
-
-     for(size_t idx = 0; idx < _beamDataRecords.size(); idx++)
-     {
-        ElectronicEmissionBeamData x = _beamDataRecords[idx];
-        x.marshal(dataStream);
-     }
-
+    _beamDataRecords.marshal(dataStream);
 }
 
 void ElectronicEmissionSystemData::unmarshal(DataStream& dataStream)
@@ -110,14 +109,7 @@ void ElectronicEmissionSystemData::unmarshal(DataStream& dataStream)
     dataStream >> _emissionsPadding2;
     _emitterSystem.unmarshal(dataStream);
     _location.unmarshal(dataStream);
-
-     _beamDataRecords.clear();
-     for(size_t idx = 0; idx < _numberOfBeams; idx++)
-     {
-        ElectronicEmissionBeamData x;
-        x.unmarshal(dataStream);
-        _beamDataRecords.push_back(x);
-     }
+    _beamDataRecords.unmarshal(dataStream);
 }
 
 
@@ -126,15 +118,11 @@ bool ElectronicEmissionSystemData::operator ==(const ElectronicEmissionSystemDat
      bool ivarsEqual = true;
 
      if( ! (_systemDataLength == rhs._systemDataLength) ) ivarsEqual = false;
+     if( ! (_numberOfBeams == rhs._numberOfBeams) ) ivarsEqual = false;
      if( ! (_emissionsPadding2 == rhs._emissionsPadding2) ) ivarsEqual = false;
      if( ! (_emitterSystem == rhs._emitterSystem) ) ivarsEqual = false;
      if( ! (_location == rhs._location) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _beamDataRecords.size(); idx++)
-     {
-        if( ! ( _beamDataRecords[idx] == rhs._beamDataRecords[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_beamDataRecords == rhs._beamDataRecords) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -148,13 +136,7 @@ int ElectronicEmissionSystemData::getMarshalledSize() const
    marshalSize = marshalSize + 2;  // _emissionsPadding2
    marshalSize = marshalSize + _emitterSystem.getMarshalledSize();  // _emitterSystem
    marshalSize = marshalSize + _location.getMarshalledSize();  // _location
-
-   for(int idx=0; idx < _beamDataRecords.size(); idx++)
-   {
-        ElectronicEmissionBeamData listElement = _beamDataRecords[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _beamDataRecords.getMarshalledSize();  // _beamDataRecords
     return marshalSize;
 }
 

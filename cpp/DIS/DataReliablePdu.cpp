@@ -9,15 +9,15 @@ DataReliablePdu::DataReliablePdu() : SimulationManagementWithReliabilityFamilyPd
    _pad1(0), 
    _pad2(0), 
    _numberOfFixedDatumRecords(0), 
-   _numberOfVariableDatumRecords(0)
+   _numberOfVariableDatumRecords(0), 
+   _fixedDatumRecords(), 
+   _variableDatumRecords()
 {
     setPduType( 60 );
 }
 
 DataReliablePdu::~DataReliablePdu()
 {
-    _fixedDatumRecords.clear();
-    _variableDatumRecords.clear();
 }
 
 unsigned int DataReliablePdu::getRequestID() const
@@ -62,42 +62,52 @@ void DataReliablePdu::setPad2(unsigned char pX)
 
 unsigned int DataReliablePdu::getNumberOfFixedDatumRecords() const
 {
-   return _fixedDatumRecords.size();
+    return _numberOfFixedDatumRecords;
+}
+
+void DataReliablePdu::setNumberOfFixedDatumRecords(unsigned int pX)
+{
+    _numberOfFixedDatumRecords = pX;
 }
 
 unsigned int DataReliablePdu::getNumberOfVariableDatumRecords() const
 {
-   return _variableDatumRecords.size();
+    return _numberOfVariableDatumRecords;
 }
 
-std::vector<FixedDatum>& DataReliablePdu::getFixedDatumRecords() 
+void DataReliablePdu::setNumberOfVariableDatumRecords(unsigned int pX)
+{
+    _numberOfVariableDatumRecords = pX;
+}
+
+FixedDatum& DataReliablePdu::getFixedDatumRecords() 
 {
     return _fixedDatumRecords;
 }
 
-const std::vector<FixedDatum>& DataReliablePdu::getFixedDatumRecords() const
+const FixedDatum& DataReliablePdu::getFixedDatumRecords() const
 {
     return _fixedDatumRecords;
 }
 
-void DataReliablePdu::setFixedDatumRecords(const std::vector<FixedDatum>& pX)
+void DataReliablePdu::setFixedDatumRecords(const FixedDatum &pX)
 {
-     _fixedDatumRecords = pX;
+    _fixedDatumRecords = pX;
 }
 
-std::vector<VariableDatum>& DataReliablePdu::getVariableDatumRecords() 
+VariableDatum& DataReliablePdu::getVariableDatumRecords() 
 {
     return _variableDatumRecords;
 }
 
-const std::vector<VariableDatum>& DataReliablePdu::getVariableDatumRecords() const
+const VariableDatum& DataReliablePdu::getVariableDatumRecords() const
 {
     return _variableDatumRecords;
 }
 
-void DataReliablePdu::setVariableDatumRecords(const std::vector<VariableDatum>& pX)
+void DataReliablePdu::setVariableDatumRecords(const VariableDatum &pX)
 {
-     _variableDatumRecords = pX;
+    _variableDatumRecords = pX;
 }
 
 void DataReliablePdu::marshal(DataStream& dataStream) const
@@ -107,22 +117,10 @@ void DataReliablePdu::marshal(DataStream& dataStream) const
     dataStream << _requiredReliabilityService;
     dataStream << _pad1;
     dataStream << _pad2;
-    dataStream << ( unsigned int )_fixedDatumRecords.size();
-    dataStream << ( unsigned int )_variableDatumRecords.size();
-
-     for(size_t idx = 0; idx < _fixedDatumRecords.size(); idx++)
-     {
-        FixedDatum x = _fixedDatumRecords[idx];
-        x.marshal(dataStream);
-     }
-
-
-     for(size_t idx = 0; idx < _variableDatumRecords.size(); idx++)
-     {
-        VariableDatum x = _variableDatumRecords[idx];
-        x.marshal(dataStream);
-     }
-
+    dataStream << _numberOfFixedDatumRecords;
+    dataStream << _numberOfVariableDatumRecords;
+    _fixedDatumRecords.marshal(dataStream);
+    _variableDatumRecords.marshal(dataStream);
 }
 
 void DataReliablePdu::unmarshal(DataStream& dataStream)
@@ -134,22 +132,8 @@ void DataReliablePdu::unmarshal(DataStream& dataStream)
     dataStream >> _pad2;
     dataStream >> _numberOfFixedDatumRecords;
     dataStream >> _numberOfVariableDatumRecords;
-
-     _fixedDatumRecords.clear();
-     for(size_t idx = 0; idx < _numberOfFixedDatumRecords; idx++)
-     {
-        FixedDatum x;
-        x.unmarshal(dataStream);
-        _fixedDatumRecords.push_back(x);
-     }
-
-     _variableDatumRecords.clear();
-     for(size_t idx = 0; idx < _numberOfVariableDatumRecords; idx++)
-     {
-        VariableDatum x;
-        x.unmarshal(dataStream);
-        _variableDatumRecords.push_back(x);
-     }
+    _fixedDatumRecords.unmarshal(dataStream);
+    _variableDatumRecords.unmarshal(dataStream);
 }
 
 
@@ -163,18 +147,10 @@ bool DataReliablePdu::operator ==(const DataReliablePdu& rhs) const
      if( ! (_requiredReliabilityService == rhs._requiredReliabilityService) ) ivarsEqual = false;
      if( ! (_pad1 == rhs._pad1) ) ivarsEqual = false;
      if( ! (_pad2 == rhs._pad2) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _fixedDatumRecords.size(); idx++)
-     {
-        if( ! ( _fixedDatumRecords[idx] == rhs._fixedDatumRecords[idx]) ) ivarsEqual = false;
-     }
-
-
-     for(size_t idx = 0; idx < _variableDatumRecords.size(); idx++)
-     {
-        if( ! ( _variableDatumRecords[idx] == rhs._variableDatumRecords[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_numberOfFixedDatumRecords == rhs._numberOfFixedDatumRecords) ) ivarsEqual = false;
+     if( ! (_numberOfVariableDatumRecords == rhs._numberOfVariableDatumRecords) ) ivarsEqual = false;
+     if( ! (_fixedDatumRecords == rhs._fixedDatumRecords) ) ivarsEqual = false;
+     if( ! (_variableDatumRecords == rhs._variableDatumRecords) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -190,20 +166,8 @@ int DataReliablePdu::getMarshalledSize() const
    marshalSize = marshalSize + 1;  // _pad2
    marshalSize = marshalSize + 4;  // _numberOfFixedDatumRecords
    marshalSize = marshalSize + 4;  // _numberOfVariableDatumRecords
-
-   for(int idx=0; idx < _fixedDatumRecords.size(); idx++)
-   {
-        FixedDatum listElement = _fixedDatumRecords[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
-
-   for(int idx=0; idx < _variableDatumRecords.size(); idx++)
-   {
-        VariableDatum listElement = _variableDatumRecords[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _fixedDatumRecords.getMarshalledSize();  // _fixedDatumRecords
+   marshalSize = marshalSize + _variableDatumRecords.getMarshalledSize();  // _variableDatumRecords
     return marshalSize;
 }
 

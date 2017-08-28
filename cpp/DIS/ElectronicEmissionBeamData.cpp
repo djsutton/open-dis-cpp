@@ -12,13 +12,13 @@ ElectronicEmissionBeamData::ElectronicEmissionBeamData():
    _numberOfTrackJamTargets(0), 
    _highDensityTrackJam(0), 
    _pad4(0), 
-   _jammingModeSequence(0)
+   _jammingModeSequence(0), 
+   _trackJamTargets()
 {
 }
 
 ElectronicEmissionBeamData::~ElectronicEmissionBeamData()
 {
-    _trackJamTargets.clear();
 }
 
 unsigned char ElectronicEmissionBeamData::getBeamDataLength() const
@@ -78,7 +78,12 @@ void ElectronicEmissionBeamData::setBeamFunction(unsigned char pX)
 
 unsigned char ElectronicEmissionBeamData::getNumberOfTrackJamTargets() const
 {
-   return _trackJamTargets.size();
+    return _numberOfTrackJamTargets;
+}
+
+void ElectronicEmissionBeamData::setNumberOfTrackJamTargets(unsigned char pX)
+{
+    _numberOfTrackJamTargets = pX;
 }
 
 unsigned char ElectronicEmissionBeamData::getHighDensityTrackJam() const
@@ -111,19 +116,19 @@ void ElectronicEmissionBeamData::setJammingModeSequence(unsigned int pX)
     _jammingModeSequence = pX;
 }
 
-std::vector<TrackJamTarget>& ElectronicEmissionBeamData::getTrackJamTargets() 
+TrackJamTarget& ElectronicEmissionBeamData::getTrackJamTargets() 
 {
     return _trackJamTargets;
 }
 
-const std::vector<TrackJamTarget>& ElectronicEmissionBeamData::getTrackJamTargets() const
+const TrackJamTarget& ElectronicEmissionBeamData::getTrackJamTargets() const
 {
     return _trackJamTargets;
 }
 
-void ElectronicEmissionBeamData::setTrackJamTargets(const std::vector<TrackJamTarget>& pX)
+void ElectronicEmissionBeamData::setTrackJamTargets(const TrackJamTarget &pX)
 {
-     _trackJamTargets = pX;
+    _trackJamTargets = pX;
 }
 
 void ElectronicEmissionBeamData::marshal(DataStream& dataStream) const
@@ -133,17 +138,11 @@ void ElectronicEmissionBeamData::marshal(DataStream& dataStream) const
     dataStream << _beamParameterIndex;
     _fundamentalParameterData.marshal(dataStream);
     dataStream << _beamFunction;
-    dataStream << ( unsigned char )_trackJamTargets.size();
+    dataStream << _numberOfTrackJamTargets;
     dataStream << _highDensityTrackJam;
     dataStream << _pad4;
     dataStream << _jammingModeSequence;
-
-     for(size_t idx = 0; idx < _trackJamTargets.size(); idx++)
-     {
-        TrackJamTarget x = _trackJamTargets[idx];
-        x.marshal(dataStream);
-     }
-
+    _trackJamTargets.marshal(dataStream);
 }
 
 void ElectronicEmissionBeamData::unmarshal(DataStream& dataStream)
@@ -157,14 +156,7 @@ void ElectronicEmissionBeamData::unmarshal(DataStream& dataStream)
     dataStream >> _highDensityTrackJam;
     dataStream >> _pad4;
     dataStream >> _jammingModeSequence;
-
-     _trackJamTargets.clear();
-     for(size_t idx = 0; idx < _numberOfTrackJamTargets; idx++)
-     {
-        TrackJamTarget x;
-        x.unmarshal(dataStream);
-        _trackJamTargets.push_back(x);
-     }
+    _trackJamTargets.unmarshal(dataStream);
 }
 
 
@@ -177,15 +169,11 @@ bool ElectronicEmissionBeamData::operator ==(const ElectronicEmissionBeamData& r
      if( ! (_beamParameterIndex == rhs._beamParameterIndex) ) ivarsEqual = false;
      if( ! (_fundamentalParameterData == rhs._fundamentalParameterData) ) ivarsEqual = false;
      if( ! (_beamFunction == rhs._beamFunction) ) ivarsEqual = false;
+     if( ! (_numberOfTrackJamTargets == rhs._numberOfTrackJamTargets) ) ivarsEqual = false;
      if( ! (_highDensityTrackJam == rhs._highDensityTrackJam) ) ivarsEqual = false;
      if( ! (_pad4 == rhs._pad4) ) ivarsEqual = false;
      if( ! (_jammingModeSequence == rhs._jammingModeSequence) ) ivarsEqual = false;
-
-     for(size_t idx = 0; idx < _trackJamTargets.size(); idx++)
-     {
-        if( ! ( _trackJamTargets[idx] == rhs._trackJamTargets[idx]) ) ivarsEqual = false;
-     }
-
+     if( ! (_trackJamTargets == rhs._trackJamTargets) ) ivarsEqual = false;
 
     return ivarsEqual;
  }
@@ -203,13 +191,7 @@ int ElectronicEmissionBeamData::getMarshalledSize() const
    marshalSize = marshalSize + 1;  // _highDensityTrackJam
    marshalSize = marshalSize + 1;  // _pad4
    marshalSize = marshalSize + 4;  // _jammingModeSequence
-
-   for(int idx=0; idx < _trackJamTargets.size(); idx++)
-   {
-        TrackJamTarget listElement = _trackJamTargets[idx];
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-    }
-
+   marshalSize = marshalSize + _trackJamTargets.getMarshalledSize();  // _trackJamTargets
     return marshalSize;
 }
 

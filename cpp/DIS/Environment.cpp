@@ -6,7 +6,7 @@ using namespace DIS;
 Environment::Environment():
    _environmentType(0), 
    _length(0), 
-   _index(0), 
+   _recordIndex(0), 
    _padding1(0), 
    _geometry(0), 
    _padding2(0)
@@ -37,14 +37,14 @@ void Environment::setLength(unsigned char pX)
     _length = pX;
 }
 
-unsigned char Environment::getIndex() const
+unsigned char Environment::getRecordIndex() const
 {
-    return _index;
+    return _recordIndex;
 }
 
-void Environment::setIndex(unsigned char pX)
+void Environment::setRecordIndex(unsigned char pX)
 {
-    _index = pX;
+    _recordIndex = pX;
 }
 
 unsigned char Environment::getPadding1() const
@@ -81,7 +81,7 @@ void Environment::marshal(DataStream& dataStream) const
 {
     dataStream << _environmentType;
     dataStream << _length;
-    dataStream << _index;
+    dataStream << _recordIndex;
     dataStream << _padding1;
     dataStream << _geometry;
     dataStream << _padding2;
@@ -91,7 +91,7 @@ void Environment::unmarshal(DataStream& dataStream)
 {
     dataStream >> _environmentType;
     dataStream >> _length;
-    dataStream >> _index;
+    dataStream >> _recordIndex;
     dataStream >> _padding1;
     dataStream >> _geometry;
     dataStream >> _padding2;
@@ -104,7 +104,7 @@ bool Environment::operator ==(const Environment& rhs) const
 
      if( ! (_environmentType == rhs._environmentType) ) ivarsEqual = false;
      if( ! (_length == rhs._length) ) ivarsEqual = false;
-     if( ! (_index == rhs._index) ) ivarsEqual = false;
+     if( ! (_recordIndex == rhs._recordIndex) ) ivarsEqual = false;
      if( ! (_padding1 == rhs._padding1) ) ivarsEqual = false;
      if( ! (_geometry == rhs._geometry) ) ivarsEqual = false;
      if( ! (_padding2 == rhs._padding2) ) ivarsEqual = false;
@@ -118,7 +118,7 @@ int Environment::getMarshalledSize() const
 
    marshalSize = marshalSize + 4;  // _environmentType
    marshalSize = marshalSize + 1;  // _length
-   marshalSize = marshalSize + 1;  // _index
+   marshalSize = marshalSize + 1;  // _recordIndex
    marshalSize = marshalSize + 1;  // _padding1
    marshalSize = marshalSize + 1;  // _geometry
    marshalSize = marshalSize + 1;  // _padding2

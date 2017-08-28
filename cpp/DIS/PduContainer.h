@@ -2,14 +2,13 @@
 #define PDUCONTAINER_H
 
 #include <DIS/Pdu.h>
-#include <vector>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
 
 
 namespace DIS
 {
-// Used for XML compatability. A container that holds PDUs
+// A container that holds PDUs
 
 // Copyright (c) 2007-2009, MOVES Institute, Naval Postgraduate School. All rights reserved. 
 //
@@ -21,8 +20,8 @@ protected:
   /** Number of PDUs in the container list */
   int _numberOfPdus; 
 
-  /** record sets */
-  std::vector<Pdu> _pdus; 
+  /** List of PDUs */
+  Pdu _pdus; 
 
 
  public:
@@ -33,10 +32,11 @@ protected:
     virtual void unmarshal(DataStream& dataStream);
 
     int getNumberOfPdus() const; 
+    void setNumberOfPdus(int pX); 
 
-    std::vector<Pdu>& getPdus(); 
-    const std::vector<Pdu>& getPdus() const; 
-    void setPdus(const std::vector<Pdu>&    pX);
+    Pdu& getPdus(); 
+    const Pdu&  getPdus() const; 
+    void setPdus(const Pdu    &pX);
 
 
 virtual int getMarshalledSize() const;

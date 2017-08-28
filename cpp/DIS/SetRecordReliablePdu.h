@@ -2,7 +2,6 @@
 #define SETRECORDRELIABLEPDU_H
 
 #include <DIS/RecordSet.h>
-#include <vector>
 #include <DIS/SimulationManagementWithReliabilityFamilyPdu.h>
 #include <DIS/DataStream.h>
 #include <DIS/msLibMacro.h>
@@ -35,7 +34,7 @@ protected:
   unsigned int _numberOfRecordSets; 
 
   /** record sets */
-  std::vector<RecordSet> _recordSets; 
+  RecordSet _recordSets; 
 
 
  public:
@@ -58,10 +57,11 @@ protected:
     void setPad2(unsigned char pX); 
 
     unsigned int getNumberOfRecordSets() const; 
+    void setNumberOfRecordSets(unsigned int pX); 
 
-    std::vector<RecordSet>& getRecordSets(); 
-    const std::vector<RecordSet>& getRecordSets() const; 
-    void setRecordSets(const std::vector<RecordSet>&    pX);
+    RecordSet& getRecordSets(); 
+    const RecordSet&  getRecordSets() const; 
+    void setRecordSets(const RecordSet    &pX);
 
 
 virtual int getMarshalledSize() const;
