@@ -20,7 +20,9 @@
 #include <DIS/EventReportPdu.h>
 #include <DIS/CommentPdu.h>
 #include <DIS/StopFreezePdu.h>
-
+#include <DIS/ElectronicEmissionsPdu.h>
+#include <DIS/DesignatorPdu.h>
+#include <DIS/TransmitterPdu.h>
 
 using namespace DIS;
 
@@ -47,6 +49,9 @@ Pdu* PduBank::GetStaticPDU( DIS::PDUType pdu_type )
    static EventReportPdu      eventReportPdu;
    static CommentPdu          commentPdu;
    static StopFreezePdu       stopFreezePdu;
+   static ElectronicEmissionsPdu    electronicEmissionsPdu;
+   static DesignatorPdu             designatorPdu;
+   static TransmitterPdu            transmitterPdu;
 
    switch(pdu_type)
    {
@@ -71,6 +76,9 @@ Pdu* PduBank::GetStaticPDU( DIS::PDUType pdu_type )
       case PDU_EVENT_REPORT:      return &eventReportPdu;      break; 
       case PDU_COMMENT:           return &commentPdu;          break; 
       case PDU_STOP_FREEZE:       return &stopFreezePdu;       break;
+      case PDU_ELECTRONIC_EMMISIONS:    return &electronicEmissionsPdu; break;
+      case PDU_DESIGNATOR:              return &designatorPdu;          break;
+      case PDU_TRANSMITTER:             return &transmitterPdu;         break;
    }
 
    return NULL;

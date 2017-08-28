@@ -28,6 +28,9 @@ namespace DIS
       // PDU_WTF = 20
       PDU_EVENT_REPORT = 21,
       PDU_COMMENT = 22,
+      PDU_ELECTRONIC_EMMISIONS = 23,
+      PDU_DESIGNATOR = 24,
+      PDU_TRANSMITTER = 25,
    };
 }
 
