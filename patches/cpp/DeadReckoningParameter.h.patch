@@ -1,0 +1,23 @@
+--- a/cpp/DIS/DeadReckoningParameter.h
++++ b/cpp/DIS/DeadReckoningParameter.h
+@@ -22,7 +22,7 @@ protected:
+   unsigned char _deadReckoningAlgorithm; 
+ 
+   /** other parameters to use in the dead reckoning algorithm */
+-  char _otherParameters; 
++  char _otherParameters[15]; 
+ 
+   /** Linear acceleration of the entity */
+   Vector3Float _entityLinearAcceleration; 
+@@ -41,8 +41,9 @@ protected:
+     unsigned char getDeadReckoningAlgorithm() const; 
+     void setDeadReckoningAlgorithm(unsigned char pX); 
+ 
+-    char getOtherParameters() const; 
+-    void setOtherParameters(char pX); 
++    char*  getOtherParameters(); 
++    const char*  getOtherParameters() const; 
++    void setOtherParameters( const char*    pX);
+ 
+     Vector3Float& getEntityLinearAcceleration(); 
+     const Vector3Float&  getEntityLinearAcceleration() const; 

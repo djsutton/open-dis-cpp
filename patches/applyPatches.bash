@@ -66,6 +66,10 @@ case "$1" in
       patch cpp/DIS/VariableDatum.h patches/cpp/VariableDatum.h.patch
       patch cpp/DIS/Pdu.cpp patches/cpp/Pdu.patch
       patch cpp/DIS/msLibMacro.h patches/cpp/msLibMacro.h.patch
+      patch cpp/DIS/DeadReckoningParameter.cpp patches/cpp/DeadReckoningParameter.cpp.patch
+      patch cpp/DIS/DeadReckoningParameter.h patches/cpp/DeadReckoningParameter.h.patch
+      patch cpp/DIS/Marking.cpp patches/cpp/Marking.cpp.patch
+      patch cpp/DIS/Marking.h patches/cpp/Marking.h.patch
       ;;
 
   cppDis7)

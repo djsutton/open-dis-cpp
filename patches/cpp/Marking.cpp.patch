@@ -1,0 +1,104 @@
+--- a/cpp/DIS/Marking.cpp
++++ b/cpp/DIS/Marking.cpp
+@@ -1,12 +1,19 @@
+ #include <DIS/Marking.h> 
+ 
++#include <cstring>
++
+ using namespace DIS;
+ 
+ 
+ Marking::Marking():
+-   _characterSet(0), 
+-   _characters(0)
++   _characterSet(0)
+ {
++     // Initialize fixed length array
++     for(int idx = 0; idx < sizeof(_characters); idx++)
++     {
++         _characters[idx] = 0;
++     }
++
+ }
+ 
+ Marking::~Marking()
+@@ -23,26 +30,51 @@ void Marking::setCharacterSet(unsigned char pX)
+     _characterSet = pX;
+ }
+ 
+-char Marking::getCharacters() const
++char* Marking::getCharacters() 
++{
++    return _characters;
++}
++
++const char* Marking::getCharacters() const
+ {
+     return _characters;
+ }
+ 
+-void Marking::setCharacters(char pX)
++void Marking::setCharacters(const char* x)
+ {
+-    _characters = pX;
++   for(int i = 0; i < sizeof(_characters); i++)
++   {
++        _characters[i] = x[i];
++   }
++}
++
++// An alternate method to set the value if this could be a string. This is not strictly comnpliant with the DIS standard.
++void Marking::setByStringCharacters(const char* x)
++{
++   std::strncpy(_characters, x, sizeof(_characters)-1);
++   _characters[sizeof(_characters) -1] = '\0';
+ }
+ 
+ void Marking::marshal(DataStream& dataStream) const
+ {
+     dataStream << _characterSet;
+-    dataStream << _characters;
++
++     for(size_t idx = 0; idx < sizeof(_characters); idx++)
++     {
++        dataStream << _characters[idx];
++     }
++
+ }
+ 
+ void Marking::unmarshal(DataStream& dataStream)
+ {
+     dataStream >> _characterSet;
+-    dataStream >> _characters;
++
++     for(size_t idx = 0; idx < sizeof(_characters); idx++)
++     {
++        dataStream >> _characters[idx];
++     }
++
+ }
+ 
+ 
+@@ -51,7 +83,12 @@ bool Marking::operator ==(const Marking& rhs) const
+      bool ivarsEqual = true;
+ 
+      if( ! (_characterSet == rhs._characterSet) ) ivarsEqual = false;
+-     if( ! (_characters == rhs._characters) ) ivarsEqual = false;
++
++     for(char idx = 0; idx < sizeof(_characters); idx++)
++     {
++          if(!(_characters[idx] == rhs._characters[idx]) ) ivarsEqual = false;
++     }
++
+ 
+     return ivarsEqual;
+  }
+@@ -61,7 +98,7 @@ int Marking::getMarshalledSize() const
+    int marshalSize = 0;
+ 
+    marshalSize = marshalSize + 1;  // _characterSet
+-   marshalSize = marshalSize + 1;  // _characters
++   marshalSize = marshalSize + sizeof(_characters);  // _characters
+     return marshalSize;
+ }
+ 
