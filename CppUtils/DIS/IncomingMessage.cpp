@@ -33,10 +33,15 @@ void IncomingMessage::Process(const char* buf, unsigned int size, Endian e)
 
    DataStream ds( buf , size , e );
 
-   while( ds.GetReadPos() < ds.size() )
+   while( ds.GetReadPos() + PDU_TYPE_POSITION < ds.size() )
    {  
       unsigned int pdu_type = ds[PDU_TYPE_POSITION];
       SwitchOnType( pdu_type, ds );
+   }
+
+   if (ds.GetReadPos() < ds.size())
+   {
+      //TODO:  fragment remaining
    }
 }
 

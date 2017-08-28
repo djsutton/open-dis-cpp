@@ -113,11 +113,18 @@ namespace DIS
       template<typename T>
       void ReadAlgorithm(T& t)
       {
-         char ch[sizeof(T)];
-         DoRead( ch , sizeof(T) );
-         DoFlip( ch , sizeof(T) );
-         t = *reinterpret_cast<T*>( ch );
-         IncrementPointer<T>( _read_pos );
+         if (_read_pos+ sizeof(T) <= _buffer.size())
+         {
+            char ch[sizeof(T)];
+            DoRead( ch , sizeof(T) );
+            DoFlip( ch , sizeof(T) );
+            t = *reinterpret_cast<T*>( ch );
+            IncrementPointer<T>( _read_pos );
+         }
+         else
+         {
+            // processing error, data buffer too small
+         }
       }
 
       /// will flip the buffer if the buffer endian is different than the machine's.
